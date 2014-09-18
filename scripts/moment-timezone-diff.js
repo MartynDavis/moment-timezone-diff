@@ -5,7 +5,7 @@
     "use strict";
 
     if (typeof exports === 'object') {
-        module.exports = factory(require('moment-timezone'));   // Node
+        module.exports = factory(require('../moment/moment-timezone'));   // Node
     } else {
         root.momentTimezoneDiff = factory(moment);              // Browser
     }
@@ -53,32 +53,42 @@
         }
         return copy;
     }
+    
+    function daysInYear(year) {
+        var days = 0,
+            i;
+        for (i = 1; i <= 12; i += 1) {
+            days += moment(year + '-' + ((i < 10) ? '0' : '') + i, "YYYY-MM").daysInMonth();
+        }
+        return days;
+    }
 
-    function getMinutes(m) {
-        return ((m.dayOfYear() - 1) * (24 * 60)) +
-               (m.hour() * 60) +
-               m.minute();
+    function getMinutes(m, base) {
+        var year,
+            minutes = 0;
+        if (m.year() > base.year()) {
+            for (year = base.year(); year < m.year(); year += 1) {
+                minutes += daysInYear(year) * (24 * 60);
+            }
+        }
+        minutes += ((m.dayOfYear() - 1) * (24 * 60)) +
+                   (m.hour() * 60) +
+                   m.minute();
+        return minutes;
     }
 
     function TimezoneDiff(momentReference, timezone) {
         this.momentReference = momentReference;
-        this.momentTz = moment(this.momentReference, timezone);
+        this.momentTz = moment.tz(momentReference, timezone);
     }
 
     TimezoneDiff.prototype.diff = function () {
-        var minutes = getMinutes(this.momentTz),
-            minutesReference = getMinutes(this.momentReference),
+        var minutesTz = getMinutes(this.momentTz, this.momentReference),
+            minutesReference = getMinutes(this.momentReference, this.momentTz),
             factor,
             fromYear,
             toYear;
-        if (this.momentTz.year() === this.momentReference.year()) {
-            return minutes - minutesReference;
-        }
-        if (this.momentTz.year() < this.momentReference.year()) {
-            factor = -1;
-        } else {
-            factor = 1;
-        }
+        return (minutesTz - minutesReference) / 60;
     };
 
     TimezoneDiff.prototype.format = function () {

@@ -2,7 +2,8 @@
 
 /*global describe, it*/
 
-var mtzd = require('../scripts/moment-timezone-diff');
+var moment = require('moment-timezone'),
+    momentTimezoneDiff = require('../scripts/moment-timezone-diff');
 
 describe('options', function () {
     describe('options', function () {
@@ -19,7 +20,7 @@ describe('options', function () {
         // copy(...)
         //
         // Copies one or more objects creating a new object which contains all of the properties of the supplied objects
-        // Objects are copied in the parameter order, so last property value wins
+        // Objects are copied in the parameter order, so last property value wins.
         //
         function copy() {
             var newObj = { },
@@ -38,21 +39,43 @@ describe('options', function () {
         }
         it('defaultOptions', function () {
             
-            mtzd.getOptions().should.eql(defaultOptions);
+            momentTimezoneDiff.getOptions().should.eql(defaultOptions);
         });
         it('get/set', function () {
             var options,
                 newOptions1 = { ahead: 'changed ahead', hour: 'changed hours' },
-                newOptions2 = { sun: 'sun', sunRise: { hours: 1, minutes: 42 } };
-            mtzd.getOptions().should.eql(defaultOptions);
-            mtzd.setOptions(newOptions1);
+                newOptions2 = { ahead: 'changed ahead again', sun: 'sun', sunRise: { hours: 1, minutes: 42 } };
+            momentTimezoneDiff.getOptions().should.eql(defaultOptions);
+            momentTimezoneDiff.setOptions(newOptions1);
             options = copy(defaultOptions, newOptions1);
-            mtzd.getOptions().should.eql(options);
-            mtzd.setOptions(newOptions2);
+            momentTimezoneDiff.getOptions().should.eql(options);
+            momentTimezoneDiff.setOptions(newOptions2);
             options = copy(defaultOptions, newOptions1, newOptions2);
-            mtzd.getOptions().should.eql(options);
-            mtzd.setOptions(defaultOptions);
-            mtzd.getOptions().should.eql(defaultOptions);
+            momentTimezoneDiff.getOptions().should.eql(options);
+            momentTimezoneDiff.setOptions(defaultOptions);
+            momentTimezoneDiff.getOptions().should.eql(defaultOptions);
+        });
+        it('TimezoneDiff', function () {
+            
+            var m = moment.tz([2014, 8, 1, 12, 42, 13], 'US/Pacific'),
+                tzDiff = new momentTimezoneDiff.TimezoneDiff(m, 'US/Eastern');
+            tzDiff.diff().should.equal(3);
+            
+            m = moment.tz([2014, 11, 31, 23, 42, 13], 'US/Pacific');
+            tzDiff = new momentTimezoneDiff.TimezoneDiff(m, 'US/Eastern');
+            tzDiff.diff().should.equal(3);
+
+            m = moment.tz([2015, 0, 1, 1, 1, 1], 'Australia/Melbourne');
+            tzDiff = new momentTimezoneDiff.TimezoneDiff(m, 'Australia/Perth');
+            tzDiff.diff().should.equal(-3);
+            tzDiff = new momentTimezoneDiff.TimezoneDiff(m, 'Australia/Brisbane');
+            tzDiff.diff().should.equal(-1);
+
+            m = moment.tz([2014, 7, 7, 7, 7, 7], 'Australia/Melbourne');
+            tzDiff = new momentTimezoneDiff.TimezoneDiff(m, 'Australia/Perth');
+            tzDiff.diff().should.equal(-2);
+            tzDiff = new momentTimezoneDiff.TimezoneDiff(m, 'Australia/Brisbane');
+            tzDiff.diff().should.equal(0);
         });
     });
 });
