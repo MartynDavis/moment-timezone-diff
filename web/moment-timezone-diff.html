@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="moment-with-langs.min.js"></script>
+<script src="moment-timezone-with-data-2010-2020.min.js"></script>
+<script src="moment-timezone-diff.js"></script>
+<meta charset=utf-8 />
+<title>Moment Timezone Difference</title>
+<style>
+body {
+    font-size: 16px;
+}
+div {
+    clear: both;
+    height: auto;
+    margin: 0 auto;
+    padding-top: 10px;
+}
+div.header {
+    text-align: center;
+    padding-bottom: 10px;
+}
+div.date {
+    text-align: center;
+}
+div.footer {
+    display: block;
+    width: 100%;
+}
+div.footer p {
+    text-align: center;
+    padding: 0px;
+    margin: 0px;
+}
+form { 
+    margin: 0px auto;
+    width: auto; 
+}
+table { 
+    margin: 0px auto; 
+    border-collapse: collapse;
+}
+td.name, td.location, td.timezone {
+    cursor: pointer;
+}
+td.name:hover, td.location:hover, td.timezone:hover {
+    text-decoration: underline;
+}
+.name, .location, .timezone {
+    text-align: left;
+}
+tr {
+    height: 2em;
+}
+tr:nth-child(even) {
+    background-color: #eee;
+}
+th, td { 
+    padding-left: 10px; 
+    padding-right: 10px; 
+    vertical-align: middle;
+}
+td.dayOfWeek {
+    min-width: 5em;
+}
+td.time {
+    min-width: 4em;
+}
+td.date {
+    min-width: 6em;
+}
+td.diff {
+    min-width: 8em;
+}
+td.sunmoon {
+    min-width: 1em;
+}
+td.dayOfWeek, td.time, td.date, td.diff { 
+    text-align: right; 
+}
+td.sunmoon { 
+    text-align: center; 
+}
+td.image {
+    background-color: white;
+}
+div.footer {
+    font-size: small;
+}
+a#now {
+    color: black;
+    text-decoration: none;
+}
+p#thisTime {
+    padding-bottom: 0.75em;
+}
+
+</style>
+<script>
+    function initialiseDate() {
+        var data = [ { name: 'Fred Flintstone',    location: 'Vancouver, Canada',      timezone: 'US/Pacific' },
+                     { name: 'Barny Rubble',       location: 'New York, USA',          timezone: 'US/Eastern' },
+                     { name: 'Bamm Bamm Rubble',   location: 'London, United Kingdom', timezone: 'Europe/London' },
+                     { name: 'Wilma Flintstone',   location: 'Paris, France',          timezone: 'Europe/Paris' },
+                     { name: 'Betty Rubble',       location: 'Mumbai, India',          timezone: 'Asia/Calcutta' },
+                     { name: 'Pebbles Flintstone', location: 'Perth, Australia',       timezone: 'Australia/Perth' }
+                   ],
+            i,
+            dataElement = document.getElementById('data'),
+            tzCombo = document.getElementById('timezone');
+
+        thisMoment = moment();
+        thisMomentTimezone = undefined;
+        
+        for (i = 0; i < data.length; i += 1) {
+            addData(dataElement, tzCombo, data[i]);
+        }
+        
+        updateLegend();
+        
+        refreshData();
+    }
+</script>
+</head>
+<body onload='initialiseDate();'>
+    <div class="header">
+        <h1>Moment Timezone Difference</h1>
+    </div>
+    <div class="date">
+        <form>
+            <select id='hour' onchange='dateChanged()'>
+                <option value='12'>12</option>
+                <option value='1'>01</option>
+                <option value='2'>02</option>
+                <option value='3'>03</option>
+                <option value='4'>04</option>
+                <option value='5'>05</option>
+                <option value='6'>06</option>
+                <option value='7'>07</option>
+                <option value='8'>08</option>
+                <option value='9'>09</option>
+                <option value='10'>10</option>
+                <option value='11'>11</option>
+            </select>
+            :
+            <select id='minute' onchange='dateChanged()'>
+                <option value='0'>00</option>
+                <option value='1'>01</option>
+                <option value='2'>02</option>
+                <option value='3'>03</option>
+                <option value='4'>04</option>
+                <option value='5'>05</option>
+                <option value='6'>06</option>
+                <option value='7'>07</option>
+                <option value='8'>08</option>
+                <option value='9'>09</option>
+                <option value='10'>10</option>
+                <option value='11'>11</option>
+                <option value='12'>12</option>
+                <option value='13'>13</option>
+                <option value='14'>14</option>
+                <option value='15'>15</option>
+                <option value='16'>16</option>
+                <option value='17'>17</option>
+                <option value='18'>18</option>
+                <option value='19'>19</option>
+                <option value='20'>20</option>
+                <option value='21'>21</option>
+                <option value='22'>22</option>
+                <option value='23'>23</option>
+                <option value='24'>24</option>
+                <option value='25'>25</option>
+                <option value='26'>26</option>
+                <option value='27'>27</option>
+                <option value='28'>28</option>
+                <option value='29'>29</option>
+                <option value='30'>30</option>
+                <option value='31'>31</option>
+                <option value='32'>32</option>
+                <option value='33'>33</option>
+                <option value='34'>34</option>
+                <option value='35'>35</option>
+                <option value='36'>36</option>
+                <option value='37'>37</option>
+                <option value='38'>38</option>
+                <option value='39'>39</option>
+                <option value='40'>40</option>
+                <option value='41'>41</option>
+                <option value='42'>42</option>
+                <option value='43'>43</option>
+                <option value='44'>44</option>
+                <option value='45'>45</option>
+                <option value='46'>46</option>
+                <option value='47'>47</option>
+                <option value='48'>48</option>
+                <option value='49'>49</option>
+                <option value='50'>50</option>
+                <option value='51'>51</option>
+                <option value='52'>52</option>
+                <option value='53'>53</option>
+                <option value='54'>54</option>
+                <option value='55'>55</option>
+                <option value='56'>56</option>
+                <option value='57'>57</option>
+                <option value='58'>58</option>
+                <option value='59'>59</option>
+            </select>
+            &nbsp;
+            <select id='ampm' onchange='dateChanged()'>
+                <option value='0'>am</option>
+                <option value='1'>pm</option>
+            </select>
+            &nbsp;
+            <select id='month' onchange='dateChanged()'>
+                <option value='0'>Jan</option>
+                <option value='1'>Feb</option>
+                <option value='2'>Mar</option>
+                <option value='3'>Apr</option>
+                <option value='4'>May</option>
+                <option value='5'>Jun</option>
+                <option value='6'>Jul</option>
+                <option value='7'>Aug</option>
+                <option value='8'>Sep</option>
+                <option value='9'>Oct</option>
+                <option value='10'>Nov</option>
+                <option value='11'>Dec</option>
+            </select>
+            -
+            <select id='day' onchange='dateChanged()'>
+                <option value='1'>01</option>
+                <option value='2'>02</option>
+                <option value='3'>03</option>
+                <option value='4'>04</option>
+                <option value='5'>05</option>
+                <option value='6'>06</option>
+                <option value='7'>07</option>
+                <option value='8'>08</option>
+                <option value='9'>09</option>
+                <option value='10'>10</option>
+                <option value='11'>11</option>
+                <option value='12'>12</option>
+                <option value='13'>13</option>
+                <option value='14'>14</option>
+                <option value='15'>15</option>
+                <option value='16'>16</option>
+                <option value='17'>17</option>
+                <option value='18'>18</option>
+                <option value='19'>19</option>
+                <option value='20'>20</option>
+                <option value='21'>21</option>
+                <option value='22'>22</option>
+                <option value='23'>23</option>
+                <option value='24'>24</option>
+                <option value='25'>25</option>
+                <option value='26'>26</option>
+                <option value='27'>27</option>
+                <option value='28'>28</option>
+                <option value='29'>29</option>
+                <option value='30'>30</option>
+                <option value='31'>31</option>
+            </select>
+            -
+            <select id='year' onchange='dateChanged()'>
+                <option value='2010'>2010</option>
+                <option value='2011'>2011</option>
+                <option value='2012'>2012</option>
+                <option value='2013'>2013</option>
+                <option value='2014'>2014</option>
+                <option value='2015'>2015</option>
+                <option value='2016'>2016</option>
+                <option value='2017'>2017</option>
+                <option value='2018'>2018</option>
+                <option value='2019'>2019</option>
+                <option value='2020'>2020</option>
+            </select>
+            &nbsp;
+            <select id='timezone' onchange='dateChanged()'>
+                <option value='' selected></option>
+            </select>
+            &nbsp;
+            <a id='now' href='#' onclick='updateNow(); return false;' title='Current Time'>&#x25D4;</a>
+        </form>
+    </div>
+    <div class="details">
+        <table id='data'>
+            <thead>
+                <tr>
+                    <th class='name'>Who</th>
+                    <th class='location'>Location</th>
+                    <th class='timezone'>Timezone</th>
+                    <th colspan='5'>Local Time</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+    <div class='footer'>
+        <p id='thisTime'></p>
+        <p id='legend1'></p>
+        <p id='legend2'></p>
+    </div>
+</body>
+</html>
