@@ -9,8 +9,8 @@ describe('options', function () {
     describe('options', function () {
         var defaultOptions = { ahead: 'ahead',
                                behind: 'behind',
-                               sunRise: { hours: 6, minutes: 0 },
-                               sunSet: { hours: 19, minutes: 59 },
+                               sunRise: { hour: 6, minute: 0 },
+                               sunSet: { hour: 19, minute: 59 },
                                sun: '\u263c',  // Unicode white sun with rays
                                moon: '\u263e', // Unicode last quarter moon
                                hour: 'hour',
@@ -44,7 +44,7 @@ describe('options', function () {
         it('get/set', function () {
             var options,
                 newOptions1 = { ahead: 'changed ahead', hour: 'changed hours' },
-                newOptions2 = { ahead: 'changed ahead again', sun: 'sun', sunRise: { hours: 1, minutes: 42 } };
+                newOptions2 = { ahead: 'changed ahead again', sun: 'sun', sunRise: { hour: 1, minute: 42 } };
             momentTimezoneDiff.getOptions().should.eql(defaultOptions);
             momentTimezoneDiff.setOptions(newOptions1);
             options = copy(defaultOptions, newOptions1);
@@ -65,6 +65,10 @@ describe('options', function () {
             tzDiff = new momentTimezoneDiff.TimezoneDiff(m, 'US/Eastern');
             tzDiff.diff().should.equal(3);
 
+            m = moment.tz([2015, 0, 1, 1, 42, 13], 'US/Eastern');
+            tzDiff = new momentTimezoneDiff.TimezoneDiff(m, 'US/Pacific');
+            tzDiff.diff().should.equal(-3);
+
             m = moment.tz([2015, 0, 1, 1, 1, 1], 'Australia/Melbourne');
             tzDiff = new momentTimezoneDiff.TimezoneDiff(m, 'Australia/Perth');
             tzDiff.diff().should.equal(-3);
@@ -76,6 +80,372 @@ describe('options', function () {
             tzDiff.diff().should.equal(-2);
             tzDiff = new momentTimezoneDiff.TimezoneDiff(m, 'Australia/Brisbane');
             tzDiff.diff().should.equal(0);
+        });
+        it('Format', function () {
+            var m = moment.tz([2015, 0, 1, 0, 15, 0], 'Australia/Melbourne'),
+                tzDiff = new momentTimezoneDiff.TimezoneDiff(m, 'Australia/Adelaide');
+            tzDiff.diff().should.equal(-0.5);
+            tzDiff.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('23:45 Dec-31-2014 0.5 hours behind \u263e');
+            tzDiff = new momentTimezoneDiff.TimezoneDiff(m, 'US/Pacific');
+            tzDiff.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('05:15 Dec-31-2014 19 hours behind \u263e');
+            m = moment.tz([2015, 0, 1, 9, 15, 0], 'Australia/Melbourne');
+            tzDiff = new momentTimezoneDiff.TimezoneDiff(m, 'US/Pacific');
+            tzDiff.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('14:15 Dec-31-2014 19 hours behind \u263c');
+            tzDiff.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('14:15 Dec-31-2014 -19 hours \u263c');
+            tzDiff.format('HH:mm MMM-DD-YYYY [DIFF] sunmoon').should.equal('14:15 Dec-31-2014 DIFF \u263c');
+            tzDiff.format('HH:mm MMM-DD-YYYY [diff] sunmoon').should.equal('14:15 Dec-31-2014 diff \u263c');
+            tzDiff.format('HH:mm MMM-DD-YYYY [diff] [sunmoon]').should.equal('14:15 Dec-31-2014 diff sunmoon');
+        });
+        it('Format - escaped', function () {
+            var m = moment.tz([2015, 0, 1, 9, 15, 0], 'Australia/Melbourne'),
+                tzDiff = new momentTimezoneDiff.TimezoneDiff(m, 'US/Pacific');
+            tzDiff.format('DIFF').should.equal('19 hours behind');
+            tzDiff.format('diff').should.equal('-19 hours');
+            tzDiff.format('sunmoon').should.equal('\u263c');
+            tzDiff.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('14:15 Dec-31-2014 19 hours behind \u263c');
+            tzDiff.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('14:15 Dec-31-2014 -19 hours \u263c');
+            tzDiff.format('HH:mm MMM-DD-YYYY [DIFF] sunmoon').should.equal('14:15 Dec-31-2014 DIFF \u263c');
+            tzDiff.format('HH:mm MMM-DD-YYYY [diff] sunmoon').should.equal('14:15 Dec-31-2014 diff \u263c');
+            tzDiff.format('HH:mm MMM-DD-YYYY [diff] [sunmoon]').should.equal('14:15 Dec-31-2014 diff sunmoon');
+
+            m = moment.tz([2014, 11, 31, 14, 15, 0], 'US/Pacific');
+            tzDiff = new momentTimezoneDiff.TimezoneDiff(m, 'Australia/Melbourne');
+            tzDiff.format('DIFF').should.equal('19 hours ahead');
+            tzDiff.format('diff').should.equal('19 hours');
+            tzDiff.format('sunmoon').should.equal('\u263c');
+            tzDiff.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('09:15 Jan-01-2015 19 hours ahead \u263c');
+            tzDiff.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('09:15 Jan-01-2015 19 hours \u263c');
+            tzDiff.format('HH:mm MMM-DD-YYYY [DIFF] sunmoon').should.equal('09:15 Jan-01-2015 DIFF \u263c');
+            tzDiff.format('HH:mm MMM-DD-YYYY [diff] sunmoon').should.equal('09:15 Jan-01-2015 diff \u263c');
+            tzDiff.format('HH:mm MMM-DD-YYYY [diff] [sunmoon]').should.equal('09:15 Jan-01-2015 diff sunmoon');
+        });
+        it('Sunny', function () {
+            var m = moment.tz([2015, 0, 1, 9, 15, 0], 'Australia/Melbourne'),
+                tzDiff = new momentTimezoneDiff.TimezoneDiff(m, 'US/Pacific');
+            tzDiff.sunny().should.equal(true);
+            momentTimezoneDiff.sunny(m).should.equal(true);
+
+            m = moment.tz([2014, 11, 31, 14, 15, 0], 'US/Pacific');
+            tzDiff = new momentTimezoneDiff.TimezoneDiff(m, 'Australia/Melbourne');
+            tzDiff.sunny().should.equal(true);
+            momentTimezoneDiff.sunny(m).should.equal(true);
+
+            m = moment.tz([2014, 11, 31, 20, 15, 0], 'US/Pacific');
+            tzDiff = new momentTimezoneDiff.TimezoneDiff(m, 'Australia/Melbourne');
+            tzDiff.sunny().should.equal(true);
+            momentTimezoneDiff.sunny(m).should.equal(false);
+
+            m = moment.tz([2014, 11, 31, 20, 15, 0], 'Australia/Melbourne');
+            tzDiff = new momentTimezoneDiff.TimezoneDiff(m, 'Australia/Perth');
+            tzDiff.sunny().should.equal(true);
+            momentTimezoneDiff.sunny(m).should.equal(false);
+
+            m = moment.tz([2014, 11, 31, 14, 15, 0], 'Australia/Melbourne');
+            tzDiff = new momentTimezoneDiff.TimezoneDiff(m, 'Australia/Perth');
+            tzDiff.sunny().should.equal(true);
+            momentTimezoneDiff.sunny(m).should.equal(true);
+
+            m = moment.tz([2014, 11, 31, 8, 15, 0], 'Australia/Melbourne');
+            tzDiff = new momentTimezoneDiff.TimezoneDiff(m, 'Australia/Perth');
+            tzDiff.sunny().should.equal(false);
+            momentTimezoneDiff.sunny(m).should.equal(true);
+
+            m = moment.tz([2014, 11, 31, 1, 15, 0], 'Australia/Melbourne');
+            tzDiff = new momentTimezoneDiff.TimezoneDiff(m, 'Australia/Adelaide');
+            tzDiff.sunny().should.equal(false);
+            momentTimezoneDiff.sunny(m).should.equal(false);
+        });
+        
+        function checkSunny(m, options) {
+            var hour = m.hour(),
+                minute = m.minute();
+            if ((hour > options.sunRise.hour) && (hour < options.sunSet.hour)) {
+                return true;
+            }
+            if ((hour === options.sunRise.hour) && (hour === options.sunSet.hour)) {
+                return (minute >= (options.sunRise.minute || 0)) && (minute < (options.sunSet.minute || 0));
+            }
+            if (hour === options.sunRise.hour) {
+                return minute >= (options.sunRise.minute || 0);
+            }
+            if (hour === options.sunSet.hour) {
+                return minute < (options.sunSet.minute || 0);
+            }
+            return false;
+        }
+        
+        it('Sunny with options', function () {
+            var sunRiseHour,
+                sunRiseMinute,
+                sunSetHour,
+                sunSetMinute,
+                m = moment.tz([2015, 0, 8, 12, 35, 0], 'Europe/London');
+            for (sunRiseHour = 0; sunRiseHour < 24; sunRiseHour += 1) {
+                for (sunRiseMinute = 0; sunRiseMinute < 60; sunRiseMinute += 1) {
+                    for (sunSetHour = sunRiseHour; sunSetHour < 24; sunSetHour += 1) {
+                        for (sunSetMinute = (sunRiseHour === sunSetHour) ? (sunRiseMinute + 1) : 0; sunSetMinute < 60; sunSetMinute += 1) {
+                            momentTimezoneDiff.setOptions({ sunRise: { hour: sunRiseHour, minute: sunRiseMinute },
+                                                            sunSet: { hour: sunSetHour, minute: sunSetMinute } });
+                            //console.log("Sunny(" + sunRiseHour + ":" + sunRiseMinute + "," + sunSetHour + ":" + sunSetMinute + ") - " + m.hour() + ":" + m.minute());
+                            momentTimezoneDiff.sunny(m).should.equal(checkSunny(m, momentTimezoneDiff.getOptions()));
+                        }
+                    }
+                }
+            }
+            for (sunRiseHour = 0; sunRiseHour < 24; sunRiseHour += 1) {
+                for (sunSetHour = sunRiseHour; sunSetHour < 24; sunSetHour += 1) {
+                    momentTimezoneDiff.setOptions({ sunRise: { hour: sunRiseHour, minute: undefined },
+                                                    sunSet: { hour: sunSetHour, minute: undefined } });
+                    momentTimezoneDiff.sunny(m).should.equal(checkSunny(m, momentTimezoneDiff.getOptions()));
+                }
+            }
+            
+            // restore default options
+            momentTimezoneDiff.setOptions(defaultOptions);
+            momentTimezoneDiff.getOptions().should.eql(defaultOptions);
+        });
+        it('Format with various options values', function () {
+            var m1 = moment.tz([2015, 0, 1, 9, 15, 0], 'Australia/Melbourne'),
+                tzDiff1 = new momentTimezoneDiff.TimezoneDiff(m1, 'US/Pacific'),
+                m2 = moment.tz([2014, 11, 31, 14, 15, 0], 'US/Pacific'),
+                tzDiff2 = new momentTimezoneDiff.TimezoneDiff(m2, 'Australia/Melbourne'),
+                m3 = moment.tz([2014, 11, 31, 14, 15, 0], 'Australia/Melbourne'),
+                tzDiff3 = new momentTimezoneDiff.TimezoneDiff(m3, 'Australia/Brisbane'),
+                m4 = moment.tz([2014, 11, 31, 1, 15, 0], 'Australia/Brisbane'),
+                tzDiff4 = new momentTimezoneDiff.TimezoneDiff(m4, 'Australia/Melbourne');
+
+            tzDiff1.format('DIFF').should.equal('19 hours behind');
+            tzDiff1.format('diff').should.equal('-19 hours');
+            tzDiff1.format('sunmoon').should.equal('\u263c');
+            tzDiff1.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('14:15 Dec-31-2014 19 hours behind \u263c');
+            tzDiff1.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('14:15 Dec-31-2014 -19 hours \u263c');
+
+            tzDiff2.format('DIFF').should.equal('19 hours ahead');
+            tzDiff2.format('diff').should.equal('19 hours');
+            tzDiff2.format('sunmoon').should.equal('\u263c');
+            tzDiff2.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('09:15 Jan-01-2015 19 hours ahead \u263c');
+            tzDiff2.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('09:15 Jan-01-2015 19 hours \u263c');
+
+            tzDiff3.format('DIFF').should.equal('1 hour behind');
+            tzDiff3.format('diff').should.equal('-1 hour');
+            tzDiff3.format('sunmoon').should.equal('\u263c');
+            tzDiff3.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('13:15 Dec-31-2014 1 hour behind \u263c');
+            tzDiff3.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('13:15 Dec-31-2014 -1 hour \u263c');
+
+            tzDiff4.format('DIFF').should.equal('1 hour ahead');
+            tzDiff4.format('diff').should.equal('1 hour');
+            tzDiff4.format('sunmoon').should.equal('\u263e');
+            tzDiff4.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('02:15 Dec-31-2014 1 hour ahead \u263e');
+            tzDiff4.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('02:15 Dec-31-2014 1 hour \u263e');
+
+            momentTimezoneDiff.setOptions({ ahead: 'XXXX', behind: 'YYYY' });
+
+            tzDiff1.format('DIFF').should.equal('19 hours YYYY');
+            tzDiff1.format('diff').should.equal('-19 hours');
+            tzDiff1.format('sunmoon').should.equal('\u263c');
+            tzDiff1.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('14:15 Dec-31-2014 19 hours YYYY \u263c');
+            tzDiff1.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('14:15 Dec-31-2014 -19 hours \u263c');
+
+            tzDiff2.format('DIFF').should.equal('19 hours XXXX');
+            tzDiff2.format('diff').should.equal('19 hours');
+            tzDiff2.format('sunmoon').should.equal('\u263c');
+            tzDiff2.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('09:15 Jan-01-2015 19 hours XXXX \u263c');
+            tzDiff2.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('09:15 Jan-01-2015 19 hours \u263c');
+
+            tzDiff3.format('DIFF').should.equal('1 hour YYYY');
+            tzDiff3.format('diff').should.equal('-1 hour');
+            tzDiff3.format('sunmoon').should.equal('\u263c');
+            tzDiff3.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('13:15 Dec-31-2014 1 hour YYYY \u263c');
+            tzDiff3.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('13:15 Dec-31-2014 -1 hour \u263c');
+
+            tzDiff4.format('DIFF').should.equal('1 hour XXXX');
+            tzDiff4.format('diff').should.equal('1 hour');
+            tzDiff4.format('sunmoon').should.equal('\u263e');
+            tzDiff4.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('02:15 Dec-31-2014 1 hour XXXX \u263e');
+            tzDiff4.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('02:15 Dec-31-2014 1 hour \u263e');
+
+            momentTimezoneDiff.setOptions({ hour: 'AAAA', hours: 'AAAAs' });
+
+            tzDiff1.format('DIFF').should.equal('19 AAAAs YYYY');
+            tzDiff1.format('diff').should.equal('-19 AAAAs');
+            tzDiff1.format('sunmoon').should.equal('\u263c');
+            tzDiff1.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('14:15 Dec-31-2014 19 AAAAs YYYY \u263c');
+            tzDiff1.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('14:15 Dec-31-2014 -19 AAAAs \u263c');
+
+            tzDiff2.format('DIFF').should.equal('19 AAAAs XXXX');
+            tzDiff2.format('diff').should.equal('19 AAAAs');
+            tzDiff2.format('sunmoon').should.equal('\u263c');
+            tzDiff2.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('09:15 Jan-01-2015 19 AAAAs XXXX \u263c');
+            tzDiff2.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('09:15 Jan-01-2015 19 AAAAs \u263c');
+
+            tzDiff3.format('DIFF').should.equal('1 AAAA YYYY');
+            tzDiff3.format('diff').should.equal('-1 AAAA');
+            tzDiff3.format('sunmoon').should.equal('\u263c');
+            tzDiff3.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('13:15 Dec-31-2014 1 AAAA YYYY \u263c');
+            tzDiff3.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('13:15 Dec-31-2014 -1 AAAA \u263c');
+
+            tzDiff4.format('DIFF').should.equal('1 AAAA XXXX');
+            tzDiff4.format('diff').should.equal('1 AAAA');
+            tzDiff4.format('sunmoon').should.equal('\u263e');
+            tzDiff4.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('02:15 Dec-31-2014 1 AAAA XXXX \u263e');
+            tzDiff4.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('02:15 Dec-31-2014 1 AAAA \u263e');
+
+            momentTimezoneDiff.setOptions({ ahead: undefined, behind: undefined });
+
+            tzDiff1.format('DIFF').should.equal('-19 AAAAs');
+            tzDiff1.format('diff').should.equal('-19 AAAAs');
+            tzDiff1.format('sunmoon').should.equal('\u263c');
+            tzDiff1.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('14:15 Dec-31-2014 -19 AAAAs \u263c');
+            tzDiff1.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('14:15 Dec-31-2014 -19 AAAAs \u263c');
+
+            tzDiff2.format('DIFF').should.equal('19 AAAAs');
+            tzDiff2.format('diff').should.equal('19 AAAAs');
+            tzDiff2.format('sunmoon').should.equal('\u263c');
+            tzDiff2.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('09:15 Jan-01-2015 19 AAAAs \u263c');
+            tzDiff2.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('09:15 Jan-01-2015 19 AAAAs \u263c');
+
+            tzDiff3.format('DIFF').should.equal('-1 AAAA');
+            tzDiff3.format('diff').should.equal('-1 AAAA');
+            tzDiff3.format('sunmoon').should.equal('\u263c');
+            tzDiff3.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('13:15 Dec-31-2014 -1 AAAA \u263c');
+            tzDiff3.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('13:15 Dec-31-2014 -1 AAAA \u263c');
+
+            tzDiff4.format('DIFF').should.equal('1 AAAA');
+            tzDiff4.format('diff').should.equal('1 AAAA');
+            tzDiff4.format('sunmoon').should.equal('\u263e');
+            tzDiff4.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('02:15 Dec-31-2014 1 AAAA \u263e');
+            tzDiff4.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('02:15 Dec-31-2014 1 AAAA \u263e');
+
+            momentTimezoneDiff.setOptions({ hour: undefined, hours: undefined });
+
+            tzDiff1.format('DIFF').should.equal('-19');
+            tzDiff1.format('diff').should.equal('-19');
+            tzDiff1.format('sunmoon').should.equal('\u263c');
+            tzDiff1.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('14:15 Dec-31-2014 -19 \u263c');
+            tzDiff1.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('14:15 Dec-31-2014 -19 \u263c');
+
+            tzDiff2.format('DIFF').should.equal('19');
+            tzDiff2.format('diff').should.equal('19');
+            tzDiff2.format('sunmoon').should.equal('\u263c');
+            tzDiff2.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('09:15 Jan-01-2015 19 \u263c');
+            tzDiff2.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('09:15 Jan-01-2015 19 \u263c');
+
+            tzDiff3.format('DIFF').should.equal('-1');
+            tzDiff3.format('diff').should.equal('-1');
+            tzDiff3.format('sunmoon').should.equal('\u263c');
+            tzDiff3.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('13:15 Dec-31-2014 -1 \u263c');
+            tzDiff3.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('13:15 Dec-31-2014 -1 \u263c');
+
+            tzDiff4.format('DIFF').should.equal('1');
+            tzDiff4.format('diff').should.equal('1');
+            tzDiff4.format('sunmoon').should.equal('\u263e');
+            tzDiff4.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('02:15 Dec-31-2014 1 \u263e');
+            tzDiff4.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('02:15 Dec-31-2014 1 \u263e');
+
+            momentTimezoneDiff.setOptions({ hour: undefined, hours: undefined, ahead: '+', behind: '-'});
+
+            tzDiff1.format('DIFF').should.equal('19 -');
+            tzDiff1.format('diff').should.equal('-19');
+            tzDiff1.format('sunmoon').should.equal('\u263c');
+            tzDiff1.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('14:15 Dec-31-2014 19 - \u263c');
+            tzDiff1.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('14:15 Dec-31-2014 -19 \u263c');
+
+            tzDiff2.format('DIFF').should.equal('19 +');
+            tzDiff2.format('diff').should.equal('19');
+            tzDiff2.format('sunmoon').should.equal('\u263c');
+            tzDiff2.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('09:15 Jan-01-2015 19 + \u263c');
+            tzDiff2.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('09:15 Jan-01-2015 19 \u263c');
+
+            tzDiff3.format('DIFF').should.equal('1 -');
+            tzDiff3.format('diff').should.equal('-1');
+            tzDiff3.format('sunmoon').should.equal('\u263c');
+            tzDiff3.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('13:15 Dec-31-2014 1 - \u263c');
+            tzDiff3.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('13:15 Dec-31-2014 -1 \u263c');
+
+            tzDiff4.format('DIFF').should.equal('1 +');
+            tzDiff4.format('diff').should.equal('1');
+            tzDiff4.format('sunmoon').should.equal('\u263e');
+            tzDiff4.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('02:15 Dec-31-2014 1 + \u263e');
+            tzDiff4.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('02:15 Dec-31-2014 1 \u263e');
+
+            momentTimezoneDiff.setOptions({ hour: 'hour', hours: 'hours', ahead: 'ahead', behind: 'behind', sun: 'S', moon: 'M'});
+
+            tzDiff1.format('DIFF').should.equal('19 hours behind');
+            tzDiff1.format('diff').should.equal('-19 hours');
+            tzDiff1.format('sunmoon').should.equal('S');
+            tzDiff1.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('14:15 Dec-31-2014 19 hours behind S');
+            tzDiff1.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('14:15 Dec-31-2014 -19 hours S');
+
+            tzDiff2.format('DIFF').should.equal('19 hours ahead');
+            tzDiff2.format('diff').should.equal('19 hours');
+            tzDiff2.format('sunmoon').should.equal('S');
+            tzDiff2.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('09:15 Jan-01-2015 19 hours ahead S');
+            tzDiff2.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('09:15 Jan-01-2015 19 hours S');
+
+            tzDiff3.format('DIFF').should.equal('1 hour behind');
+            tzDiff3.format('diff').should.equal('-1 hour');
+            tzDiff3.format('sunmoon').should.equal('S');
+            tzDiff3.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('13:15 Dec-31-2014 1 hour behind S');
+            tzDiff3.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('13:15 Dec-31-2014 -1 hour S');
+
+            tzDiff4.format('DIFF').should.equal('1 hour ahead');
+            tzDiff4.format('diff').should.equal('1 hour');
+            tzDiff4.format('sunmoon').should.equal('M');
+            tzDiff4.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('02:15 Dec-31-2014 1 hour ahead M');
+            tzDiff4.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('02:15 Dec-31-2014 1 hour M');
+
+            momentTimezoneDiff.setOptions({ sun: undefined, moon: undefined});
+
+            tzDiff1.format('DIFF').should.equal('19 hours behind');
+            tzDiff1.format('diff').should.equal('-19 hours');
+            tzDiff1.format('sunmoon').should.equal('');
+            tzDiff1.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('14:15 Dec-31-2014 19 hours behind ');
+            tzDiff1.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('14:15 Dec-31-2014 -19 hours ');
+
+            tzDiff2.format('DIFF').should.equal('19 hours ahead');
+            tzDiff2.format('diff').should.equal('19 hours');
+            tzDiff2.format('sunmoon').should.equal('');
+            tzDiff2.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('09:15 Jan-01-2015 19 hours ahead ');
+            tzDiff2.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('09:15 Jan-01-2015 19 hours ');
+
+            tzDiff3.format('DIFF').should.equal('1 hour behind');
+            tzDiff3.format('diff').should.equal('-1 hour');
+            tzDiff3.format('sunmoon').should.equal('');
+            tzDiff3.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('13:15 Dec-31-2014 1 hour behind ');
+            tzDiff3.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('13:15 Dec-31-2014 -1 hour ');
+
+            tzDiff4.format('DIFF').should.equal('1 hour ahead');
+            tzDiff4.format('diff').should.equal('1 hour');
+            tzDiff4.format('sunmoon').should.equal('');
+            tzDiff4.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('02:15 Dec-31-2014 1 hour ahead ');
+            tzDiff4.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('02:15 Dec-31-2014 1 hour ');
+
+            // restore default options
+            momentTimezoneDiff.setOptions(defaultOptions);
+            momentTimezoneDiff.getOptions().should.eql(defaultOptions);
+        });
+        it('Same timezone values', function () {
+            var m = moment.tz([2015, 0, 1, 1, 15, 0], 'Australia/Melbourne'),
+                tzDiff = new momentTimezoneDiff.TimezoneDiff(m, 'Australia/Sydney');
+            tzDiff.format('DIFF').should.equal('');
+            tzDiff.format('diff').should.equal('');
+            tzDiff.format('sunmoon').should.equal('\u263e');
+            tzDiff.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('01:15 Jan-01-2015  \u263e');
+            tzDiff.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('01:15 Jan-01-2015  \u263e');
+            tzDiff.format('HH:mm MMM-DD-YYYY [DIFF] sunmoon').should.equal('01:15 Jan-01-2015 DIFF \u263e');
+            tzDiff.format('HH:mm MMM-DD-YYYY [diff] sunmoon').should.equal('01:15 Jan-01-2015 diff \u263e');
+            tzDiff.format('HH:mm MMM-DD-YYYY [diff] [sunmoon]').should.equal('01:15 Jan-01-2015 diff sunmoon');
+
+            m = moment.tz([2014, 11, 31, 14, 15, 0], 'Australia/ACT');
+            tzDiff = new momentTimezoneDiff.TimezoneDiff(m, 'Australia/Melbourne');
+            tzDiff.format('DIFF').should.equal('');
+            tzDiff.format('diff').should.equal('');
+            tzDiff.format('sunmoon').should.equal('\u263c');
+            tzDiff.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('14:15 Dec-31-2014  \u263c');
+            tzDiff.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('14:15 Dec-31-2014  \u263c');
+            tzDiff.format('HH:mm MMM-DD-YYYY [DIFF] sunmoon').should.equal('14:15 Dec-31-2014 DIFF \u263c');
+            tzDiff.format('HH:mm MMM-DD-YYYY [diff] sunmoon').should.equal('14:15 Dec-31-2014 diff \u263c');
+            tzDiff.format('HH:mm MMM-DD-YYYY [diff] [sunmoon]').should.equal('14:15 Dec-31-2014 diff sunmoon');
         });
     });
 });

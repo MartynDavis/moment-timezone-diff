@@ -26,8 +26,8 @@
     
     var options = { ahead: 'ahead',
                     behind: 'behind',
-                    sunRise: { hours: 6, minutes: 0 },
-                    sunSet: { hours: 19, minutes: 59 },
+                    sunRise: { hour: 6, minute: 0 },
+                    sunSet: { hour: 19, minute: 59 },
                     sun: '\u263c',  // Unicode white sun with rays
                     moon: '\u263e', // Unicode last quarter moon
                     hour: 'hour',
@@ -54,6 +54,11 @@
         return copy;
     }
     
+    //
+    // daysInYear
+    //
+    // Calculates the number of days in year
+    //
     function daysInYear(year) {
         var days = 0,
             i;
@@ -63,11 +68,18 @@
         return days;
     }
 
-    function getMinutes(m, base) {
+    //
+    // getMinutes
+    //
+    // Calculates the number of minutes since the base year
+    //
+    // This allows a difference to be calculated should dayes be in different years
+    //
+    function getMinutes(m, baseYear) {
         var year,
             minutes = 0;
-        if (m.year() > base.year()) {
-            for (year = base.year(); year < m.year(); year += 1) {
+        if (m.year() > baseYear) {
+            for (year = baseYear; year < m.year(); year += 1) {
                 minutes += daysInYear(year) * (24 * 60);
             }
         }
@@ -83,16 +95,108 @@
     }
 
     TimezoneDiff.prototype.diff = function () {
-        var minutesTz = getMinutes(this.momentTz, this.momentReference),
-            minutesReference = getMinutes(this.momentReference, this.momentTz),
-            factor,
-            fromYear,
-            toYear;
-        return (minutesTz - minutesReference) / 60;
+        return (getMinutes(this.momentTz, this.momentReference.year()) - getMinutes(this.momentReference, this.momentTz.year())) / 60;
     };
 
-    TimezoneDiff.prototype.format = function () {
-        return moment.format.apply(this.momentTz, arguments);
+    function sunny(m) {
+        var hour = m.hour(),
+            minute = m.minute(),
+            value = false;
+
+        function compare(hour1, minute1, hour2, minute2) {
+            if (hour1 !== hour2) {
+                return hour1 - hour2;
+            }
+            return (minute1 || 0) - (minute2 || 0);
+        }
+
+        if (options && options.sunRise && options.sunSet) {
+            value = (compare(hour, minute, options.sunRise.hour, options.sunRise.minute) >= 0) &&
+                    (compare(hour, minute, options.sunSet.hour, options.sunSet.minute) < 0);
+        }
+        return value;
+    }
+    
+    TimezoneDiff.prototype.sunny = function () {
+        return sunny(this.momentTz);
+    };
+
+    function makeDiffText(d, useSuffix) {
+        var suffix = '',
+            text;
+        if (d === 0) {
+            return '';
+        }
+        if (useSuffix) {
+            if ((d < 0) && options.behind) {
+                suffix = options.behind;
+                d = Math.abs(d);
+            } else if ((d > 0) && options.ahead) {
+                suffix = options.ahead;
+                d = Math.abs(d);
+            }
+        }
+        text = String(d);
+        if ((Math.abs(d) === 1) && options.hour) {
+            text += ' ' + options.hour;
+        } else if ((Math.abs(d) !== 1) && options.hours) {
+            text += ' ' + options.hours;
+        }
+        if (suffix) {
+            text += ' ' + suffix;
+        }
+        return text;
+    }
+
+    TimezoneDiff.prototype.format = function (f) {
+        var re = /^(.*?)\b(DIFF|diff|sunmoon)\b(.*?)$/,
+            fNew = '',
+            match,
+            value,
+            hoursDiff = this.diff(),
+            process;
+        if (f.match(/^\s*$/)) {
+            return this.momentTz.format(f);
+        }
+        while (true) {
+            match = re.exec(f);
+            if (match) {
+                if (match[1]) {
+                    fNew += match[1];
+                }
+                if (match[2]) {
+                    if (match[1] && (match[1].substr(match[1].length - 1) === '[') &&
+                        match[3] && (match[3].substr(0, 1) === ']')) {
+                        fNew += match[2] + ']';
+                        f = match[3].substr(1);
+                    } else {
+                        if (match[2] === 'DIFF') {
+                            value = makeDiffText(hoursDiff, true);
+                        } else if (match[2] === 'diff') {
+                            value = makeDiffText(hoursDiff, false);
+                        } else if (match[2] === 'sunmoon') {
+                            value = sunny(this.momentTz) ? (options.sun || '') : (options.moon || '');
+                        } else {
+                            value = match[2];
+                        }
+                        if (value) {
+                            // Enclose value within [] so that moment.format does not replace it
+                            fNew += '[' + value + ']';
+                        }
+                        f = match[3];
+                    }
+                } else {
+                    f = match[3];
+                }
+            } else {
+                fNew += f;
+                break;
+            }
+        }
+        if (fNew === '') {
+            return '';
+        }
+        return this.momentTz.format(fNew);
     };
 
     var mtzd = { };
@@ -100,6 +204,7 @@
     mtzd.TimezoneDiff = TimezoneDiff;
     mtzd.getOptions = getOptions;
     mtzd.setOptions = setOptions;
+    mtzd.sunny = sunny;
     
     return mtzd;
 }));
