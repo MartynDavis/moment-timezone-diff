@@ -10,11 +10,15 @@ describe('options', function () {
         var defaultOptions = { ahead: 'ahead',
                                behind: 'behind',
                                sunRise: { hour: 6, minute: 0 },
-                               sunSet: { hour: 19, minute: 59 },
+                               sunSet: { hour: 20, minute: 0 },
                                sun: '\u263c',  // Unicode white sun with rays
                                moon: '\u263e', // Unicode last quarter moon
                                hour: 'hour',
-                               hours: 'hours'
+                               hours: 'hours',
+                               legendFormat: 'h:mm a', 
+                               legendDash: ' - ',
+                               legendSeparator: ' .. ',
+                               timeFormat: 'dddd h:mm a MMM-DD-YYYY'
                              };
         //
         // copy(...)
@@ -238,7 +242,7 @@ describe('options', function () {
             tzDiff4.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('02:15 Dec-31-2014 1 hour ahead \u263e');
             tzDiff4.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('02:15 Dec-31-2014 1 hour \u263e');
 
-            momentTimezoneDiff.setOptions({ ahead: 'XXXX', behind: 'YYYY' });
+            tzDiff1.setOptions({ ahead: 'XXXX', behind: 'YYYY' });
 
             tzDiff1.format('DIFF').should.equal('19 hours YYYY');
             tzDiff1.format('diff').should.equal('-19 hours');
@@ -246,17 +250,23 @@ describe('options', function () {
             tzDiff1.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('14:15 Dec-31-2014 19 hours YYYY \u263c');
             tzDiff1.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('14:15 Dec-31-2014 -19 hours \u263c');
 
+            tzDiff2.setOptions({ ahead: 'XXXX', behind: 'YYYY' });
+            
             tzDiff2.format('DIFF').should.equal('19 hours XXXX');
             tzDiff2.format('diff').should.equal('19 hours');
             tzDiff2.format('sunmoon').should.equal('\u263c');
             tzDiff2.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('09:15 Jan-01-2015 19 hours XXXX \u263c');
             tzDiff2.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('09:15 Jan-01-2015 19 hours \u263c');
 
+            tzDiff3.setOptions({ ahead: 'XXXX', behind: 'YYYY' });
+            
             tzDiff3.format('DIFF').should.equal('1 hour YYYY');
             tzDiff3.format('diff').should.equal('-1 hour');
             tzDiff3.format('sunmoon').should.equal('\u263c');
             tzDiff3.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('13:15 Dec-31-2014 1 hour YYYY \u263c');
             tzDiff3.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('13:15 Dec-31-2014 -1 hour \u263c');
+
+            tzDiff4.setOptions({ ahead: 'XXXX', behind: 'YYYY' });
 
             tzDiff4.format('DIFF').should.equal('1 hour XXXX');
             tzDiff4.format('diff').should.equal('1 hour');
@@ -264,7 +274,7 @@ describe('options', function () {
             tzDiff4.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('02:15 Dec-31-2014 1 hour XXXX \u263e');
             tzDiff4.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('02:15 Dec-31-2014 1 hour \u263e');
 
-            momentTimezoneDiff.setOptions({ hour: 'AAAA', hours: 'AAAAs' });
+            tzDiff1.setOptions({ hour: 'AAAA', hours: 'AAAAs' });
 
             tzDiff1.format('DIFF').should.equal('19 AAAAs YYYY');
             tzDiff1.format('diff').should.equal('-19 AAAAs');
@@ -272,11 +282,15 @@ describe('options', function () {
             tzDiff1.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('14:15 Dec-31-2014 19 AAAAs YYYY \u263c');
             tzDiff1.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('14:15 Dec-31-2014 -19 AAAAs \u263c');
 
+            tzDiff2.setOptions({ hour: 'AAAA', hours: 'AAAAs' });
+
             tzDiff2.format('DIFF').should.equal('19 AAAAs XXXX');
             tzDiff2.format('diff').should.equal('19 AAAAs');
             tzDiff2.format('sunmoon').should.equal('\u263c');
             tzDiff2.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('09:15 Jan-01-2015 19 AAAAs XXXX \u263c');
             tzDiff2.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('09:15 Jan-01-2015 19 AAAAs \u263c');
+
+            tzDiff3.setOptions({ hour: 'AAAA', hours: 'AAAAs' });
 
             tzDiff3.format('DIFF').should.equal('1 AAAA YYYY');
             tzDiff3.format('diff').should.equal('-1 AAAA');
@@ -284,13 +298,15 @@ describe('options', function () {
             tzDiff3.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('13:15 Dec-31-2014 1 AAAA YYYY \u263c');
             tzDiff3.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('13:15 Dec-31-2014 -1 AAAA \u263c');
 
+            tzDiff4.setOptions({ hour: 'AAAA', hours: 'AAAAs' });
+
             tzDiff4.format('DIFF').should.equal('1 AAAA XXXX');
             tzDiff4.format('diff').should.equal('1 AAAA');
             tzDiff4.format('sunmoon').should.equal('\u263e');
             tzDiff4.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('02:15 Dec-31-2014 1 AAAA XXXX \u263e');
             tzDiff4.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('02:15 Dec-31-2014 1 AAAA \u263e');
 
-            momentTimezoneDiff.setOptions({ ahead: undefined, behind: undefined });
+            tzDiff1.setOptions({ ahead: undefined, behind: undefined });
 
             tzDiff1.format('DIFF').should.equal('-19 AAAAs');
             tzDiff1.format('diff').should.equal('-19 AAAAs');
@@ -298,11 +314,15 @@ describe('options', function () {
             tzDiff1.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('14:15 Dec-31-2014 -19 AAAAs \u263c');
             tzDiff1.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('14:15 Dec-31-2014 -19 AAAAs \u263c');
 
+            tzDiff2.setOptions({ ahead: undefined, behind: undefined });
+
             tzDiff2.format('DIFF').should.equal('19 AAAAs');
             tzDiff2.format('diff').should.equal('19 AAAAs');
             tzDiff2.format('sunmoon').should.equal('\u263c');
             tzDiff2.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('09:15 Jan-01-2015 19 AAAAs \u263c');
             tzDiff2.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('09:15 Jan-01-2015 19 AAAAs \u263c');
+
+            tzDiff3.setOptions({ ahead: undefined, behind: undefined });
 
             tzDiff3.format('DIFF').should.equal('-1 AAAA');
             tzDiff3.format('diff').should.equal('-1 AAAA');
@@ -310,13 +330,15 @@ describe('options', function () {
             tzDiff3.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('13:15 Dec-31-2014 -1 AAAA \u263c');
             tzDiff3.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('13:15 Dec-31-2014 -1 AAAA \u263c');
 
+            tzDiff4.setOptions({ ahead: undefined, behind: undefined });
+
             tzDiff4.format('DIFF').should.equal('1 AAAA');
             tzDiff4.format('diff').should.equal('1 AAAA');
             tzDiff4.format('sunmoon').should.equal('\u263e');
             tzDiff4.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('02:15 Dec-31-2014 1 AAAA \u263e');
             tzDiff4.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('02:15 Dec-31-2014 1 AAAA \u263e');
 
-            momentTimezoneDiff.setOptions({ hour: undefined, hours: undefined });
+            tzDiff1.setOptions({ hour: undefined, hours: undefined });
 
             tzDiff1.format('DIFF').should.equal('-19');
             tzDiff1.format('diff').should.equal('-19');
@@ -324,11 +346,15 @@ describe('options', function () {
             tzDiff1.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('14:15 Dec-31-2014 -19 \u263c');
             tzDiff1.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('14:15 Dec-31-2014 -19 \u263c');
 
+            tzDiff2.setOptions({ hour: undefined, hours: undefined });
+
             tzDiff2.format('DIFF').should.equal('19');
             tzDiff2.format('diff').should.equal('19');
             tzDiff2.format('sunmoon').should.equal('\u263c');
             tzDiff2.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('09:15 Jan-01-2015 19 \u263c');
             tzDiff2.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('09:15 Jan-01-2015 19 \u263c');
+
+            tzDiff3.setOptions({ hour: undefined, hours: undefined });
 
             tzDiff3.format('DIFF').should.equal('-1');
             tzDiff3.format('diff').should.equal('-1');
@@ -336,13 +362,15 @@ describe('options', function () {
             tzDiff3.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('13:15 Dec-31-2014 -1 \u263c');
             tzDiff3.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('13:15 Dec-31-2014 -1 \u263c');
 
+            tzDiff4.setOptions({ hour: undefined, hours: undefined });
+
             tzDiff4.format('DIFF').should.equal('1');
             tzDiff4.format('diff').should.equal('1');
             tzDiff4.format('sunmoon').should.equal('\u263e');
             tzDiff4.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('02:15 Dec-31-2014 1 \u263e');
             tzDiff4.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('02:15 Dec-31-2014 1 \u263e');
 
-            momentTimezoneDiff.setOptions({ hour: undefined, hours: undefined, ahead: '+', behind: '-'});
+            tzDiff1.setOptions({ hour: undefined, hours: undefined, ahead: '+', behind: '-'});
 
             tzDiff1.format('DIFF').should.equal('19 -');
             tzDiff1.format('diff').should.equal('-19');
@@ -350,11 +378,15 @@ describe('options', function () {
             tzDiff1.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('14:15 Dec-31-2014 19 - \u263c');
             tzDiff1.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('14:15 Dec-31-2014 -19 \u263c');
 
+            tzDiff2.setOptions({ hour: undefined, hours: undefined, ahead: '+', behind: '-'});
+
             tzDiff2.format('DIFF').should.equal('19 +');
             tzDiff2.format('diff').should.equal('19');
             tzDiff2.format('sunmoon').should.equal('\u263c');
             tzDiff2.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('09:15 Jan-01-2015 19 + \u263c');
             tzDiff2.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('09:15 Jan-01-2015 19 \u263c');
+
+            tzDiff3.setOptions({ hour: undefined, hours: undefined, ahead: '+', behind: '-'});
 
             tzDiff3.format('DIFF').should.equal('1 -');
             tzDiff3.format('diff').should.equal('-1');
@@ -362,13 +394,15 @@ describe('options', function () {
             tzDiff3.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('13:15 Dec-31-2014 1 - \u263c');
             tzDiff3.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('13:15 Dec-31-2014 -1 \u263c');
 
+            tzDiff4.setOptions({ hour: undefined, hours: undefined, ahead: '+', behind: '-'});
+
             tzDiff4.format('DIFF').should.equal('1 +');
             tzDiff4.format('diff').should.equal('1');
             tzDiff4.format('sunmoon').should.equal('\u263e');
             tzDiff4.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('02:15 Dec-31-2014 1 + \u263e');
             tzDiff4.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('02:15 Dec-31-2014 1 \u263e');
 
-            momentTimezoneDiff.setOptions({ hour: 'hour', hours: 'hours', ahead: 'ahead', behind: 'behind', sun: 'S', moon: 'M'});
+            tzDiff1.setOptions({ hour: 'hour', hours: 'hours', ahead: 'ahead', behind: 'behind', sun: 'S', moon: 'M'});
 
             tzDiff1.format('DIFF').should.equal('19 hours behind');
             tzDiff1.format('diff').should.equal('-19 hours');
@@ -376,11 +410,15 @@ describe('options', function () {
             tzDiff1.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('14:15 Dec-31-2014 19 hours behind S');
             tzDiff1.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('14:15 Dec-31-2014 -19 hours S');
 
+            tzDiff2.setOptions({ hour: 'hour', hours: 'hours', ahead: 'ahead', behind: 'behind', sun: 'S', moon: 'M'});
+
             tzDiff2.format('DIFF').should.equal('19 hours ahead');
             tzDiff2.format('diff').should.equal('19 hours');
             tzDiff2.format('sunmoon').should.equal('S');
             tzDiff2.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('09:15 Jan-01-2015 19 hours ahead S');
             tzDiff2.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('09:15 Jan-01-2015 19 hours S');
+
+            tzDiff3.setOptions({ hour: 'hour', hours: 'hours', ahead: 'ahead', behind: 'behind', sun: 'S', moon: 'M'});
 
             tzDiff3.format('DIFF').should.equal('1 hour behind');
             tzDiff3.format('diff').should.equal('-1 hour');
@@ -388,13 +426,15 @@ describe('options', function () {
             tzDiff3.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('13:15 Dec-31-2014 1 hour behind S');
             tzDiff3.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('13:15 Dec-31-2014 -1 hour S');
 
+            tzDiff4.setOptions({ hour: 'hour', hours: 'hours', ahead: 'ahead', behind: 'behind', sun: 'S', moon: 'M'});
+
             tzDiff4.format('DIFF').should.equal('1 hour ahead');
             tzDiff4.format('diff').should.equal('1 hour');
             tzDiff4.format('sunmoon').should.equal('M');
             tzDiff4.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('02:15 Dec-31-2014 1 hour ahead M');
             tzDiff4.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('02:15 Dec-31-2014 1 hour M');
 
-            momentTimezoneDiff.setOptions({ sun: undefined, moon: undefined});
+            tzDiff1.setOptions({ sun: undefined, moon: undefined});
 
             tzDiff1.format('DIFF').should.equal('19 hours behind');
             tzDiff1.format('diff').should.equal('-19 hours');
@@ -402,17 +442,23 @@ describe('options', function () {
             tzDiff1.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('14:15 Dec-31-2014 19 hours behind ');
             tzDiff1.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('14:15 Dec-31-2014 -19 hours ');
 
+            tzDiff2.setOptions({ sun: undefined, moon: undefined});
+
             tzDiff2.format('DIFF').should.equal('19 hours ahead');
             tzDiff2.format('diff').should.equal('19 hours');
             tzDiff2.format('sunmoon').should.equal('');
             tzDiff2.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('09:15 Jan-01-2015 19 hours ahead ');
             tzDiff2.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('09:15 Jan-01-2015 19 hours ');
 
+            tzDiff3.setOptions({ sun: undefined, moon: undefined});
+
             tzDiff3.format('DIFF').should.equal('1 hour behind');
             tzDiff3.format('diff').should.equal('-1 hour');
             tzDiff3.format('sunmoon').should.equal('');
             tzDiff3.format('HH:mm MMM-DD-YYYY DIFF sunmoon').should.equal('13:15 Dec-31-2014 1 hour behind ');
             tzDiff3.format('HH:mm MMM-DD-YYYY diff sunmoon').should.equal('13:15 Dec-31-2014 -1 hour ');
+
+            tzDiff4.setOptions({ sun: undefined, moon: undefined});
 
             tzDiff4.format('DIFF').should.equal('1 hour ahead');
             tzDiff4.format('diff').should.equal('1 hour');
@@ -447,5 +493,21 @@ describe('options', function () {
             tzDiff.format('HH:mm MMM-DD-YYYY [diff] sunmoon').should.equal('14:15 Dec-31-2014 diff \u263c');
             tzDiff.format('HH:mm MMM-DD-YYYY [diff] [sunmoon]').should.equal('14:15 Dec-31-2014 diff sunmoon');
         });
+        it('Legend', function () {
+            momentTimezoneDiff.getOptions().should.eql(defaultOptions);
+            momentTimezoneDiff.createLegend().should.eql([ '\u263c - 6:00 am .. 7:59 pm', '\u263e - 8:00 pm .. 5:59 am' ]);
+
+            momentTimezoneDiff.setOptions({ legendFormat: 'HH:mm', legendSeparator: '-' });
+            momentTimezoneDiff.createLegend().should.eql([ '\u263c - 06:00-19:59', '\u263e - 20:00-05:59' ]);
+
+            momentTimezoneDiff.setOptions({ legendFormat: 'h:m', legendDash: '> ', legendSeparator: '...' });
+            momentTimezoneDiff.createLegend().should.eql([ '\u263c> 6:0...7:59', '\u263e> 8:0...5:59' ]);
+
+            momentTimezoneDiff.setOptions({ sun: 'SUN', moon: 'MOON' });
+            momentTimezoneDiff.createLegend().should.eql([ 'SUN> 6:0...7:59', 'MOON> 8:0...5:59' ]);
+
+            momentTimezoneDiff.setOptions({ sunRise: { hour: 13, minute: 42 }, sunSet: { hour: 19, minute: 13 }, legendDash: ' - ', legendSeparator: ' .. ' });
+            momentTimezoneDiff.createLegend().should.eql([ 'SUN - 1:42 .. 7:12', 'MOON - 7:13 .. 1:41' ]);
+       });
     });
 });
