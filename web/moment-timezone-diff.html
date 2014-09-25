@@ -8,106 +8,117 @@
 <meta charset=utf-8 />
 <title>Moment Timezone Difference</title>
 <style>
-body {
-    font-size: 16px;
-}
-div {
-    clear: both;
-    height: auto;
-    margin: 0 auto;
-    padding-top: 10px;
-}
-h1, h2 {
-    text-align: center;
-}
-h2 {
-    padding-bottom: 10px;
-    padding-top: 10px;
-}
-div.date {
-    text-align: center;
-}
-table { 
-    margin: 0px auto; 
-    border-collapse: collapse;
-}
-td.name, td.location, td.timezone {
-    cursor: pointer;
-}
-td.name:hover, td.location:hover, td.timezone:hover {
-    text-decoration: underline;
-}
-.name, .location, .timezone {
-    text-align: left;
-}
-tr {
-    height: 2em;
-}
-tbody tr:nth-child(odd) {
-    background-color: #eee;
-}
-th, td { 
-    padding-left: 10px; 
-    padding-right: 10px; 
-    vertical-align: middle;
-}
-td.dayOfWeek {
-    min-width: 5em;
-}
-td.time {
-    min-width: 4em;
-}
-td.date {
-    min-width: 6em;
-}
-td.diff {
-    min-width: 8em;
-}
-td.sunmoon {
-    min-width: 1em;
-}
-td.dayOfWeek, td.time, td.date, td.diff { 
-    text-align: right; 
-}
-td.sunmoon { 
-    text-align: center; 
-}
-tfoot {
-    font-size: small;
-}
-.currentTime {
-    padding-top: 0.75em;
-    padding-bottom: 0.75em;
-}
-tfoot tr td {
-    text-align: center;
-    padding: 0px;
-    margin: 0px;
-}
-
+    body {
+        font-size: 16px;
+    }
+    div {
+        clear: both;
+        height: auto;
+        margin: 0 auto;
+        padding-top: 10px;
+    }
+    h1, h2 {
+        text-align: center;
+    }
+    h2 {
+        padding-bottom: 10px;
+        padding-top: 10px;
+    }
+    div.date {
+        text-align: center;
+    }
+    table { 
+        margin: 0px auto; 
+        border-collapse: collapse;
+    }
+    td.name, td.location, td.timezone {
+        cursor: pointer;
+    }
+    td.name:hover, td.location:hover, td.timezone:hover {
+        text-decoration: underline;
+    }
+    .name, .location, .timezone {
+        text-align: left;
+    }
+    tr {
+        height: 2em;
+    }
+    tbody tr:nth-child(odd) {
+        background-color: #eee;
+    }
+    th, td { 
+        padding-left: 10px; 
+        padding-right: 10px; 
+        vertical-align: middle;
+    }
+    td.dayOfWeek {
+        min-width: 5em;
+    }
+    td.time {
+        min-width: 4em;
+    }
+    td.date {
+        min-width: 6em;
+    }
+    td.diff {
+        min-width: 8em;
+    }
+    td.sunmoon {
+        min-width: 1em;
+    }
+    td.dayOfWeek, td.time, td.date, td.diff { 
+        text-align: right; 
+    }
+    td.sunmoon { 
+        text-align: center; 
+    }
+    tfoot {
+        font-size: small;
+    }
+    .currentTime {
+        padding-top: 0.75em;
+        padding-bottom: 0.75em;
+    }
+    tfoot tr td {
+        text-align: center;
+        padding: 0px;
+        margin: 0px;
+    }
+    thead#tableHeadAnother tr th.timezone, tbody#tableBodyAnother tr td.timezone {
+        display: none;
+    }
 </style>
 <script>
     var env1,
         env2,
         env3;
     function initialise() {
-        env1 = new momentTimezoneDiff.Environment({ dateTimeElements: new momentTimezoneDiff.DateTimeElements('date', { mode: momentTimezoneDiff.MODE_SPLIT_HOUR12 }), 
-                                                    formatsId: 'cellFormats', 
-                                                    containerId: 'tableBody', 
-                                                    timeId: 'currentTime', 
-                                                    legendId: 'legend' });
-        env2 = new momentTimezoneDiff.Environment({ dateTimeElements: new momentTimezoneDiff.DateTimeElements('dateOther', { mode: momentTimezoneDiff.MODE_SINGLE }), 
+        env1 = new momentTimezoneDiff.Environment();
+        env2 = new momentTimezoneDiff.Environment({ 
+                                                    dateTimeElements: new momentTimezoneDiff.DateTimeElements('dateOther', { mode: momentTimezoneDiff.MODE_SINGLE }), 
                                                     formatsId: 'cellFormatsOther', 
                                                     containerId: 'tableBodyOther', 
                                                     timeId: 'currentTimeOther', 
-                                                    legendId: 'legendOther' },
-                                                  { legendFormat: 'HH:mm', sun: '\u2600', moon: '\u2605'} );
-        env3 = new momentTimezoneDiff.Environment({ dateTimeElements: new momentTimezoneDiff.DateTimeElements('dateAnother', { mode: momentTimezoneDiff.MODE_SPLIT_HOUR24 }), 
+                                                    legendId: 'legendOther' 
+                                                  },
+                                                  { 
+                                                    legendFormat: 'HH:mm', 
+                                                    sun: '\u2600', 
+                                                    moon: '\u2605'
+                                                  });
+        env3 = new momentTimezoneDiff.Environment({ 
+                                                    dateTimeElements: new momentTimezoneDiff.DateTimeElements('dateAnother', { mode: momentTimezoneDiff.MODE_SPLIT_HOUR24 }), 
                                                     formatsId: 'cellFormatsAnother', 
                                                     containerId: 'tableBodyAnother', 
                                                     timeId: 'currentTimeAnother', 
-                                                    legendId: 'legendAnother' },
-                                                  { sunRise: { hour: 8 }, sunSet: { hour: 16 } } );
+                                                    legendId: 'legendAnother' 
+                                                  },
+                                                  { 
+                                                    timeShowTimezoneName: false, 
+                                                    legendBreak: false, 
+                                                    sunRise: { hour: 8 }, 
+                                                    sunSet: { hour: 16 } 
+                                                  });
         env1.refresh();
         env2.refresh();
         env3.refresh();
@@ -117,7 +128,7 @@ tfoot tr td {
 <body onload='initialise();'>
     <h1>Moment Timezone Difference Examples</h1>
     <h2>Example #1 - 12 hour clock</h2>
-    <div class='date' id='date'>
+    <div class='date' id='mtzdDate'>
     </div>
     <div>
         <table>
@@ -128,7 +139,7 @@ tfoot tr td {
                     <th class='timezone'>Timezone</th>
                     <th colspan='5'>Local Time</th>
                 </tr>
-                <tr id='cellFormats' style='display: none'>
+                <tr id='mtzdFormats' style='display: none'>
                     <th>NAME</th>
                     <th></th>
                     <th>TIMEZONE</th>
@@ -139,7 +150,7 @@ tfoot tr td {
                     <th>sunmoon</th>
                 </tr>
             </thead>
-            <tbody id='tableBody'>
+            <tbody id='mtzdContainer'>
                 <tr>
                     <td class='name'>Fred Flintstone</td>
                     <td class='location'>Vancouver, Canada</td>
@@ -203,10 +214,10 @@ tfoot tr td {
             </tbody>
             <tfoot>
                 <tr>
-                    <td class='currentTime' id='currentTime' colspan='8'></td>
+                    <td class='currentTime' id='mtzdTime' colspan='8'></td>
                 </tr>
                 <tr>
-                    <td id='legend' colspan='8'></td>
+                    <td id='mtzdLegend' colspan='8'></td>
                 </tr>
             </tfoot>
         </table>
@@ -218,26 +229,20 @@ tfoot tr td {
         <table>
             <thead>
                 <tr>
-                    <th class='name'>Who</th>
-                    <th class='location'>Location</th>
                     <th class='timezone'>Timezone</th>
                     <th colspan='5'>Local Time</th>
                 </tr>
                 <tr id='cellFormatsOther' style='display: none'>
-                    <th></th>
-                    <th></th>
                     <th>TIMEZONE</th>
                     <th>dddd</th>
                     <th>h:mm a</th>
-                    <th>MMM-DD-YYYY</th>
+                    <th>DD/MMM/YYYY</th>
                     <th>DIFF</th>
                     <th>sunmoon</th>
                 </tr>
             </thead>
             <tbody id='tableBodyOther'>
                 <tr>
-                    <td class='name'>Fred Flintstone</td>
-                    <td class='location'>Vancouver, Canada</td>
                     <td class='timezone'>US/Pacific</td>
                     <td class='dayOfWeek'></td>
                     <td class='time'></td>
@@ -246,8 +251,6 @@ tfoot tr td {
                     <td class='sunmoon'></td>
                 </tr>
                 <tr>
-                    <td class='name'>Barny Rubble</td>
-                    <td class='location'>New York, USA</td>
                     <td class='timezone'>US/Eastern</td>
                     <td class='dayOfWeek'></td>
                     <td class='time'></td>
@@ -256,8 +259,6 @@ tfoot tr td {
                     <td class='sunmoon'></td>
                 </tr>
                 <tr>
-                    <td class='name'>Bamm Bamm Rubble</td>
-                    <td class='location'>London, United Kingdom</td>
                     <td class='timezone'>Europe/London</td>
                     <td class='dayOfWeek'></td>
                     <td class='time'></td>
@@ -266,8 +267,6 @@ tfoot tr td {
                     <td class='sunmoon'></td>
                 </tr>
                 <tr>
-                    <td class='name'>Wilma Flintstone</td>
-                    <td class='location'>Paris, France</td>
                     <td class='timezone'>Europe/Paris</td>
                     <td class='dayOfWeek'></td>
                     <td class='time'></td>
@@ -276,8 +275,6 @@ tfoot tr td {
                     <td class='sunmoon'></td>
                 </tr>
                 <tr>
-                    <td class='name'>Betty Rubble</td>
-                    <td class='location'>Mumbai, India</td>
                     <td class='timezone'>Asia/Calcutta</td>
                     <td class='dayOfWeek'></td>
                     <td class='time'></td>
@@ -286,8 +283,6 @@ tfoot tr td {
                     <td class='sunmoon'></td>
                 </tr>
                 <tr>
-                    <td class='name'>Pebbles Flintstone</td>
-                    <td class='location'>Perth, Australia</td>
                     <td class='timezone'>Australia/Perth</td>
                     <td class='dayOfWeek'></td>
                     <td class='time'></td>
@@ -298,10 +293,10 @@ tfoot tr td {
             </tbody>
             <tfoot>
                 <tr>
-                    <td class='currentTime' id='currentTimeOther' colspan='8'></td>
+                    <td class='currentTime' id='currentTimeOther' colspan='6'></td>
                 </tr>
                 <tr>
-                    <td id='legendOther' colspan='8'></td>
+                    <td id='legendOther' colspan='6'></td>
                 </tr>
             </tfoot>
         </table>
@@ -311,64 +306,56 @@ tfoot tr td {
     </div>
     <div>
         <table>
-            <thead>
+            <thead  id='tableHeadAnother'>
                 <tr>
                     <th class='name'>Who</th>
-                    <th class='location'>Location</th>
                     <th class='timezone'>Timezone</th>
-                    <th colspan='1'>Local Time</th>
+                    <th>Local Time</th>
                 </tr>
                 <tr id='cellFormatsAnother' style='display: none'>
                     <th>NAME</th>
-                    <th></th>
                     <th>TIMEZONE</th>
-                    <th>dddd HH:mm MMM-DD-YYYY DIFF sunmoon</th>
+                    <th>dddd HH:mm MMMM Do YYYY DIFF sunmoon</th>
                 </tr>
             </thead>
             <tbody id='tableBodyAnother'>
                 <tr>
                     <td class='name'>Fred Flintstone</td>
-                    <td class='location'>Vancouver, Canada</td>
                     <td class='timezone'>US/Pacific</td>
                     <td class='fulldate'></td>
                 </tr>
                 <tr>
                     <td class='name'>Barny Rubble</td>
-                    <td class='location'>New York, USA</td>
                     <td class='timezone'>US/Eastern</td>
                     <td class='fulldate'></td>
                 </tr>
                 <tr>
                     <td class='name'>Bamm Bamm Rubble</td>
-                    <td class='location'>London, United Kingdom</td>
                     <td class='timezone'>Europe/London</td>
                     <td class='fulldate'></td>
                 </tr>
                 <tr>
                     <td class='name'>Wilma Flintstone</td>
-                    <td class='location'>Paris, France</td>
                     <td class='timezone'>Europe/Paris</td>
                     <td class='fulldate'></td>
                 </tr>
                 <tr>
                     <td class='name'>Betty Rubble</td>
-                    <td class='location'>Mumbai, India</td>
                     <td class='timezone'>Asia/Calcutta</td>
                     <td class='fulldate'></td>
                 </tr>
                 <tr>
                     <td class='name'>Pebbles Flintstone</td>
-                    <td class='location'>Perth, Australia</td>
                     <td class='timezone'>Australia/Perth</td>
                     <td class='fulldate'></td>
                 </tr>
             </tbody>
             <tfoot>
                 <tr>
-                    <td class='currentTime' id='currentTimeAnother' colspan='8'></td>
+                    <td class='currentTime' id='currentTimeAnother' colspan='3'></td>
                 </tr>
                 <tr>
-                    <td id='legendAnother' colspan='8'></td>
+                    <td id='legendAnother' colspan='3'></td>
                 </tr>
             </tfoot>
         </table>

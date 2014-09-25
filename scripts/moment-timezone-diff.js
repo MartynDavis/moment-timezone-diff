@@ -1,9 +1,7 @@
 
 /*global document, Option, moment*/
-
 (function (root, factory) {
     "use strict";
-
     if (typeof exports === 'object') {
         module.exports = factory(require('../moment/moment-timezone'));   // Node
     } else {
@@ -11,19 +9,16 @@
     }
 }(this, function (moment) {
     "use strict";
-    
     function MomentTimezoneDiffException(message) {
        this.message = message;
        this.name = "MomentTimezoneDiffException";
     }
-
     if (!moment || !moment.tz) {
         if (!moment) {
             throw new MomentTimezoneDiffException('Moment has not been loaded');
         }
         throw new MomentTimezoneDiffException('Moment-timezone has not been loaded');
     }
-
     function duplicate(obj) {
         var copy,
             prop;
@@ -37,7 +32,6 @@
         }
         return copy;
     }
-
     var defaultOptions = { ahead: 'ahead',
                            behind: 'behind',
                            sunRise: { hour: 6, minute: 0 },
@@ -46,15 +40,16 @@
                            moon: '\u263e', // Unicode last quarter moon
                            hour: 'hour',
                            hours: 'hours',
-                           legendFormat: 'h:mm a', 
+                           legendFormat: 'h:mm a',
+                           legendBreak: true,
                            legendDash: ' - ',
                            legendSeparator: ' .. ',
-                           timeFormat: 'dddd h:mm a MMM-DD-YYYY'
+                           timeFormat: 'dddd h:mm a MMM-DD-YYYY',
+                           timeShowTimezoneName: true
                          },
         MODE_SINGLE = 0,
         MODE_SPLIT_HOUR24 = 1,
         MODE_SPLIT_HOUR12 = 2;
-
     //
     // daysInYear
     //
@@ -68,7 +63,6 @@
         }
         return days;
     }
-
     //
     // getMinutes
     //
@@ -89,7 +83,6 @@
                    m.minute();
         return minutes;
     }
-
     function createElement(type, value) {
         var element = document.createElement(type),
             property;
@@ -102,14 +95,12 @@
         }
         return element;
     }
-
     function appendChild(element, child) {
         if (element && child) {
             element.appendChild(child);
         }
         return child;
     }
-
     function comboValuePresent(combo, text, value) {
         var i;
         value = String(value);
@@ -131,13 +122,11 @@
         }
         return false;
     }
-
     function addComboValue(combo, text, value) {
         if (!comboValuePresent(combo, text, value)) {
             combo.options[combo.options.length] = new Option((text ? String(text) : String(value)), String(value));
         }
     }
-
     function populateHourOptions(element, format, hours24) {
         var m,
             i;
@@ -146,7 +135,6 @@
             addComboValue(element, m.format(format), i);
         }
     }
-
     function populateMinuteOptions(element, format) {
         var m,
             i;
@@ -155,7 +143,6 @@
             addComboValue(element, m.format(format), i);
         }
     }
-
     function populateAmpmOptions(element, format) {
         function add(value, hour) {
             var m;
@@ -170,7 +157,6 @@
             }
         }
     }
-
     function populateMonthOptions(element, format) {
         var m,
             i;
@@ -179,7 +165,6 @@
             addComboValue(element, m.format(format), i);
         }
     }
-
     function populateDayOptions(element, format) {
         var m,
             i;
@@ -188,7 +173,6 @@
             addComboValue(element, m.format(format), i);
         }
     }
-
     function populateYearOptions(element, format, minValue, maxValue) {
         var m,
             i;
@@ -197,18 +181,15 @@
             addComboValue(element, m.format(format), i);
         }
     }
-
     function populateTimezoneOptions(element, currentTimezoneText) {
         addComboValue(element, currentTimezoneText, '');
     }
-
     function getOptionValue(options, name, defaultValue) {
         if (options && (options[name] !== undefined)) {
             return options[name];
         }
         return defaultValue;
     }
-
     function DateTimeElements(id, options) {
         var element = document.getElementById(id),
             mode = getOptionValue(options, 'mode', MODE_SPLIT_HOUR12),
@@ -254,33 +235,29 @@
         elements.timezone = appendChild(element, createElement('select'));
         populateTimezoneOptions(elements.timezone, getOptionValue(options, 'currentTimezoneText', ''));
         appendChild(element, createElement('span', { textContent: ' ' }));
-        this.currentTime = appendChild(element, createElement('a', { textContent: getOptionValue(options, 'currentTime', '\u25d4'), 
+        this.currentTime = appendChild(element, createElement('a', { textContent: getOptionValue(options, 'currentTime', '\u25d4'),
                                                                      href: '#',
                                                                      title: getOptionValue(options, 'currentTimeTitle', 'Current Time'),
                                                                      className: getOptionValue(options, 'currentTimeClass', 'CurrentTime') }));
         this.mode = mode;
         this.elements = elements;
     }
-
     DateTimeElements.prototype.addTimezone = function (name, timezone) {
         if (this.elements && this.elements.timezone) {
             addComboValue(this.elements.timezone, name, timezone);
         }
     };
-    
     function getSelected(element) {
         if (element) {
             return parseInt(element.options[element.selectedIndex].value, 10);
         }
     }
-    
     function getSelectedValueText(element) {
         if (element) {
             return { value: element.options[element.selectedIndex].value, text: element.options[element.selectedIndex].textContent };
         }
         return undefined;
     }
-    
     function setSelected(element, value, text) {
         var i;
         value = String(value);
@@ -303,18 +280,15 @@
             }
         }
     }
-
     function setSelectedIndex(element, value) {
         value = parseInt(value, 10);
         if (element) {
             element.selectedIndex = value;
         }
     }
-
     DateTimeElements.prototype.getSelected = function () {
         var selected,
             ampm;
-        
         if (this.mode === MODE_SINGLE) {
             selected = { };
             selected.timezone = getSelectedValueText(this.elements.timezone);
@@ -343,7 +317,6 @@
         }
         return selected;
     };
-
     DateTimeElements.prototype.setSelected = function (selected) {
         var hour,
             ampm;
@@ -378,41 +351,37 @@
             console.error('Unknown mode "' + this.mode + '"');
         }
     };
-
     function registerTimezone(timezones, name, timezone, elementFormats) {
         timezones.push({ name: name, timezone: timezone, elementFormats: elementFormats });
     }
-
     function createLegend(options) {
-
         function sayRange(from, to, format, separator) {
             var momentFrom = moment([2014, 0, 1, from.hour, from.minute, 0]),
                 momentTo = moment([2014, 0, 1, to.hour, to.minute, 0]);
             momentTo.subtract(1, 'minute');
             return momentFrom.format(format) + separator + momentTo.format(format);
         }
-        
         var lines = [ ];
-
         if (options && options.sunRise && options.sunSet) {
             lines.push(options.sun + options.legendDash + sayRange(options.sunRise, options.sunSet, options.legendFormat, options.legendSeparator));
             lines.push(options.moon + options.legendDash + sayRange(options.sunSet, options.sunRise, options.legendFormat, options.legendSeparator));
         }
-        
         return lines;
     }
-    
     function updateLegend(legendElement, options) {
         var lines = createLegend(options),
             i;
         for (i = 0; i < lines.length; i += 1) {
             if (i > 0) {
-                appendChild(legendElement, createElement('br'));
+                if (options.legendBreak) {
+                    appendChild(legendElement, createElement('br'));
+                } else {
+                    appendChild(legendElement, createElement('span', { textContent: ' ' }));
+                }
             }
             appendChild(legendElement, createElement('span', { textContent: lines[i] }));
         }
     }
-
     function createOnchange(env) {
         return function () {
             if (env) {
@@ -420,15 +389,15 @@
             }
         };
     }
-
     function createSetCurrentTime(env) {
         return function() {
             if (env) {
                 env.setCurrentTime();
             }
+            return false;
         };
     }
-
+    
     function Environment(setupOptions, options) {
         var dateTimeElements,
             container,
@@ -447,14 +416,11 @@
             param,
             onchange,
             i;
-        if (!setupOptions) {
-            return;
-        }
-        dateTimeElements = setupOptions.dateTimeElements;
-        container = document.getElementById(setupOptions.containerId);
-        formats = document.getElementById(setupOptions.formatsId);
-        timeElement = document.getElementById(setupOptions.timeId);
-        legendElement = document.getElementById(setupOptions.legendId);
+        dateTimeElements = getOptionValue(setupOptions, 'dateTimeElements') || new DateTimeElements('mtzdDate');
+        container = document.getElementById(getOptionValue(setupOptions, 'containerId', 'mtzdContainer'));
+        formats = document.getElementById(getOptionValue(setupOptions, 'formatsId', 'mtzdFormats'));
+        timeElement = document.getElementById(getOptionValue(setupOptions, 'timeId', 'mtzdTime'));
+        legendElement = document.getElementById(getOptionValue(setupOptions, 'legendId', 'mtzdLegend'));
         if (!container || !container.children || !formats || !formats.children) {
             return;
         }
@@ -471,7 +437,6 @@
                 }
             }
         }
-
         this.moment = moment();
         this.timezone = undefined;
         this.timezones = [ ];
@@ -480,7 +445,6 @@
             setOptionValues(this.options, options);
         }
         this.timeElement = timeElement;
-
         rows = container.children;
         for (i = 0; i < rows.length; i += 1) {
             if (rows[i] && rows[i].children) {
@@ -504,7 +468,6 @@
                 }
             }
         }
-
         if (dateTimeElements) {
             if (dateTimeElements.elements) {
                 onchange = createOnchange(this);
@@ -519,33 +482,28 @@
             }
             this.dateTimeElements = dateTimeElements;
         }
-        
         if (legendElement) {
             updateLegend(legendElement, this.options);
         }
     }
-
     Environment.prototype.register = function (name, timezone, elementFormats) {
         registerTimezone(this.timezones, name, timezone, elementFormats);
     };
-
     function updateText(element, text) {
         if (element) {
             element.textContent = text;
         }
     }
-
-    function updateTimezone(m, timezone, elementFormats) {
-        var tzDiff, 
+    function updateTimezone(m, timezone, elementFormats, options) {
+        var tzDiff,
             i;
         if (m && timezone && elementFormats) {
-            tzDiff = new TimezoneDiff(m, timezone);
+            tzDiff = new TimezoneDiff(m, timezone, options);
             for (i = 0; i < elementFormats.length; i += 1) {
                 updateText(elementFormats[i].element, tzDiff.format(elementFormats[i].format));
             }
         }
     }
-
     Environment.prototype.refresh = function () {
         var selected,
             i;
@@ -562,17 +520,16 @@
         if (this.timeElement) {
             var text = this.moment.format(this.options.timeFormat);
             if (this.timezone && this.timezone.value) {
-                text += ' (' + this.timezone.value + ')';
+                text += ' (' + (this.options.timeShowTimezoneName ? this.timezone.text : this.timezone.value) + ')';
             }
             updateText(this.timeElement, text);
         }
         if (this.timezones) {
             for (i = 0; i < this.timezones.length; i += 1) {
-                updateTimezone(this.moment, this.timezones[i].timezone, this.timezones[i].elementFormats);
+                updateTimezone(this.moment, this.timezones[i].timezone, this.timezones[i].elementFormats, this.options);
             }
         }
     };
-
     Environment.prototype.update = function (values, timezone, name) {
         if (timezone) {
             this.moment = moment(values, timezone);
@@ -583,7 +540,6 @@
         }
         this.refresh();
     };
-
     Environment.prototype.updated = function () {
         var selected;
         if (this.dateTimeElements) {
@@ -600,13 +556,11 @@
             this.refresh();
         }
     };
-
     Environment.prototype.setCurrentTime = function () {
         this.moment = moment();
         this.timezone = undefined;
         this.refresh();
     };
-
     function setOptionValues(options, o) {
         var prop;
         for (prop in o) {
@@ -615,19 +569,15 @@
             }
         }
     }
-    
     Environment.prototype.getOptions = function () {
         return duplicate(this.options);
     };
-    
     Environment.prototype.setOptions = function (o) {
         setOptionValues(this.options, o);
     };
-    
     Environment.prototype.sunny = function (m, options) {
         return sunny(m, options || this.options);
     };
-    
     function TimezoneDiff(momentReference, timezone, options) {
         this.momentReference = momentReference;
         this.momentTz = moment.tz(momentReference, timezone);
@@ -636,42 +586,34 @@
             setOptionValues(this.options, options);
         }
     }
-
     TimezoneDiff.prototype.diff = function () {
         return (getMinutes(this.momentTz, this.momentReference.year()) - getMinutes(this.momentReference, this.momentTz.year())) / 60;
     };
-
     function sunny(m, options) {
         var hour = m.hour(),
             minute = m.minute(),
             value = false;
-
         function compare(hour1, minute1, hour2, minute2) {
             if (hour1 !== hour2) {
                 return hour1 - hour2;
             }
             return (minute1 || 0) - (minute2 || 0);
         }
-
         if (options && options.sunRise && options.sunSet) {
             value = (compare(hour, minute, options.sunRise.hour, options.sunRise.minute) >= 0) &&
                     (compare(hour, minute, options.sunSet.hour, options.sunSet.minute) < 0);
         }
         return value;
     }
-    
     TimezoneDiff.prototype.sunny = function () {
         return sunny(this.momentTz, this.options);
     };
-
     Environment.prototype.timezoneDiff = function (momentReference, timezone) {
         return new TimezoneDiff(momentReference, timezone, this.options);
     };
-    
     Environment.prototype.createLegend = function () {
         return createLegend(this.options);
     };
-    
     function makeDiffText(d, useSuffix, options) {
         var suffix = '',
             text;
@@ -698,7 +640,6 @@
         }
         return text;
     }
-
     TimezoneDiff.prototype.format = function (f) {
         var re = /^(.*?)\b(DIFF|diff|sunmoon)\b(.*?)$/,
             fNew = '',
@@ -749,17 +690,13 @@
         }
         return this.momentTz.format(fNew);
     };
-
     TimezoneDiff.prototype.getOptions = function () {
         return duplicate(this.options);
     };
-    
     TimezoneDiff.prototype.setOptions = function (o) {
         setOptionValues(this.options, o);
     };
-    
     var mtzd = { };
-    
     mtzd.MODE_SINGLE = MODE_SINGLE;
     mtzd.MODE_SPLIT_HOUR24 = MODE_SPLIT_HOUR24;
     mtzd.MODE_SPLIT_HOUR12 = MODE_SPLIT_HOUR12;
