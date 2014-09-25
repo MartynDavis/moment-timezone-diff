@@ -156,8 +156,8 @@
                                                   },
                                                   { 
                                                     legendFormat: 'HH:mm', 
-                                                    sun: '\u2665', 
-                                                    moon: '\u265e'
+                                                    sun: 'Day', 
+                                                    moon: 'Night'
                                                   });
         env3 = new momentTimezoneDiff.Environment({ 
                                                     dateTimeElements: new momentTimezoneDiff.DateTimeElements('dateAnother', { mode: momentTimezoneDiff.MODE_SPLIT_HOUR24 }), 
@@ -261,6 +261,16 @@
                     <td class='diff'></td>
                     <td class='sunmoon'></td>
                 </tr>
+                <tr>
+                    <td class='name'>Me</td>
+                    <td class='location'>Here</td>
+                    <td class='timezone'></td>
+                    <td class='dayOfWeek'></td>
+                    <td class='time'></td>
+                    <td class='date'></td>
+                    <td class='diff'></td>
+                    <td class='sunmoon'></td>
+                </tr>
             </tbody>
             <tfoot>
                 <tr>
@@ -340,6 +350,14 @@
                     <td class='diff'></td>
                     <td class='sunmoon'></td>
                 </tr>
+                <tr>
+                    <td class='timezone'></td>
+                    <td class='dayOfWeek'></td>
+                    <td class='time'></td>
+                    <td class='date'></td>
+                    <td class='diff'></td>
+                    <td class='sunmoon'></td>
+                </tr>
             </tbody>
             <tfoot>
                 <tr>
@@ -411,6 +429,13 @@
             <div class='datetime'></div>
             <div class='diff'></div>
             <div class='sunmoon'></div>
+        </div>
+        <div class='row shade'>
+            <div class='name shade'>Me</div>
+            <div class='timezone shade hide'></div>
+            <div class='datetime shade'></div>
+            <div class='diff shade'></div>
+            <div class='sunmoon shade'></div>
         </div>
     </div>
     <div id='legendAnother'></p>

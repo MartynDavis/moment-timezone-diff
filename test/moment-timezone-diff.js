@@ -17,7 +17,8 @@ describe('options', function () {
                                legendDash: ' - ',
                                legendSeparator: ' .. ',
                                timeFormat: 'dddd h:mm a MMM-DD-YYYY',
-                               timeShowTimezoneName: true
+                               timeShowTimezoneName: true,
+                               defaultTimezone: momentTimezoneDiff.getDefaultTimezone()
                              };
         //
         // copy(...)

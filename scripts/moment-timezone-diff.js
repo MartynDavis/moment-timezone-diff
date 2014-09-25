@@ -32,6 +32,30 @@
         }
         return copy;
     }
+    // getDefaultTimezone() logic taken from tzdetect.js
+    function getDefaultTimezone() {
+        function makekey(id) {
+            return [-12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(function(months){
+                var m = moment(now + months * 30 * 24 * 60 * 60 * 1000);
+                if (id) {
+                    m.tz(id);
+                }
+                // Compare using day of month, hour and minute (some timezones differ by 30 minutes)
+                return m.format("DDHHmm");
+            }).join(' ');
+        }
+        var now = Date.now(),
+            lockey = makekey(),
+            timezones = moment.tz.names(),
+            i;
+        if (timezones) {
+            for (i = 0; i < timezones.length; i += 1) {
+                if (makekey(timezones[i]) === lockey) {
+                    return timezones[i];
+                }
+            }
+        }
+    }
     var defaultOptions = { ahead: 'ahead',
                            behind: 'behind',
                            sunRise: { hour: 6, minute: 0 },
@@ -45,7 +69,8 @@
                            legendDash: ' - ',
                            legendSeparator: ' .. ',
                            timeFormat: 'dddd h:mm a MMM-DD-YYYY',
-                           timeShowTimezoneName: true
+                           timeShowTimezoneName: true,
+                           defaultTimezone: getDefaultTimezone()
                          },
         MODE_SINGLE = 0,
         MODE_SPLIT_HOUR24 = 1,
@@ -301,22 +326,25 @@
                 if (text !== undefined) {
                     if ((element.options[i].value === value) && (element.options[i].textContent === text)) {
                         element.selectedIndex = i;
-                        break;
+                        return true;
                     }
                 } else {
                     if (element.options[i].value === value) {
                         element.selectedIndex = i;
-                        break;
+                        return true;
                     }
                 }
             }
         }
+        return false;
     }
     function setSelectedIndex(element, value) {
         value = parseInt(value, 10);
         if (element) {
             element.selectedIndex = value;
+            return true;
         }
+        return false;
     }
     function classAdd(element, className) {
         var classNames = element.className.split(/\s+/),
@@ -414,8 +442,10 @@
             console.error('Unknown mode "' + this.mode + '"');
             return;
         }
-        if (selected.timezone && selected.timezone.value) {
-            setSelected(this.elements.timezone, selected.timezone.value, selected.timezone.text);
+        if (selected.timezone) {
+            if (!setSelected(this.elements.timezone, selected.timezone.value, selected.timezone.text)) {
+                setSelectedIndex(this.elements.timezone, 0);
+            }
         } else {
             setSelectedIndex(this.elements.timezone, 0);
         }
@@ -519,7 +549,7 @@
             if (rows[i] && rows[i].children) {
                 cells = rows[i].children;
                 name = ((nameNum !== -1) && cells[nameNum]) ? cells[nameNum].textContent : undefined;
-                timezone = (timezoneNum !== -1) && cells[timezoneNum] ? cells[timezoneNum].textContent : undefined;
+                timezone = (timezoneNum !== -1) && cells[timezoneNum] ? (cells[timezoneNum].textContent || '') : undefined;
                 elementFormats = [ ];
                 for (param in timeFormats) {
                     if (timeFormats.hasOwnProperty(param)) {
@@ -528,7 +558,7 @@
                         }
                     }
                 }
-                if (timezone && elementFormats.length) {
+                if ((timezone !== undefined) && elementFormats.length) {
                     name = name || timezone;
                     registerTimezone(this.timezones, timezone, elementFormats);
                     if (dateTimeElements) {
@@ -569,7 +599,7 @@
     function updateTimezone(m, timezone, elementFormats, options) {
         var tzDiff,
             i;
-        if (m && timezone && elementFormats) {
+        if (m && elementFormats) {
             tzDiff = new TimezoneDiff(m, timezone, options);
             for (i = 0; i < elementFormats.length; i += 1) {
                 updateText(elementFormats[i].element, tzDiff.format(elementFormats[i].format));
@@ -605,11 +635,10 @@
     Environment.prototype.update = function (values, timezone, name) {
         if (timezone) {
             this.moment = moment(values, timezone);
-            this.timezone = { name: name, timezone: timezone };
         } else {
             this.moment = moment(values);
-            this.timezone = undefined;
         }
+        this.timezone = { name: name, timezone: timezone };
         this.refresh();
     };
     Environment.prototype.updated = function () {
@@ -620,11 +649,10 @@
         if (selected) {
             if (selected.timezone && selected.timezone.value) {
                 this.moment = moment.tz([selected.year, selected.month, selected.day, selected.hour, selected.minute, 0], selected.timezone.value);
-                this.timezone = selected.timezone;
             } else {
                 this.moment = moment([selected.year, selected.month, selected.day, selected.hour, selected.minute, 0]);
-                this.timezone = undefined;
             }
+            this.timezone = selected.timezone;
             this.refresh();
         }
     };
@@ -652,7 +680,7 @@
     };
     function TimezoneDiff(momentReference, timezone, options) {
         this.momentReference = momentReference;
-        this.momentTz = moment.tz(momentReference, timezone);
+        this.momentTz = moment.tz(momentReference, timezone ? timezone : options.defaultTimezone);
         this.options = duplicate(defaultOptions);
         if (options) {
             setOptionValues(this.options, options);
@@ -775,6 +803,7 @@
     mtzd.DateTimeElements = DateTimeElements;
     mtzd.Environment = Environment;
     mtzd.TimezoneDiff = TimezoneDiff;
+    mtzd.getDefaultTimezone = getDefaultTimezone;
     mtzd.getOptions = function () {
         return duplicate(defaultOptions);
     };
