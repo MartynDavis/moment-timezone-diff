@@ -1,4 +1,13 @@
 
-a.CurrentTime {
-    text-decoration: none;
+.mtzdCurrentTime {
+    cursor: pointer;
+}
+.mtzdError {
+    background-color: yellow;
+}
+.mtzdLink {
+    cursor: pointer;
+}
+.mtzdLink:hover {
+    text-decoration: underline;
 }

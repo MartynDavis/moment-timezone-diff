@@ -196,34 +196,66 @@
             timeDelim = getOptionValue(options, 'timeDelim', ':'),
             dateDelim = getOptionValue(options, 'dateDelim', '-'),
             hourFormat = getOptionValue(options, 'hourFormat', (mode === MODE_SPLIT_HOUR12) ? 'hh' : 'HH'),
-            elements;
+            elements,
+            title,
+            i;
         if (!element) {
             console.error('Element with id "' + id + '" not found');
             return;
         }
         if (mode === MODE_SINGLE) {
+            this.timeDisplayFormat = getOptionValue(options, 'timeDisplayFormat', 'dddd h:mm a MMM-DD-YYYY');
+            this.timeInputFormats = getOptionValue(options, 'timeInputFormats', [ 'dddd h:mm a MMM-DD-YYYY', 
+                                                                                  'dddd H:mm MMM-DD-YYYY', 
+                                                                                  'h:mm a MMM-DD-YYYY', 
+                                                                                  'H:mm MMM-DD-YYYY', 
+                                                                                  'h:mm a DD-MMM-YYYY', 
+                                                                                  'H:mm DD-MMM-YYYY', 
+                                                                                  'h:mm a MMM-DD-YY', 
+                                                                                  'H:mm MMM-DD-YY', 
+                                                                                  'h:mm a DD-MMM-YY', 
+                                                                                  'H:mm DD-MMM-YY', 
+                                                                                  'h:mm a MM-DD-YYYY', 
+                                                                                  'H:mm MM-DD-YYYY', 
+                                                                                  'h:mm a DD-MM-YYYY', 
+                                                                                  'H:mm DD-MM-YYYY', 
+                                                                                  'h:mm a MM-DD-YY',
+                                                                                  'H:mm MM-DD-YY',
+                                                                                  'h:mm a DD-MM-YY',
+                                                                                  'H:mm DD-MM-YY' ]);
             elements = { };
-            elements.single = appendChild(element, createElement('input', {type: 'text', maxlength: getOptionValue(options, 'maxlength', 255) }));
+            title = getOptionValue(options, 'timeTitle', 'Enter the required date and time.');
+            if (this.timeInputFormats && getOptionValue(options, 'timeTitleShowInputFormats', true)) {
+                title += '  ' + getOptionValue(options, 'timeTitleInputFormats', 'Supported formats are:') + '\n';
+                if (typeof this.timeInputFormats === 'string') {
+                    title += '\n  ' + this.timeInputFormats;
+                } else if (this.timeInputFormats) {
+                    for (i = 0; i < this.timeInputFormats.length; i += 1) {
+                        title += '\n  ' + this.timeInputFormats[i];
+                    }
+                }
+            }
+            elements.datetime = appendChild(element, createElement('input', {type: 'text', title: title, size: getOptionValue(options, 'size', 28), maxlength: getOptionValue(options, 'maxlength', 255) }));
         } else if ((mode === MODE_SPLIT_HOUR24) || (mode === MODE_SPLIT_HOUR12)) {
             elements = { };
-            elements.hour = appendChild(element, createElement('select'));
+            elements.hour = appendChild(element, createElement('select', { title: getOptionValue(options, 'hourTitle', 'Select hour of the day') }));
             populateHourOptions(elements.hour, hourFormat, (mode === MODE_SPLIT_HOUR24));
             appendChild(element, createElement('span', { textContent: timeDelim }));
-            elements.minute = appendChild(element, createElement('select'));
+            elements.minute = appendChild(element, createElement('select', { title: getOptionValue(options, 'minuteTitle', 'Select minute of the hour') }));
             populateMinuteOptions(elements.minute, getOptionValue(options, 'minuteFormat', 'mm'));
             if ((mode !== MODE_SPLIT_HOUR24)) {
                 appendChild(element, createElement('span', { textContent: ' ' }));
-                elements.ampm = appendChild(element, createElement('select'));
+                elements.ampm = appendChild(element, createElement('select', { title: getOptionValue(options, 'ampmTitle', 'Select morning or afternoon') }));
                 populateAmpmOptions(elements.ampm, getOptionValue(options, 'ampmFormat', 'a'));
             }
             appendChild(element, createElement('span', { textContent: ' ' }));
-            elements.month = appendChild(element, createElement('select'));
+            elements.month = appendChild(element, createElement('select', { title: getOptionValue(options, 'monthTitle', 'Select month of the year') }));
             populateMonthOptions(elements.month, getOptionValue(options, 'monthFormat', 'MMM'));
             appendChild(element, createElement('span', { textContent: dateDelim }));
-            elements.day = appendChild(element, createElement('select'));
+            elements.day = appendChild(element, createElement('select', { title: getOptionValue(options, 'dayTitle', 'Select day of the month') }));
             populateDayOptions(elements.day, getOptionValue(options, 'dayFormat', 'DD'));
             appendChild(element, createElement('span', { textContent: dateDelim }));
-            elements.year = appendChild(element, createElement('select'));
+            elements.year = appendChild(element, createElement('select', { title: getOptionValue(options, 'yearTitle', 'Select year') }));
             populateYearOptions(elements.year, getOptionValue(options, 'yearFormat', 'YYYY'),
                                                getOptionValue(options, 'minYear', 2010),
                                                getOptionValue(options, 'maxYear', 2020));
@@ -232,15 +264,15 @@
             return;
         }
         appendChild(element, createElement('span', { textContent: ' ' }));
-        elements.timezone = appendChild(element, createElement('select'));
+        elements.timezone = appendChild(element, createElement('select', { title: getOptionValue(options, 'timezoneTitle', 'Select timezone') }));
         populateTimezoneOptions(elements.timezone, getOptionValue(options, 'currentTimezoneText', ''));
         appendChild(element, createElement('span', { textContent: ' ' }));
-        this.currentTime = appendChild(element, createElement('a', { textContent: getOptionValue(options, 'currentTime', '\u25d4'),
-                                                                     href: '#',
-                                                                     title: getOptionValue(options, 'currentTimeTitle', 'Current Time'),
-                                                                     className: getOptionValue(options, 'currentTimeClass', 'CurrentTime') }));
+        this.currentTime = appendChild(element, createElement('span', { textContent: getOptionValue(options, 'currentTime', '\u25d4'),
+                                                                        title: getOptionValue(options, 'currentTimeTitle', 'Current Time'),
+                                                                        className: getOptionValue(options, 'currentTimeClass', 'mtzdCurrentTime') }));
         this.mode = mode;
         this.elements = elements;
+        this.errorClassName = getOptionValue(options, 'errorClass', 'mtzdError');
     }
     DateTimeElements.prototype.addTimezone = function (name, timezone) {
         if (this.elements && this.elements.timezone) {
@@ -286,12 +318,45 @@
             element.selectedIndex = value;
         }
     }
+    function classAdd(element, className) {
+        var classNames = element.className.split(/\s+/),
+            i;
+        for (i = 0; i < classNames.length; i += 1) {
+            if (classNames[i] === className) {
+                return;
+            }
+        }
+        classNames.push(className);
+        element.className = classNames.join(' ');
+    }
+    function classRemove(element, className) {
+        var classNames = element.className.split(/\s+/),
+            i;
+        for (i = classNames.length - 1; i >= 0; i -= 1) {
+            if (classNames[i] === className) {
+                classNames.splice(i, 1);
+            }
+        }
+        element.className = classNames.join(' ');
+    }
     DateTimeElements.prototype.getSelected = function () {
         var selected,
-            ampm;
+            ampm,
+            m;
         if (this.mode === MODE_SINGLE) {
-            selected = { };
-            selected.timezone = getSelectedValueText(this.elements.timezone);
+            m = moment(this.elements.datetime.value, this.timeInputFormats);
+            if (m.isValid()) {
+                selected = { };
+                selected.hour = m.hour();
+                selected.minute = m.minute();
+                selected.month = m.month();
+                selected.day = m.date();
+                selected.year = m.year();
+                selected.timezone = getSelectedValueText(this.elements.timezone);
+                classRemove(this.elements.datetime, this.errorClassName);
+            } else {
+                classAdd(this.elements.datetime, this.errorClassName);
+            }
         } else if ((this.mode === MODE_SPLIT_HOUR12) || (this.mode === MODE_SPLIT_HOUR24)) {
             selected = { };
             selected.hour = getSelected(this.elements.hour);
@@ -319,8 +384,11 @@
     };
     DateTimeElements.prototype.setSelected = function (selected) {
         var hour,
-            ampm;
+            ampm,
+            m;
         if (this.mode === MODE_SINGLE) {
+            m = moment([selected.year, selected.month, selected.day, selected.hour, selected.minute, 0]);
+            this.elements.datetime.value = m.format(this.timeDisplayFormat);
         } else if ((this.mode === MODE_SPLIT_HOUR12) || (this.mode === MODE_SPLIT_HOUR24)) {
             setSelected(this.elements.year, selected.year);
             setSelected(this.elements.month, selected.month);
@@ -342,17 +410,18 @@
             }
             setSelected(this.elements.hour, hour);
             setSelected(this.elements.minute, selected.minute);
-            if (selected.timezone && selected.timezone.value) {
-                setSelected(this.elements.timezone, selected.timezone.value, selected.timezone.text);
-            } else {
-                setSelectedIndex(this.elements.timezone, 0);
-            }
         } else {
             console.error('Unknown mode "' + this.mode + '"');
+            return;
+        }
+        if (selected.timezone && selected.timezone.value) {
+            setSelected(this.elements.timezone, selected.timezone.value, selected.timezone.text);
+        } else {
+            setSelectedIndex(this.elements.timezone, 0);
         }
     };
-    function registerTimezone(timezones, name, timezone, elementFormats) {
-        timezones.push({ name: name, timezone: timezone, elementFormats: elementFormats });
+    function registerTimezone(timezones, timezone, elementFormats) {
+        timezones.push({ timezone: timezone, elementFormats: elementFormats });
     }
     function createLegend(options) {
         function sayRange(from, to, format, separator) {
@@ -461,7 +530,7 @@
                 }
                 if (timezone && elementFormats.length) {
                     name = name || timezone;
-                    registerTimezone(this.timezones, name, timezone, elementFormats);
+                    registerTimezone(this.timezones, timezone, elementFormats);
                     if (dateTimeElements) {
                         dateTimeElements.addTimezone(name, timezone);
                     }
@@ -473,21 +542,24 @@
                 onchange = createOnchange(this);
                 for (param in dateTimeElements.elements) {
                     if (dateTimeElements.elements.hasOwnProperty(param)) {
-                        dateTimeElements.elements[param].onchange = onchange;
+                        dateTimeElements.elements[param].addEventListener('change', onchange, false);
                     }
                 }
             }
             if (dateTimeElements.currentTime) {
-                dateTimeElements.currentTime.onclick = createSetCurrentTime(this);
+                dateTimeElements.currentTime.addEventListener('click', createSetCurrentTime(this), false);
             }
             this.dateTimeElements = dateTimeElements;
         }
         if (legendElement) {
             updateLegend(legendElement, this.options);
         }
+        if (getOptionValue(setupOptions, 'autoRefresh', true)) {
+            this.refresh();
+        }
     }
-    Environment.prototype.register = function (name, timezone, elementFormats) {
-        registerTimezone(this.timezones, name, timezone, elementFormats);
+    Environment.prototype.register = function (timezone, elementFormats) {
+        registerTimezone(this.timezones, timezone, elementFormats);
     };
     function updateText(element, text) {
         if (element) {

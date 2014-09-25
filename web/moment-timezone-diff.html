@@ -11,7 +11,7 @@
     body {
         font-size: 16px;
     }
-    div {
+    div.date, div.table, div#legendAnother {
         clear: both;
         height: auto;
         margin: 0 auto;
@@ -75,18 +75,71 @@
     tfoot {
         font-size: small;
     }
-    .currentTime {
-        padding-top: 0.75em;
-        padding-bottom: 0.75em;
-    }
     tfoot tr td {
         text-align: center;
         padding: 0px;
         margin: 0px;
     }
-    thead#tableHeadAnother tr th.timezone, tbody#tableBodyAnother tr td.timezone {
+    .currentTime {
+        padding-top: 0.75em;
+        padding-bottom: 0.75em;
+    }
+    p.exampleCurrentTime {
+        text-align: center;
+        padding-top: 20px;
+    }
+    div#legendAnother {
+        clear: both;
+        height: auto;
+        margin: 0 auto;
+        width: 800px;
+        text-align: center;
+    }
+    div#legendAnother span {
+        padding-right: 20px;
+    }
+    div.row {
+        clear: both;
+        height: auto;
+        margin: 0 auto;
+        width: 670px;
+    }
+    .shade {
+        background-color: #eee;
+    }
+    div.header {
+        font-weight: bold;
+    }
+    div.name {
+        float: left;
+        min-width: 200px;
+        padding: 5px;
+    }
+    div.timezone {
+        float: left;
+        min-width: 150px;
+        padding: 5px;
+    }
+    div.datetime {
+        float: left;
+        min-width: 300px;
+        padding: 5px;
+    }
+    div.diff {
+        float: left;
+        min-width: 100px;
+        min-height: 1em;
+        padding: 5px;
+    }
+    div.sunmoon {
+        float: left;
+        min-width: 20px;
+        padding: 5px;
+    }
+    .hide {
         display: none;
     }
+
 </style>
 <script>
     var env1,
@@ -103,13 +156,13 @@
                                                   },
                                                   { 
                                                     legendFormat: 'HH:mm', 
-                                                    sun: '\u2600', 
-                                                    moon: '\u2605'
+                                                    sun: '\u2665', 
+                                                    moon: '\u265e'
                                                   });
         env3 = new momentTimezoneDiff.Environment({ 
                                                     dateTimeElements: new momentTimezoneDiff.DateTimeElements('dateAnother', { mode: momentTimezoneDiff.MODE_SPLIT_HOUR24 }), 
                                                     formatsId: 'cellFormatsAnother', 
-                                                    containerId: 'tableBodyAnother', 
+                                                    containerId: 'container', 
                                                     timeId: 'currentTimeAnother', 
                                                     legendId: 'legendAnother' 
                                                   },
@@ -119,18 +172,15 @@
                                                     sunRise: { hour: 8 }, 
                                                     sunSet: { hour: 16 } 
                                                   });
-        env1.refresh();
-        env2.refresh();
-        env3.refresh();
     }
 </script>
 </head>
 <body onload='initialise();'>
     <h1>Moment Timezone Difference Examples</h1>
-    <h2>Example #1 - 12 hour clock</h2>
+    <h2>Example #1 - 12 hour clock (Table)</h2>
     <div class='date' id='mtzdDate'>
     </div>
-    <div>
+    <div class='table'>
         <table>
             <thead>
                 <tr>
@@ -139,7 +189,7 @@
                     <th class='timezone'>Timezone</th>
                     <th colspan='5'>Local Time</th>
                 </tr>
-                <tr id='mtzdFormats' style='display: none'>
+                <tr class='hide' id='mtzdFormats'>
                     <th>NAME</th>
                     <th></th>
                     <th>TIMEZONE</th>
@@ -222,17 +272,17 @@
             </tfoot>
         </table>
     </div>
-    <h2>Example #2 - Single text box</h2>
+    <h2>Example #2 - Single text box (Table)</h2>
     <div class='date' id='dateOther'>
     </div>
-    <div>
+    <div class='table'>
         <table>
             <thead>
                 <tr>
                     <th class='timezone'>Timezone</th>
                     <th colspan='5'>Local Time</th>
                 </tr>
-                <tr id='cellFormatsOther' style='display: none'>
+                <tr class='hide' id='cellFormatsOther'>
                     <th>TIMEZONE</th>
                     <th>dddd</th>
                     <th>h:mm a</th>
@@ -301,64 +351,68 @@
             </tfoot>
         </table>
     </div>
-    <h2>Example #3 - 24 hour clock</h2>
+    <h2>Example #3 - 24 hour clock (Div)</h2>
     <div class='date' id='dateAnother'>
     </div>
-    <div>
-        <table>
-            <thead  id='tableHeadAnother'>
-                <tr>
-                    <th class='name'>Who</th>
-                    <th class='timezone'>Timezone</th>
-                    <th>Local Time</th>
-                </tr>
-                <tr id='cellFormatsAnother' style='display: none'>
-                    <th>NAME</th>
-                    <th>TIMEZONE</th>
-                    <th>dddd HH:mm MMMM Do YYYY DIFF sunmoon</th>
-                </tr>
-            </thead>
-            <tbody id='tableBodyAnother'>
-                <tr>
-                    <td class='name'>Fred Flintstone</td>
-                    <td class='timezone'>US/Pacific</td>
-                    <td class='fulldate'></td>
-                </tr>
-                <tr>
-                    <td class='name'>Barny Rubble</td>
-                    <td class='timezone'>US/Eastern</td>
-                    <td class='fulldate'></td>
-                </tr>
-                <tr>
-                    <td class='name'>Bamm Bamm Rubble</td>
-                    <td class='timezone'>Europe/London</td>
-                    <td class='fulldate'></td>
-                </tr>
-                <tr>
-                    <td class='name'>Wilma Flintstone</td>
-                    <td class='timezone'>Europe/Paris</td>
-                    <td class='fulldate'></td>
-                </tr>
-                <tr>
-                    <td class='name'>Betty Rubble</td>
-                    <td class='timezone'>Asia/Calcutta</td>
-                    <td class='fulldate'></td>
-                </tr>
-                <tr>
-                    <td class='name'>Pebbles Flintstone</td>
-                    <td class='timezone'>Australia/Perth</td>
-                    <td class='fulldate'></td>
-                </tr>
-            </tbody>
-            <tfoot>
-                <tr>
-                    <td class='currentTime' id='currentTimeAnother' colspan='3'></td>
-                </tr>
-                <tr>
-                    <td id='legendAnother' colspan='3'></td>
-                </tr>
-            </tfoot>
-        </table>
+    <p class='exampleCurrentTime'>Current time: <span id='currentTimeAnother'></span></p>
+    <div class='hide' id='cellFormatsAnother'>
+        <span>NAME</span>
+        <span>TIMEZONE</span>
+        <span>dddd HH:mm MMMM Do YYYY</span>
+        <span>diff</span>
+        <span>sunmoon</span>
     </div>
+    <div class='row'>
+        <div class='header name'>Who`</div>
+        <div class='header timezone hide'>Timezone</div>
+        <div class='header datetime'>Local Time</div>
+        <div class='header diff'>Difference</div>
+        <div class='header sunmoon'></div>
+    </div>
+    <div id='container'>
+        <div class='row shade'>
+            <div class='name shade'>Fred Flintstone</div>
+            <div class='timezone shade hide'>US/Pacific</div>
+            <div class='datetime shade'></div>
+            <div class='diff shade'></div>
+            <div class='sunmoon shade'></div>
+        </div>
+        <div class='row'>
+            <div class='name'>Barny Rubble</div>
+            <div class='timezone hide'>US/Eastern</div>
+            <div class='datetime'></div>
+            <div class='diff'></div>
+            <div class='sunmoon'></div>
+        </div>
+        <div class='row shade'>
+            <div class='name shade'>Bamm Bamm Rubble</div>
+            <div class='timezone shade hide'>Europe/London</div>
+            <div class='datetime shade'></div>
+            <div class='diff shade'></div>
+            <div class='sunmoon shade'></div>
+        </div>
+        <div class='row'>
+            <div class='name'>Wilma Flintstone</div>
+            <div class='timezone hide'>Europe/Paris</div>
+            <div class='datetime'></div>
+            <div class='diff'></div>
+            <div class='sunmoon'></div>
+        </div>
+        <div class='row shade'>
+            <div class='name shade'>Betty Rubble</div>
+            <div class='timezone shade hide'>Asia/Calcutta</div>
+            <div class='datetime shade'></div>
+            <div class='diff shade'></div>
+            <div class='sunmoon shade'></div>
+        </div>
+        <div class='row'>
+            <div class='name'>Pebbles Flintstone</div>
+            <div class='timezone hide'>Australia/Perth</div>
+            <div class='datetime'></div>
+            <div class='diff'></div>
+            <div class='sunmoon'></div>
+        </div>
+    </div>
+    <div id='legendAnother'></p>
 </body>
 </html>
