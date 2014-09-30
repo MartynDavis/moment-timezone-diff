@@ -19,7 +19,7 @@ describe('options', function () {
                                legendBreak: true,
                                legendDash: ' - ',
                                legendSeparator: ' .. ',
-                               timeFormat: 'dddd h:mm a MMM-DD-YYYY',
+                               timeFormat: 'dddd h:mm a DD-MMM-YYYY',
                                timeShowTimezoneName: true,
                                defaultTimezone: momentTimezoneDiff.getDefaultTimezone()
                              };

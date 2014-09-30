@@ -156,7 +156,9 @@
                                                     moon: 'Night'
                                                   });
         env3 = new momentTimezoneDiff.Environment({ 
-                                                    dateTimeElements: new momentTimezoneDiff.DateTimeElements('dateAnother', { mode: momentTimezoneDiff.MODE_SPLIT_HOUR24 }), 
+                                                    dateTimeElements: new momentTimezoneDiff.DateTimeElements('dateAnother', { mode: momentTimezoneDiff.MODE_SPLIT_HOUR24,
+                                                                                                                               timeDisplayFormat: 'dddd h:mm a DD/MMM/YYYY',
+                                                                                                                              dateOrder: momentTimezoneDiff.DATE_ORDER_MDY }),
                                                     formatsId: 'cellFormatsAnother', 
                                                     containerId: 'container', 
                                                     timeId: 'currentTimeAnother', 
@@ -171,6 +173,7 @@
         env4 = new momentTimezoneDiff.Environment({ 
                                                     dateTimeElements: new momentTimezoneDiff.DateTimeElements('dateFrench', { mode: momentTimezoneDiff.MODE_SPLIT_HOUR24, 
                                                                                                                               locale: 'fr',
+                                                                                                                              currentTime: "Régler l'heure actuelle",
                                                                                                                               currentTimeTitle: "l'heure actuelle",
                                                                                                                               hourTitle: "Sélectionnez les heures de la journée",
                                                                                                                               minuteTitle: "Sélectionner les minutes de l'heure",
@@ -194,14 +197,15 @@
                                                     ahead: 'devant',
                                                     behind: 'derrière',
                                                     hour: 'heure',
-                                                    hours: 'heures'
+                                                    hours: 'heures',
+                                                    timeFormat: 'dddd HH:mm Do MMMM YYYY'
                                                   });
     }
 </script>
 </head>
 <body onload='initialise();'>
     <h1>Moment Timezone Difference Examples</h1>
-    <h2>Example #1 - 12 hour clock (Table)</h2>
+    <h2>Example #1 - 12 hour clock (TABLE)</h2>
     <div class='date' id='mtzdDate'>
     </div>
     <div class='table'>
@@ -219,7 +223,7 @@
                     <th>LINK|TIMEZONE</th>
                     <th>dddd</th>
                     <th>h:mm a</th>
-                    <th>MMM-DD-YYYY</th>
+                    <th>DD-MMM-YYYY</th>
                     <th>DIFF</th>
                     <th>sunmoon</th>
                 </tr>
@@ -306,7 +310,7 @@
             </tfoot>
         </table>
     </div>
-    <h2>Example #2 - Single text box (Table)</h2>
+    <h2>Example #2 - Single text box (TABLE)</h2>
     <div class='date' id='dateOther'>
     </div>
     <div class='table'>
@@ -393,10 +397,10 @@
             </tfoot>
         </table>
     </div>
-    <h2>Example #3 - 24 hour clock (Div)</h2>
+    <h2>Example #3 - 24 hour clock (DIV)</h2>
     <div class='date' id='dateAnother'>
     </div>
-    <p class='exampleCurrentTime'>Current time: <span id='currentTimeAnother'></span></p>
+    <p class='exampleCurrentTime'>Time: <span id='currentTimeAnother'></span></p>
     <div class='hide' id='cellFormatsAnother'>
         <span>LINK|NAME</span>
         <span>LINK|TIMEZONE</span>
@@ -463,16 +467,16 @@
         </div>
     </div>
     <div id='legendAnother'></div>
-    <h2>Example #4 - 24 hour clock (Div) - French</h2>
+    <h2>Exemple #4 - Horloge de 24 heures (DIV)</h2>
     <div class='date' id='dateFrench'>
     </div>
     <p class='exampleCurrentTime'>Heure: <span id='currentTimeFrench'></span></p>
     <div class='hide' id='cellFormatsFrench'>
         <span>LINK|NAME</span>
         <span>LINK|TIMEZONE</span>
-        <span>dddd HH:mm MMMM Do YYYY</span>
-        <span>diff</span>
-        <span>sunmoon</span>
+        <span>LINK|dddd HH:mm Do MMMM YYYY</span>
+        <span>LINK|diff</span>
+        <span>LINK|sunmoon</span>
     </div>
     <div class='row'>
         <div class='header name'>Qui`</div>

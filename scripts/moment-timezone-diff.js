@@ -72,13 +72,16 @@
                            legendBreak: true,
                            legendDash: ' - ',
                            legendSeparator: ' .. ',
-                           timeFormat: 'dddd h:mm a MMM-DD-YYYY',
+                           timeFormat: 'dddd h:mm a DD-MMM-YYYY',
                            timeShowTimezoneName: true,
                            defaultTimezone: getDefaultTimezone()
                          },
         MODE_SINGLE = 0,
         MODE_SPLIT_HOUR24 = 1,
-        MODE_SPLIT_HOUR12 = 2;
+        MODE_SPLIT_HOUR12 = 2,
+        DATE_ORDER_DMY = 0,
+        DATE_ORDER_MDY = 1,
+        DATE_ORDER_YMD = 2;
     //
     // daysInYear
     //
@@ -245,31 +248,26 @@
             hourFormat = getOptionValue(options, 'hourFormat', (mode === MODE_SPLIT_HOUR12) ? 'hh' : 'HH'),
             elements,
             title,
+            dateOrder,
+            dateControlsOrder,
             i;
         if (!element) {
             console.error('Element with id "' + id + '" not found');
             return;
         }
         if (mode === MODE_SINGLE) {
-            this.timeDisplayFormat = getOptionValue(options, 'timeDisplayFormat', 'dddd h:mm a MMM-DD-YYYY');
-            this.timeInputFormats = getOptionValue(options, 'timeInputFormats', [ 'dddd h:mm a MMM-DD-YYYY', 
-                                                                                  'dddd H:mm MMM-DD-YYYY', 
-                                                                                  'h:mm a MMM-DD-YYYY', 
-                                                                                  'H:mm MMM-DD-YYYY', 
+            this.timeDisplayFormat = getOptionValue(options, 'timeDisplayFormat', 'dddd h:mm a DD-MMM-YYYY');
+            this.timeInputFormats = getOptionValue(options, 'timeInputFormats', [ 'dddd h:mm a DD-MMM-YYYY', 
+                                                                                  'dddd H:mm DD-MMM-YYYY', 
                                                                                   'h:mm a DD-MMM-YYYY', 
                                                                                   'H:mm DD-MMM-YYYY', 
-                                                                                  'h:mm a MMM-DD-YY', 
-                                                                                  'H:mm MMM-DD-YY', 
-                                                                                  'h:mm a DD-MMM-YY', 
-                                                                                  'H:mm DD-MMM-YY', 
-                                                                                  'h:mm a MM-DD-YYYY', 
-                                                                                  'H:mm MM-DD-YYYY', 
+                                                                                  'h:mm a MMM-DD-YYYY', 
+                                                                                  'H:mm MMM-DD-YYYY', 
                                                                                   'h:mm a DD-MM-YYYY', 
                                                                                   'H:mm DD-MM-YYYY', 
-                                                                                  'h:mm a MM-DD-YY',
-                                                                                  'H:mm MM-DD-YY',
-                                                                                  'h:mm a DD-MM-YY',
-                                                                                  'H:mm DD-MM-YY' ]);
+                                                                                  'h:mm a MM-DD-YYYY', 
+                                                                                  'H:mm MM-DD-YYYY'
+                                                                                ]); 
             elements = { };
             title = getOptionValue(options, 'timeTitle', 'Enter the required date and time.');
             if (this.timeInputFormats && getOptionValue(options, 'timeTitleShowInputFormats', true)) {
@@ -296,17 +294,33 @@
                 populateAmpmOptions(elements.ampm, getOptionValue(options, 'ampmFormat', 'a'), getOptionValue(options, 'locale'));
             }
             appendChild(element, createElement('span', { textContent: ' ' }));
-            elements.month = appendChild(element, createElement('select', { title: getOptionValue(options, 'monthTitle', 'Select month of the year') }));
-            populateMonthOptions(elements.month, getOptionValue(options, 'monthFormat', 'MMM'), getOptionValue(options, 'locale'));
-            appendChild(element, createElement('span', { textContent: dateDelim }));
-            elements.day = appendChild(element, createElement('select', { title: getOptionValue(options, 'dayTitle', 'Select day of the month') }));
-            populateDayOptions(elements.day, getOptionValue(options, 'dayFormat', 'DD'), getOptionValue(options, 'locale'));
-            appendChild(element, createElement('span', { textContent: dateDelim }));
-            elements.year = appendChild(element, createElement('select', { title: getOptionValue(options, 'yearTitle', 'Select year') }));
-            populateYearOptions(elements.year, getOptionValue(options, 'yearFormat', 'YYYY'),
-                                               getOptionValue(options, 'minYear', 2010),
-                                               getOptionValue(options, 'maxYear', 2020),
-                                               getOptionValue(options, 'locale'));
+            
+            dateOrder = getOptionValue(options, 'dateOrder', DATE_ORDER_DMY);
+            if (dateOrder === DATE_ORDER_MDY) {
+                dateControlsOrder = [ 1, 0, 2];
+            } else if (dateOrder === DATE_ORDER_YMD) {
+                dateControlsOrder = [ 2, 1, 0];
+            } else {
+                dateControlsOrder = [ 0, 1, 2];
+            }
+            for (i = 0; i < dateControlsOrder.length; i += 1) {
+                if (i > 0) {
+                    appendChild(element, createElement('span', { textContent: dateDelim }));
+                }
+                if (dateControlsOrder[i] === 0) {
+                    elements.day = appendChild(element, createElement('select', { title: getOptionValue(options, 'dayTitle', 'Select day of the month') }));
+                    populateDayOptions(elements.day, getOptionValue(options, 'dayFormat', 'DD'), getOptionValue(options, 'locale'));
+                } else if (dateControlsOrder[i] === 1) {
+                    elements.month = appendChild(element, createElement('select', { title: getOptionValue(options, 'monthTitle', 'Select month of the year') }));
+                    populateMonthOptions(elements.month, getOptionValue(options, 'monthFormat', 'MMM'), getOptionValue(options, 'locale'));
+                } else if (dateControlsOrder[i] === 2) {
+                    elements.year = appendChild(element, createElement('select', { title: getOptionValue(options, 'yearTitle', 'Select year') }));
+                    populateYearOptions(elements.year, getOptionValue(options, 'yearFormat', 'YYYY'),
+                                                       getOptionValue(options, 'minYear', 2010),
+                                                       getOptionValue(options, 'maxYear', 2020),
+                                                       getOptionValue(options, 'locale'));
+                }
+            }
         } else {
             console.error('Mode "' + mode + '" is invalid');
             return;
@@ -432,6 +446,15 @@
                 }
             }
             selected.timezone = getSelectedValueText(this.elements.timezone);
+            // Since the month drop down has 31 days, this will cause the date to roll over 1 (Apr, Jun, Sep & Nov) 
+            // or 2 or 3 (Feb) days. Therefore, use moment() to calculate the roll over values, so a valid date 
+            // is returned and displayed.
+            m = moment([selected.year, selected.month, selected.day, selected.hour, selected.minute, 0]);
+            selected.year = m.year();
+            selected.month = m.month();
+            selected.day = m.date();
+            selected.hour = m.hour();
+            selected.minute = m.minute();
         } else {
             console.error('Unknown mode "' + this.mode + '"');
         }
@@ -884,6 +907,9 @@
     mtzd.MODE_SINGLE = MODE_SINGLE;
     mtzd.MODE_SPLIT_HOUR24 = MODE_SPLIT_HOUR24;
     mtzd.MODE_SPLIT_HOUR12 = MODE_SPLIT_HOUR12;
+    mtzd.DATE_ORDER_DMY = DATE_ORDER_DMY;
+    mtzd.DATE_ORDER_MDY = DATE_ORDER_MDY;
+    mtzd.DATE_ORDER_YMD = DATE_ORDER_YMD;
     mtzd.DateTimeElements = DateTimeElements;
     mtzd.Environment = Environment;
     mtzd.TimezoneDiff = TimezoneDiff;
