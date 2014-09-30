@@ -58,12 +58,14 @@
     }
     var defaultOptions = { ahead: 'ahead',
                            behind: 'behind',
-                           sunRise: { hour: 6, minute: 0 },
-                           sunSet: { hour: 20, minute: 0 },
-                           sun: '\u263c',  // Unicode white sun with rays
-                           moon: '\u263e', // Unicode last quarter moon
                            hour: 'hour',
                            hours: 'hours',
+                           sunRiseHour: 6,
+                           sunRiseMinute: 0,
+                           sunSetHour: 20,
+                           sunSetMinute: 0,
+                           sun: '\u263c',  // Unicode white sun with rays
+                           moon: '\u263e', // Unicode last quarter moon
                            legendFormat: 'h:mm a',
                            legendBreak: true,
                            legendDash: ' - ',
@@ -454,16 +456,16 @@
         timezones.push({ timezone: timezone, elementFormats: elementFormats });
     }
     function createLegend(options) {
-        function sayRange(from, to, format, separator) {
-            var momentFrom = moment([2014, 0, 1, from.hour, from.minute, 0]),
-                momentTo = moment([2014, 0, 1, to.hour, to.minute, 0]);
+        function sayRange(fromHour, fromMinute, toHour, toMinute, format, separator) {
+            var momentFrom = moment([2014, 0, 1, fromHour, fromMinute, 0]),
+                momentTo = moment([2014, 0, 1, toHour, toMinute, 0]);
             momentTo.subtract(1, 'minute');
             return momentFrom.format(format) + separator + momentTo.format(format);
         }
         var lines = [ ];
-        if (options && options.sunRise && options.sunSet) {
-            lines.push(options.sun + options.legendDash + sayRange(options.sunRise, options.sunSet, options.legendFormat, options.legendSeparator));
-            lines.push(options.moon + options.legendDash + sayRange(options.sunSet, options.sunRise, options.legendFormat, options.legendSeparator));
+        if (options) {
+            lines.push(options.sun + options.legendDash + sayRange(options.sunRiseHour, options.sunRiseMinute, options.sunSetHour, options.sunSetMinute, options.legendFormat, options.legendSeparator));
+            lines.push(options.moon + options.legendDash + sayRange(options.sunSetHour, options.sunSetMinute, options.sunRiseHour, options.sunRiseMinute, options.legendFormat, options.legendSeparator));
         }
         return lines;
     }
@@ -493,9 +495,17 @@
             if (env) {
                 env.setCurrentTime();
             }
-            return false;
         };
     }
+    
+    function createSetTimezone(env, timezone, name) {
+        return function () {
+            if (env) {
+                env.setTimezone(timezone, name);
+            }
+        };
+    }
+    
     
     function Environment(setupOptions, options) {
         var dateTimeElements,
@@ -505,16 +515,20 @@
             legendElement,
             rows,
             cells,
+            links = [ ],
             nameNum = -1,
             timezoneNum = -1,
             timeFormats = { },
             name,
             timezone,
             elementFormats,
+            tokens,
             token,
             param,
             onchange,
-            i;
+            onclick,
+            i,
+            j;
         dateTimeElements = getOptionValue(setupOptions, 'dateTimeElements') || new DateTimeElements('mtzdDate');
         container = document.getElementById(getOptionValue(setupOptions, 'containerId', 'mtzdContainer'));
         formats = document.getElementById(getOptionValue(setupOptions, 'formatsId', 'mtzdFormats'));
@@ -525,14 +539,19 @@
         }
         formats = formats.children;
         for (i = 0; i < formats.length; i += 1) {
-            if (formats[i]) {
-                token = formats[i].textContent;
-                if (token === 'NAME') {
-                    nameNum = i;
-                } else if (token === 'TIMEZONE') {
-                    timezoneNum = i;
-                } else if (token) {
-                    timeFormats[i] = token;
+            if (formats[i] && formats[i].textContent) {
+                tokens = formats[i].textContent.split(getOptionValue(setupOptions, 'tokenSeparator', '|'));
+                for (j = 0; j < tokens.length; j += 1) {
+                    token = tokens[j];
+                    if (token === 'NAME') {
+                        nameNum = i;
+                    } else if (token === 'TIMEZONE') {
+                        timezoneNum = i;
+                    } else if (token === 'LINK') {
+                        links.push(i);
+                    } else if (token) {
+                        timeFormats[i] = token;
+                    }
                 }
             }
         }
@@ -558,11 +577,20 @@
                         }
                     }
                 }
-                if ((timezone !== undefined) && elementFormats.length) {
-                    name = name || timezone;
-                    registerTimezone(this.timezones, timezone, elementFormats);
-                    if (dateTimeElements) {
-                        dateTimeElements.addTimezone(name, timezone);
+                if (timezone !== undefined) {
+                    if (elementFormats.length) {
+                        name = name || timezone;
+                        registerTimezone(this.timezones, timezone, elementFormats);
+                        if (dateTimeElements) {
+                            dateTimeElements.addTimezone(name, timezone);
+                        }
+                        onclick = createSetTimezone(this, timezone, name);
+                        for (j = 0; j < links.length; j += 1) {
+                            if (cells[j]) {
+                                cells[j].addEventListener('click', onclick, false);
+                                classAdd(cells[j], getOptionValue(setupOptions, 'linkClass', 'mtzdLink'));
+                            }
+                        }
                     }
                 }
             }
@@ -632,34 +660,47 @@
             }
         }
     };
-    Environment.prototype.update = function (values, timezone, name) {
+    Environment.prototype.update = function (value, timezone, name) {
         if (timezone) {
-            this.moment = moment(values, timezone);
+            this.moment = moment(value, timezone);
         } else {
-            this.moment = moment(values);
+            this.moment = moment(value);
         }
-        this.timezone = { name: name, timezone: timezone };
+        this.timezone = { text: (name || timezone), value: timezone };
         this.refresh();
-    };
-    Environment.prototype.updated = function () {
-        var selected;
-        if (this.dateTimeElements) {
-            selected = this.dateTimeElements.getSelected();
-        }
-        if (selected) {
-            if (selected.timezone && selected.timezone.value) {
-                this.moment = moment.tz([selected.year, selected.month, selected.day, selected.hour, selected.minute, 0], selected.timezone.value);
-            } else {
-                this.moment = moment([selected.year, selected.month, selected.day, selected.hour, selected.minute, 0]);
-            }
-            this.timezone = selected.timezone;
-            this.refresh();
-        }
     };
     Environment.prototype.setCurrentTime = function () {
         this.moment = moment();
         this.timezone = undefined;
         this.refresh();
+    };
+    Environment.prototype.setTimezone = function(timezone, name) {
+        // Use the current time/date, for the current timezone, to create the new time/date for the required timezone
+        var values = [this.moment.year(), this.moment.month(), this.moment.date(), this.moment.hour(), this.moment.minute(), 0];
+        if (timezone) {
+            this.moment = moment.tz(values, timezone);
+        } else {
+            this.moment = moment(values);
+        }
+        this.timezone = { text: (name || timezone), value: timezone };
+        this.refresh();
+    };
+    Environment.prototype.updated = function () {
+        var selected,
+            values;
+        if (this.dateTimeElements) {
+            selected = this.dateTimeElements.getSelected();
+        }
+        if (selected) {
+            values = [selected.year, selected.month, selected.day, selected.hour, selected.minute, 0];
+            if (selected.timezone && selected.timezone.value) {
+                this.moment = moment.tz(values, selected.timezone.value);
+            } else {
+                this.moment = moment(values);
+            }
+            this.timezone = selected.timezone;
+            this.refresh();
+        }
     };
     function setOptionValues(options, o) {
         var prop;
@@ -699,9 +740,9 @@
             }
             return (minute1 || 0) - (minute2 || 0);
         }
-        if (options && options.sunRise && options.sunSet) {
-            value = (compare(hour, minute, options.sunRise.hour, options.sunRise.minute) >= 0) &&
-                    (compare(hour, minute, options.sunSet.hour, options.sunSet.minute) < 0);
+        if (options) {
+            value = (compare(hour, minute, options.sunRiseHour, options.sunRiseMinute) >= 0) &&
+                    (compare(hour, minute, options.sunSetHour, options.sunSetMinute) < 0);
         }
         return value;
     }

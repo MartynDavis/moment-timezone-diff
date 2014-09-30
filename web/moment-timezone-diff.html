@@ -31,12 +31,6 @@
         margin: 0px auto; 
         border-collapse: collapse;
     }
-    td.name, td.location, td.timezone {
-        cursor: pointer;
-    }
-    td.name:hover, td.location:hover, td.timezone:hover {
-        text-decoration: underline;
-    }
     .name, .location, .timezone {
         text-align: left;
     }
@@ -190,9 +184,9 @@
                     <th colspan='5'>Local Time</th>
                 </tr>
                 <tr class='hide' id='mtzdFormats'>
-                    <th>NAME</th>
-                    <th></th>
-                    <th>TIMEZONE</th>
+                    <th>LINK|NAME</th>
+                    <th>LINK</th>
+                    <th>LINK|TIMEZONE</th>
                     <th>dddd</th>
                     <th>h:mm a</th>
                     <th>MMM-DD-YYYY</th>
@@ -293,7 +287,7 @@
                     <th colspan='5'>Local Time</th>
                 </tr>
                 <tr class='hide' id='cellFormatsOther'>
-                    <th>TIMEZONE</th>
+                    <th>LINK|TIMEZONE</th>
                     <th>dddd</th>
                     <th>h:mm a</th>
                     <th>DD/MMM/YYYY</th>
@@ -374,8 +368,8 @@
     </div>
     <p class='exampleCurrentTime'>Current time: <span id='currentTimeAnother'></span></p>
     <div class='hide' id='cellFormatsAnother'>
-        <span>NAME</span>
-        <span>TIMEZONE</span>
+        <span>LINK|NAME</span>
+        <span>LINK|TIMEZONE</span>
         <span>dddd HH:mm MMMM Do YYYY</span>
         <span>diff</span>
         <span>sunmoon</span>

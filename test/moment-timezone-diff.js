@@ -6,8 +6,10 @@ describe('options', function () {
     describe('options', function () {
         var defaultOptions = { ahead: 'ahead',
                                behind: 'behind',
-                               sunRise: { hour: 6, minute: 0 },
-                               sunSet: { hour: 20, minute: 0 },
+                               sunRiseHour: 6,
+                               sunRiseMinute: 0,
+                               sunSetHour: 20,
+                               sunSetMinute: 0,
                                sun: '\u263c',  // Unicode white sun with rays
                                moon: '\u263e', // Unicode last quarter moon
                                hour: 'hour',
@@ -47,7 +49,7 @@ describe('options', function () {
         it('get/set', function () {
             var options,
                 newOptions1 = { ahead: 'changed ahead', hour: 'changed hours' },
-                newOptions2 = { ahead: 'changed ahead again', sun: 'sun', sunRise: { hour: 1, minute: 42 } };
+                newOptions2 = { ahead: 'changed ahead again', sun: 'sun', sunRiseHour: 1, sunRiseMinute: 42 };
             momentTimezoneDiff.getOptions().should.eql(defaultOptions);
             momentTimezoneDiff.setOptions(newOptions1);
             options = copy(defaultOptions, newOptions1);
@@ -149,17 +151,17 @@ describe('options', function () {
         function checkSunny(m, options) {
             var hour = m.hour(),
                 minute = m.minute();
-            if ((hour > options.sunRise.hour) && (hour < options.sunSet.hour)) {
+            if ((hour > options.sunRiseHour) && (hour < options.sunSetHour)) {
                 return true;
             }
-            if ((hour === options.sunRise.hour) && (hour === options.sunSet.hour)) {
-                return (minute >= (options.sunRise.minute || 0)) && (minute < (options.sunSet.minute || 0));
+            if ((hour === options.sunRiseHour) && (hour === options.sunSetHour)) {
+                return (minute >= (options.sunRiseMinute || 0)) && (minute < (options.sunSetMinute || 0));
             }
-            if (hour === options.sunRise.hour) {
-                return minute >= (options.sunRise.minute || 0);
+            if (hour === options.sunRiseHour) {
+                return minute >= (options.sunRiseMinute || 0);
             }
-            if (hour === options.sunSet.hour) {
-                return minute < (options.sunSet.minute || 0);
+            if (hour === options.sunSetHour) {
+                return minute < (options.sunSetMinute || 0);
             }
             return false;
         }
@@ -173,8 +175,8 @@ describe('options', function () {
                 for (sunRiseMinute = 0; sunRiseMinute < 60; sunRiseMinute += 1) {
                     for (sunSetHour = sunRiseHour; sunSetHour < 24; sunSetHour += 1) {
                         for (sunSetMinute = (sunRiseHour === sunSetHour) ? (sunRiseMinute + 1) : 0; sunSetMinute < 60; sunSetMinute += 1) {
-                            momentTimezoneDiff.setOptions({ sunRise: { hour: sunRiseHour, minute: sunRiseMinute },
-                                                            sunSet: { hour: sunSetHour, minute: sunSetMinute } });
+                            momentTimezoneDiff.setOptions({ sunRiseHour: sunRiseHour, sunRiseMinute: sunRiseMinute,
+                                                            sunSetHour: sunSetHour, sunSetMinute: sunSetMinute });
                             //console.log("Sunny(" + sunRiseHour + ":" + sunRiseMinute + "," + sunSetHour + ":" + sunSetMinute + ") - " + m.hour() + ":" + m.minute());
                             momentTimezoneDiff.sunny(m).should.equal(checkSunny(m, momentTimezoneDiff.getOptions()));
                         }
@@ -183,8 +185,8 @@ describe('options', function () {
             }
             for (sunRiseHour = 0; sunRiseHour < 24; sunRiseHour += 1) {
                 for (sunSetHour = sunRiseHour; sunSetHour < 24; sunSetHour += 1) {
-                    momentTimezoneDiff.setOptions({ sunRise: { hour: sunRiseHour, minute: undefined },
-                                                    sunSet: { hour: sunSetHour, minute: undefined } });
+                    momentTimezoneDiff.setOptions({ sunRiseHour: sunRiseHour, sunRiseMinute: undefined,
+                                                    sunSetHour: sunSetHour, sunSetMinute: undefined });
                     momentTimezoneDiff.sunny(m).should.equal(checkSunny(m, momentTimezoneDiff.getOptions()));
                 }
             }
@@ -424,7 +426,7 @@ describe('options', function () {
             momentTimezoneDiff.createLegend().should.eql([ '\u263c> 6:0...7:59', '\u263e> 8:0...5:59' ]);
             momentTimezoneDiff.setOptions({ sun: 'SUN', moon: 'MOON' });
             momentTimezoneDiff.createLegend().should.eql([ 'SUN> 6:0...7:59', 'MOON> 8:0...5:59' ]);
-            momentTimezoneDiff.setOptions({ sunRise: { hour: 13, minute: 42 }, sunSet: { hour: 19, minute: 13 }, legendDash: ' - ', legendSeparator: ' .. ' });
+            momentTimezoneDiff.setOptions({ sunRiseHour: 13, sunRiseMinute: 42, sunSetHour: 19, sunSetMinute: 13, legendDash: ' - ', legendSeparator: ' .. ' });
             momentTimezoneDiff.createLegend().should.eql([ 'SUN - 1:42 .. 7:12', 'MOON - 7:13 .. 1:41' ]);
        });
     });
