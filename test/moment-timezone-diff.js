@@ -1,10 +1,11 @@
 "use strict";
 /*global describe, it*/
-var moment = require('moment-timezone'),
+var moment = require('../moment/moment-timezone'),
     momentTimezoneDiff = require('../scripts/moment-timezone-diff');
 describe('options', function () {
     describe('options', function () {
-        var defaultOptions = { ahead: 'ahead',
+        var defaultOptions = { locale: undefined,
+                               ahead: 'ahead',
                                behind: 'behind',
                                sunRiseHour: 6,
                                sunRiseMinute: 0,
