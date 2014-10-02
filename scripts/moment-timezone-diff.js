@@ -569,7 +569,7 @@
             if (env) {
                 env.setCurrentTime();
             }
-        }
+        };
     }
     function Environment(setupOptions, options) {
         var dateTimeElements,
