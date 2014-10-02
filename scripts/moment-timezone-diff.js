@@ -19,6 +19,14 @@
         }
         throw new MomentTimezoneDiffException('Moment-timezone has not been loaded');
     }
+
+    var momentVersion = moment.version.split('.'),
+        major = +momentVersion[0],
+        minor = +momentVersion[1];
+    if (major < 2 || (major === 2 && minor < 7)) {
+        throw new MomentTimezoneDiffException('Moment Timezone Diff requires Moment.js >= 2.7.0. You are using Moment.js ' + moment.version + '.');
+    }
+
     function duplicate(obj) {
         var copy,
             prop;
@@ -235,7 +243,7 @@
         addComboValue(element, currentTimezoneText, '');
     }
     function getOptionValue(options, name, defaultValue) {
-        if (options && (options[name] !== undefined)) {
+        if (options && options.hasOwnProperty(name)) {
             return options[name];
         }
         return defaultValue;
@@ -556,10 +564,16 @@
             }
         };
     }
-    
-    
+    function invokeAutoUpdate(env) {
+        return function () {
+            if (env) {
+                env.setCurrentTime();
+            }
+        }
+    }
     function Environment(setupOptions, options) {
         var dateTimeElements,
+            dateId,
             container,
             formats,
             timeElement,
@@ -580,7 +594,13 @@
             onclick,
             i,
             j;
-        dateTimeElements = getOptionValue(setupOptions, 'dateTimeElements') || new DateTimeElements('mtzdDate');
+        dateTimeElements = getOptionValue(setupOptions, 'dateTimeElements');
+        if (!dateTimeElements) {
+            dateId = getOptionValue(setupOptions, 'dateId', 'mtzdDate');
+            if (dateId) {
+                dateTimeElements = new DateTimeElements(dateId);
+            }
+        }
         container = document.getElementById(getOptionValue(setupOptions, 'containerId', 'mtzdContainer'));
         formats = document.getElementById(getOptionValue(setupOptions, 'formatsId', 'mtzdFormats'));
         timeElement = document.getElementById(getOptionValue(setupOptions, 'timeId', 'mtzdTime'));
@@ -669,6 +689,9 @@
         if (getOptionValue(setupOptions, 'autoRefresh', true)) {
             this.refresh();
         }
+        if (getOptionValue(setupOptions, 'autoUpdate', false)) {
+            setInterval(invokeAutoUpdate(this), getOptionValue(setupOptions, 'autoUpdateSeconds', 30) * 1000);
+        }
     }
     Environment.prototype.register = function (timezone, elementFormats) {
         registerTimezone(this.timezones, timezone, elementFormats);
@@ -717,13 +740,14 @@
     Environment.prototype.update = function (value, timezone, name) {
         if (timezone) {
             this.moment = moment(value, timezone);
+            this.timezone = { text: (name || timezone), value: timezone };
         } else {
             this.moment = moment(value);
+            this.timezone = undefined;
         }
         if (this.moment.lang && this.options.locale) {
             this.moment.lang(this.options.locale);
         }
-        this.timezone = { text: (name || timezone), value: timezone };
         this.refresh();
     };
     Environment.prototype.setCurrentTime = function () {

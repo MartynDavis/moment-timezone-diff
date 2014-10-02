@@ -26,8 +26,8 @@
     div.date {
         text-align: center;
     }
-    table { 
-        margin: 0px auto; 
+    table {
+        margin: 0px auto;
         border-collapse: collapse;
     }
     .name, .location, .timezone {
@@ -39,9 +39,9 @@
     tbody tr:nth-child(odd) {
         background-color: #eee;
     }
-    th, td { 
-        padding-left: 10px; 
-        padding-right: 10px; 
+    th, td {
+        padding-left: 10px;
+        padding-right: 10px;
         vertical-align: middle;
     }
     td.dayOfWeek {
@@ -59,11 +59,11 @@
     td.sunmoon {
         min-width: 1em;
     }
-    td.dayOfWeek, td.time, td.date, td.diff { 
-        text-align: right; 
+    td.dayOfWeek, td.time, td.date, td.diff {
+        text-align: right;
     }
-    td.sunmoon { 
-        text-align: center; 
+    td.sunmoon {
+        text-align: center;
     }
     tfoot {
         font-size: small;
@@ -134,44 +134,44 @@
     .hide {
         display: none;
     }
-
 </style>
 <script>
     var env1,
         env2,
         env3,
-        env4;
+        env4,
+        env5;
     function initialise() {
         env1 = new momentTimezoneDiff.Environment();
-        env2 = new momentTimezoneDiff.Environment({ 
-                                                    dateTimeElements: new momentTimezoneDiff.DateTimeElements('dateOther', { mode: momentTimezoneDiff.MODE_SINGLE }), 
-                                                    formatsId: 'cellFormatsOther', 
-                                                    containerId: 'tableBodyOther', 
-                                                    timeId: 'currentTimeOther', 
-                                                    legendId: 'legendOther' 
+        env2 = new momentTimezoneDiff.Environment({
+                                                    dateTimeElements: new momentTimezoneDiff.DateTimeElements('dateOther', { mode: momentTimezoneDiff.MODE_SINGLE }),
+                                                    formatsId: 'cellFormatsOther',
+                                                    containerId: 'tableBodyOther',
+                                                    timeId: 'currentTimeOther',
+                                                    legendId: 'legendOther'
                                                   },
-                                                  { 
-                                                    legendFormat: 'HH:mm', 
-                                                    sun: 'Day', 
+                                                  {
+                                                    legendFormat: 'HH:mm',
+                                                    sun: 'Day',
                                                     moon: 'Night'
                                                   });
-        env3 = new momentTimezoneDiff.Environment({ 
+        env3 = new momentTimezoneDiff.Environment({
                                                     dateTimeElements: new momentTimezoneDiff.DateTimeElements('dateAnother', { mode: momentTimezoneDiff.MODE_SPLIT_HOUR24,
                                                                                                                                timeDisplayFormat: 'dddd h:mm a DD/MMM/YYYY',
                                                                                                                               dateOrder: momentTimezoneDiff.DATE_ORDER_MDY }),
-                                                    formatsId: 'cellFormatsAnother', 
-                                                    containerId: 'container', 
-                                                    timeId: 'currentTimeAnother', 
-                                                    legendId: 'legendAnother' 
+                                                    formatsId: 'cellFormatsAnother',
+                                                    containerId: 'container',
+                                                    timeId: 'currentTimeAnother',
+                                                    legendId: 'legendAnother'
                                                   },
-                                                  { 
-                                                    timeShowTimezoneName: false, 
-                                                    legendBreak: false, 
-                                                    sunRise: { hour: 8 }, 
-                                                    sunSet: { hour: 16 } 
+                                                  {
+                                                    timeShowTimezoneName: false,
+                                                    legendBreak: false,
+                                                    sunRise: { hour: 8 },
+                                                    sunSet: { hour: 16 }
                                                   });
-        env4 = new momentTimezoneDiff.Environment({ 
-                                                    dateTimeElements: new momentTimezoneDiff.DateTimeElements('dateFrench', { mode: momentTimezoneDiff.MODE_SPLIT_HOUR24, 
+        env4 = new momentTimezoneDiff.Environment({
+                                                    dateTimeElements: new momentTimezoneDiff.DateTimeElements('dateFrench', { mode: momentTimezoneDiff.MODE_SPLIT_HOUR24,
                                                                                                                               locale: 'fr',
                                                                                                                               currentTime: "Régler l'heure actuelle",
                                                                                                                               currentTimeTitle: "l'heure actuelle",
@@ -182,13 +182,13 @@
                                                                                                                               dayTitle: "Choisir jour du mois",
                                                                                                                               yearTitle: "Sélectionnez l'année",
                                                                                                                               monthFormat: "MMMM"
-                                                                                                                            }), 
-                                                    formatsId: 'cellFormatsFrench', 
-                                                    containerId: 'containerFrench', 
-                                                    timeId: 'currentTimeFrench', 
-                                                    legendId: 'legendFrench' 
+                                                                                                                            }),
+                                                    formatsId: 'cellFormatsFrench',
+                                                    containerId: 'containerFrench',
+                                                    timeId: 'currentTimeFrench',
+                                                    legendId: 'legendFrench'
                                                   },
-                                                  { 
+                                                  {
                                                     locale: 'fr',
                                                     timeShowTimezoneName: false,
                                                     legendBreak: false,
@@ -199,6 +199,15 @@
                                                     hour: 'heure',
                                                     hours: 'heures',
                                                     timeFormat: 'dddd HH:mm Do MMMM YYYY'
+                                                  });
+        env5 = new momentTimezoneDiff.Environment({
+                                                    dateId: undefined,
+                                                    formatsId: 'mtzdFormatsAuto',
+                                                    containerId: 'mtzdContainerAuto',
+                                                    timeId: 'mtzdTimeAuto',
+                                                    legendId: 'mtzdLegendAuto',
+                                                    autoUpdate: true,
+                                                    autoUpdateSeconds: 10
                                                   });
     }
 </script>
@@ -537,5 +546,109 @@
         </div>
     </div>
     <div id='legendFrench'></div>
+    <h2>Example #5 - AutoUpdate (TABLE)</h2>
+    </div>
+    <div class='table'>
+        <table>
+            <thead>
+                <tr>
+                    <th class='name'>Who</th>
+                    <th class='location'>Location</th>
+                    <th class='timezone'>Timezone</th>
+                    <th colspan='5'>Local Time</th>
+                </tr>
+                <tr class='hide' id='mtzdFormatsAuto'>
+                    <th>NAME</th>
+                    <th></th>
+                    <th>TIMEZONE</th>
+                    <th>dddd</th>
+                    <th>h:mm a</th>
+                    <th>DD-MMM-YYYY</th>
+                    <th>DIFF</th>
+                    <th>sunmoon</th>
+                </tr>
+            </thead>
+            <tbody id='mtzdContainerAuto'>
+                <tr>
+                    <td class='name'>Fred Flintstone</td>
+                    <td class='location'>Vancouver, Canada</td>
+                    <td class='timezone'>US/Pacific</td>
+                    <td class='dayOfWeek'></td>
+                    <td class='time'></td>
+                    <td class='date'></td>
+                    <td class='diff'></td>
+                    <td class='sunmoon'></td>
+                </tr>
+                <tr>
+                    <td class='name'>Barny Rubble</td>
+                    <td class='location'>New York, USA</td>
+                    <td class='timezone'>US/Eastern</td>
+                    <td class='dayOfWeek'></td>
+                    <td class='time'></td>
+                    <td class='date'></td>
+                    <td class='diff'></td>
+                    <td class='sunmoon'></td>
+                </tr>
+                <tr>
+                    <td class='name'>Bamm Bamm Rubble</td>
+                    <td class='location'>London, United Kingdom</td>
+                    <td class='timezone'>Europe/London</td>
+                    <td class='dayOfWeek'></td>
+                    <td class='time'></td>
+                    <td class='date'></td>
+                    <td class='diff'></td>
+                    <td class='sunmoon'></td>
+                </tr>
+                <tr>
+                    <td class='name'>Wilma Flintstone</td>
+                    <td class='location'>Paris, France</td>
+                    <td class='timezone'>Europe/Paris</td>
+                    <td class='dayOfWeek'></td>
+                    <td class='time'></td>
+                    <td class='date'></td>
+                    <td class='diff'></td>
+                    <td class='sunmoon'></td>
+                </tr>
+                <tr>
+                    <td class='name'>Betty Rubble</td>
+                    <td class='location'>Mumbai, India</td>
+                    <td class='timezone'>Asia/Calcutta</td>
+                    <td class='dayOfWeek'></td>
+                    <td class='time'></td>
+                    <td class='date'></td>
+                    <td class='diff'></td>
+                    <td class='sunmoon'></td>
+                </tr>
+                <tr>
+                    <td class='name'>Pebbles Flintstone</td>
+                    <td class='location'>Perth, Australia</td>
+                    <td class='timezone'>Australia/Perth</td>
+                    <td class='dayOfWeek'></td>
+                    <td class='time'></td>
+                    <td class='date'></td>
+                    <td class='diff'></td>
+                    <td class='sunmoon'></td>
+                </tr>
+                <tr>
+                    <td class='name'>Me</td>
+                    <td class='location'>Here</td>
+                    <td class='timezone'></td>
+                    <td class='dayOfWeek'></td>
+                    <td class='time'></td>
+                    <td class='date'></td>
+                    <td class='diff'></td>
+                    <td class='sunmoon'></td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td class='currentTime' id='mtzdTimeAuto' colspan='8'></td>
+                </tr>
+                <tr>
+                    <td id='mtzdLegendAuto' colspan='8'></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
 </body>
 </html>
