@@ -3,8 +3,6 @@
   "version": "0.1.0",
   "description": "Moment Timezone Difference",
   "devDependencies": {
-    "moment": "*",
-    "moment-timezone": "*",
     "should": "*",
     "grunt": "~0.4.5",
     "grunt-contrib-jshint": "*",

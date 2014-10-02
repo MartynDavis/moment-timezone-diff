@@ -19,13 +19,23 @@
         }
         throw new MomentTimezoneDiffException('Moment-timezone has not been loaded');
     }
-
-    var momentVersion = moment.version.split('.'),
-        major = +momentVersion[0],
-        minor = +momentVersion[1];
-    if (major < 2 || (major === 2 && minor < 7)) {
-        throw new MomentTimezoneDiffException('Moment Timezone Diff requires Moment.js >= 2.7.0. You are using Moment.js ' + moment.version + '.');
+    // Verify that at least version 2.8.3 of moment.js is being used
+    var version = moment.version.split('.'),
+        major = +version[0],
+        minor = +version[1],
+        subminor = +version[2];
+    if (major < 2 || (major === 2 && minor < 8) || (major === 2 && minor === 8 && subminor < 3)) {
+        throw new MomentTimezoneDiffException('Moment Timezone Diff requires moment.js >= 2.8.3. You are using moment.js ' + moment.version + '.');
     }
+    // Verify that at least version 0.2.2 of moment-timezone.js is being used
+    version = moment.tz.version.split('.');
+    major = +version[0];
+    minor = +version[1];
+    subminor = +version[2];
+    if (major < 0 || (major === 0 && minor < 2) || (major === 0 && minor === 2 && subminor < 2)) {
+        throw new MomentTimezoneDiffException('Moment Timezone Diff requires moment-timezone.js >= 0.2.2. You are using moment-timezone.js ' + moment.tz.version + '.');
+    }
+
 
     function duplicate(obj) {
         var copy,
@@ -172,8 +182,8 @@
             i;
         for (i = 0; i < (hours24 ? 24 : 12); i += 1) {
             m = moment([2014, 0, 1, i, 0, 0]);
-            if (m.lang && locale) {
-                m.lang(locale);
+            if (m.locale && locale) {
+                m.locale(locale);
             }
             addComboValue(element, m.format(format), i);
         }
@@ -183,8 +193,8 @@
             i;
         for (i = 0; i < 60; i += 1) {
             m = moment([2014, 0, 1, 0, i, 0]);
-            if (m.lang && locale) {
-                m.lang(locale);
+            if (m.locale && locale) {
+                m.locale(locale);
             }
             addComboValue(element, m.format(format), i);
         }
@@ -193,8 +203,8 @@
         function add(value, hour) {
             var m;
             m = moment([2014, 0, 1, hour, 0, 0]);
-            if (m.lang && locale) {
-                m.lang(locale);
+            if (m.locale && locale) {
+                m.locale(locale);
             }
             addComboValue(element, m.format(format), value);
         }
@@ -211,8 +221,8 @@
             i;
         for (i = 0; i < 12; i += 1) {
             m = moment([2014, i, 1, 0, 0, 0]);
-            if (m.lang && locale) {
-                m.lang(locale);
+            if (m.locale && locale) {
+                m.locale(locale);
             }
             addComboValue(element, m.format(format), i);
         }
@@ -222,8 +232,8 @@
             i;
         for (i = 1; i <= 31; i += 1) {
             m = moment([2014, 0, i, 0, 0, 0]);
-            if (m.lang && locale) {
-                m.lang(locale);
+            if (m.locale && locale) {
+                m.locale(locale);
             }
             addComboValue(element, m.format(format), i);
         }
@@ -233,8 +243,8 @@
             i;
         for (i = minValue; i <= maxValue; i += 1) {
             m = moment([i, 0, 1, 0, 0, 0]);
-            if (m.lang && locale) {
-                m.lang(locale);
+            if (m.locale && locale) {
+                m.locale(locale);
             }
             addComboValue(element, m.format(format), i);
         }
@@ -419,8 +429,8 @@
             m;
         if (this.mode === MODE_SINGLE) {
             m = moment(this.elements.datetime.value, this.timeInputFormats);
-            if (m.lang && this.locale) {
-                m.lang(this.locale);
+            if (m.locale && this.locale) {
+                m.locale(this.locale);
             }
             if (m.isValid()) {
                 selected = { };
@@ -474,8 +484,8 @@
             m;
         if (this.mode === MODE_SINGLE) {
             m = moment([selected.year, selected.month, selected.day, selected.hour, selected.minute, 0]);
-            if (m.lang && this.locale) {
-                m.lang(this.locale);
+            if (m.locale && this.locale) {
+                m.locale(this.locale);
             }
             this.elements.datetime.value = m.format(this.timeDisplayFormat);
         } else if ((this.mode === MODE_SPLIT_HOUR12) || (this.mode === MODE_SPLIT_HOUR24)) {
@@ -631,8 +641,8 @@
             setOptionValues(this.options, options);
         }
         this.moment = moment();
-        if (this.moment.lang && this.options.locale) {
-            this.moment.lang(this.options.locale);
+        if (this.moment.locale && this.options.locale) {
+            this.moment.locale(this.options.locale);
         }
         this.timezone = undefined;
         this.timezones = [ ];
@@ -745,15 +755,15 @@
             this.moment = moment(value);
             this.timezone = undefined;
         }
-        if (this.moment.lang && this.options.locale) {
-            this.moment.lang(this.options.locale);
+        if (this.moment.locale && this.options.locale) {
+            this.moment.locale(this.options.locale);
         }
         this.refresh();
     };
     Environment.prototype.setCurrentTime = function () {
         this.moment = moment();
-        if (this.moment.lang && this.options.locale) {
-            this.moment.lang(this.options.locale);
+        if (this.moment.locale && this.options.locale) {
+            this.moment.locale(this.options.locale);
         }
         this.timezone = undefined;
         this.refresh();
@@ -766,8 +776,8 @@
         } else {
             this.moment = moment(values);
         }
-        if (this.moment.lang && this.options.locale) {
-            this.moment.lang(this.options.locale);
+        if (this.moment.locale && this.options.locale) {
+            this.moment.locale(this.options.locale);
         }
         this.timezone = { text: (name || timezone), value: timezone };
         this.refresh();
@@ -785,8 +795,8 @@
             } else {
                 this.moment = moment(values);
             }
-            if (this.moment.lang && this.options.locale) {
-                this.moment.lang(this.options.locale);
+            if (this.moment.locale && this.options.locale) {
+                this.moment.locale(this.options.locale);
             }
             this.timezone = selected.timezone;
             this.refresh();
@@ -811,7 +821,9 @@
     };
     function TimezoneDiff(momentReference, timezone, options) {
         this.momentReference = momentReference;
-        this.momentTz = moment.tz(momentReference, timezone ? timezone : options.defaultTimezone);
+        //this.momentTz = moment.tz(momentReference, timezone ? timezone : options.defaultTimezone);
+        this.momentTz = moment(momentReference);
+        this.momentTz.tz(timezone ? timezone : options.defaultTimezone);
         this.options = duplicate(defaultOptions);
         if (options) {
             setOptionValues(this.options, options);
@@ -928,6 +940,7 @@
         setOptionValues(this.options, o);
     };
     var mtzd = { };
+    mtzd.version = '0.1.0';
     mtzd.MODE_SINGLE = MODE_SINGLE;
     mtzd.MODE_SPLIT_HOUR24 = MODE_SPLIT_HOUR24;
     mtzd.MODE_SPLIT_HOUR12 = MODE_SPLIT_HOUR12;

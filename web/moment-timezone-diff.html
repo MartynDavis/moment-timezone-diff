@@ -134,6 +134,12 @@
     .hide {
         display: none;
     }
+    .currentTimeFrench {
+        cursor: pointer;
+    }
+    .currentTimeFrench:hover {
+        text-decoration: underline;
+    }
 </style>
 <script>
     var env1,
@@ -158,7 +164,7 @@
         env3 = new momentTimezoneDiff.Environment({
                                                     dateTimeElements: new momentTimezoneDiff.DateTimeElements('dateAnother', { mode: momentTimezoneDiff.MODE_SPLIT_HOUR24,
                                                                                                                                timeDisplayFormat: 'dddd h:mm a DD/MMM/YYYY',
-                                                                                                                              dateOrder: momentTimezoneDiff.DATE_ORDER_MDY }),
+                                                                                                                               dateOrder: momentTimezoneDiff.DATE_ORDER_MDY }),
                                                     formatsId: 'cellFormatsAnother',
                                                     containerId: 'container',
                                                     timeId: 'currentTimeAnother',
@@ -167,14 +173,15 @@
                                                   {
                                                     timeShowTimezoneName: false,
                                                     legendBreak: false,
-                                                    sunRise: { hour: 8 },
-                                                    sunSet: { hour: 16 }
+                                                    sunRiseHour: 7,
+                                                    sunSetHour: 17
                                                   });
         env4 = new momentTimezoneDiff.Environment({
                                                     dateTimeElements: new momentTimezoneDiff.DateTimeElements('dateFrench', { mode: momentTimezoneDiff.MODE_SPLIT_HOUR24,
                                                                                                                               locale: 'fr',
                                                                                                                               currentTime: "Régler l'heure actuelle",
                                                                                                                               currentTimeTitle: "l'heure actuelle",
+                                                                                                                              currentTimeClass: 'currentTimeFrench',
                                                                                                                               hourTitle: "Sélectionnez les heures de la journée",
                                                                                                                               minuteTitle: "Sélectionner les minutes de l'heure",
                                                                                                                               ampmTitle: "Sélectionnez le matin ou l'après-midi",
@@ -192,8 +199,8 @@
                                                     locale: 'fr',
                                                     timeShowTimezoneName: false,
                                                     legendBreak: false,
-                                                    sunRise: { hour: 8 },
-                                                    sunSet: { hour: 16 },
+                                                    sunRiseHour: 8,
+                                                    sunSetHour: 16,
                                                     ahead: 'devant',
                                                     behind: 'derrière',
                                                     hour: 'heure',
