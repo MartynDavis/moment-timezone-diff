@@ -1,5 +1,5 @@
 
-/*global document, Option, moment*/
+/*global document, moment*/
 (function (root, factory) {
     "use strict";
     if (typeof exports === 'object') {
@@ -173,8 +173,12 @@
         return false;
     }
     function addComboValue(combo, text, value) {
+        var option;
         if (!comboValuePresent(combo, text, value)) {
-            combo.options[combo.options.length] = new Option((text ? String(text) : String(value)), String(value));
+            option = document.createElement('option');
+            option.text = text ? String(text) : String(value);
+            option.value = String(value);
+            combo.add(option, null);
         }
     }
     function populateHourOptions(element, format, hours24, locale) {
@@ -403,7 +407,7 @@
         return false;
     }
     function classAdd(element, className) {
-        var classNames = element.className.split(/\s+/),
+        var classNames = element.className ? element.className.split(/\s+/) : [ ],
             i;
         for (i = 0; i < classNames.length; i += 1) {
             if (classNames[i] === className) {
