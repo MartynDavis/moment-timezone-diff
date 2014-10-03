@@ -1,7 +1,6 @@
 "use strict";
 /*global describe, it*/
 var moment = require('../moment/moment-timezone'),
-    document = require('./lib/document-mock'),
     momentTimezoneDiff = require('../scripts/moment-timezone-diff');
 describe('options', function () {
     describe('options', function () {
@@ -430,37 +429,6 @@ describe('options', function () {
             momentTimezoneDiff.createLegend().should.eql([ 'SUN> 6:0...7:59', 'MOON> 8:0...5:59' ]);
             momentTimezoneDiff.setOptions({ sunRiseHour: 13, sunRiseMinute: 42, sunSetHour: 19, sunSetMinute: 13, legendDash: ' - ', legendSeparator: ' .. ' });
             momentTimezoneDiff.createLegend().should.eql([ 'SUN - 1:42 .. 7:12', 'MOON - 7:13 .. 1:41' ]);
-        });
-        it('Environment', function () {
-            var formats = document.createElement('div', { id : 'formatsId' }),
-                container = document.createElement('div', { id : 'containerId' }),
-                nextLevel;
-
-            formats.appendChild(document.createElement('span', { textContent: 'NAME' }));
-            formats.appendChild(document.createElement('span', { textContent: 'TIMEZONE' }));
-            formats.appendChild(document.createElement('span', { textContent: 'dddd' }));
-            formats.appendChild(document.createElement('span', { textContent: 'h:mm a' }));
-            formats.appendChild(document.createElement('span', { textContent: 'DD-MMM-YYYY' }));
-            formats.appendChild(document.createElement('span', { textContent: 'DIFF' }));
-            formats.appendChild(document.createElement('span', { textContent: 'sunmoon' }));
-
-            nextLevel = container.appendChild(document.createElement('div'));
-            nextLevel.appendChild(document.createElement('span', { textContent: 'NAME#1' }));
-            nextLevel.appendChild(document.createElement('span', { textContent: 'US/Pacific' }));
-            nextLevel.appendChild(document.createElement('span'));
-            nextLevel.appendChild(document.createElement('span'));
-            nextLevel.appendChild(document.createElement('span'));
-            nextLevel.appendChild(document.createElement('span'));
-            nextLevel.appendChild(document.createElement('span'));
-
-            nextLevel = container.appendChild(document.createElement('div'));
-            nextLevel.appendChild(document.createElement('span', { textContent: 'NAME#2' }));
-            nextLevel.appendChild(document.createElement('span', { textContent: 'Australia/Melbourne' }));
-            nextLevel.appendChild(document.createElement('span'));
-            nextLevel.appendChild(document.createElement('span'));
-            nextLevel.appendChild(document.createElement('span'));
-            nextLevel.appendChild(document.createElement('span'));
-            nextLevel.appendChild(document.createElement('span'));
         });
     });
 });
