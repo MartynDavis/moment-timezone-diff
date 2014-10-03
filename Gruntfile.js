@@ -25,7 +25,7 @@ module.exports = function(grunt) {
         src: [ 'scripts/*.js' ],
       },
       tests: {
-        src: [ 'test/**/*.js' ],
+        src: [ 'test/**/*.js', 'qunit-tests/**/test*.js' ],
       },
       options: {
         curly: true,        // Always put curly braces around blocks in loops and conditionals.

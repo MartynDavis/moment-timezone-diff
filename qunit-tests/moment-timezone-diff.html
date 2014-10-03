@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <script src="qunit-1.14.0.js"></script>
@@ -7,12 +7,163 @@
 <script src="../moment/moment.js"></script>
 <script src="../moment/moment-timezone.js"></script>
 <script src="../scripts/moment-timezone-diff.js"></script>
-<meta charset=utf-8 />
 <title>Moment Timezone Difference</title>
+<style>
+    .div {
+        clear: both;
+        height: auto;
+        margin: 0 auto;
+        text-align: center;
+    }
+</style>
 </head>
-<body>
-<div id="qunit"></div>
-<div id="qunit-fixture"></div>
-<script src="test-moment-timezone-diff.js"></script>
+<script>
+    var env,
+        dte1,
+        dte2,
+        dte3;
+    function initialise() {
+        dte1 = new momentTimezoneDiff.DateTimeElements('mtzdDate12hour', { mode: momentTimezoneDiff.MODE_SPLIT_HOUR12,
+                                                                           dateOrder: momentTimezoneDiff.DATE_ORDER_DMY,
+                                                                           locale: 'fr',
+                                                                           currentTime: "Régler l'heure actuelle",
+                                                                           currentTimeTitle: "l'heure actuelle",
+                                                                           currentTimeClass: 'currentTimeFrench',
+                                                                           hourTitle: "Sélectionnez les heures de la journée",
+                                                                           minuteTitle: "Sélectionner les minutes de l'heure",
+                                                                           ampmTitle: "Sélectionnez le matin ou l'après-midi",
+                                                                           monthTitle: "Sélectionnez un mois de l'année",
+                                                                           dayTitle: "Choisir jour du mois",
+                                                                           yearTitle: "Sélectionnez l'année",
+                                                                           timezoneTitle: "Sélectionnez le fuseau horaire",
+                                                                           monthFormat: "MMMM"
+                                                                         });
+        dte2 = new momentTimezoneDiff.DateTimeElements('mtzdDate24hour', { mode: momentTimezoneDiff.MODE_SPLIT_HOUR24,
+                                                                           dateOrder: momentTimezoneDiff.DATE_ORDER_MDY
+                                                                         });
+        dte3 = new momentTimezoneDiff.DateTimeElements('mtzdDateSingle', { mode: momentTimezoneDiff.MODE_SINGLE
+                                                                         });
+        dte3.addTimezone('timezone1', 'US/Pacific');
+        dte3.addTimezone('timezone2', 'Australia/Melbourne');
+        env = new momentTimezoneDiff.Environment();
+    }
+</script>
+</head>
+<body onload='initialise();'>
+    <h1>Moment Timezone Difference Tests</h1>
+    <h2>Test #1 - DateTimeElements (12 hour)</h2>
+    <div class='date' id='mtzdDate12hour'></div>
+    <h2>Test #2 - DateTimeElements (24 hour)</h2>
+    <div class='date' id='mtzdDate24hour'></div>
+    <h2>Test #3 - DateTimeElements (single)</h2>
+    <div class='date' id='mtzdDateSingle'></div>
+    <h2>Test #4 - 12 hour clock (TABLE)</h2>
+    <div class='date' id='mtzdDate'></div>
+    <div class='table'>
+        <table>
+            <thead>
+                <tr>
+                    <th class='name'>Who</th>
+                    <th class='location'>Location</th>
+                    <th class='timezone'>Timezone</th>
+                    <th colspan='5'>Local Time</th>
+                </tr>
+                <tr class='hide' id='mtzdFormats'>
+                    <th>LINK|NAME</th>
+                    <th>LINK</th>
+                    <th>LINK|TIMEZONE</th>
+                    <th>dddd</th>
+                    <th>h:mm a</th>
+                    <th>DD-MMM-YYYY</th>
+                    <th>DIFF</th>
+                    <th>sunmoon</th>
+                </tr>
+            </thead>
+            <tbody id='mtzdContainer'>
+                <tr>
+                    <td class='name'>Fred Flintstone</td>
+                    <td class='location'>Vancouver, Canada</td>
+                    <td class='timezone'>US/Pacific</td>
+                    <td class='dayOfWeek'></td>
+                    <td class='time'></td>
+                    <td class='date'></td>
+                    <td class='diff'></td>
+                    <td class='sunmoon'></td>
+                </tr>
+                <tr>
+                    <td class='name'>Barny Rubble</td>
+                    <td class='location'>New York, USA</td>
+                    <td class='timezone'>US/Eastern</td>
+                    <td class='dayOfWeek'></td>
+                    <td class='time'></td>
+                    <td class='date'></td>
+                    <td class='diff'></td>
+                    <td class='sunmoon'></td>
+                </tr>
+                <tr>
+                    <td class='name'>Bamm Bamm Rubble</td>
+                    <td class='location'>London, United Kingdom</td>
+                    <td class='timezone'>Europe/London</td>
+                    <td class='dayOfWeek'></td>
+                    <td class='time'></td>
+                    <td class='date'></td>
+                    <td class='diff'></td>
+                    <td class='sunmoon'></td>
+                </tr>
+                <tr>
+                    <td class='name'>Wilma Flintstone</td>
+                    <td class='location'>Paris, France</td>
+                    <td class='timezone'>Europe/Paris</td>
+                    <td class='dayOfWeek'></td>
+                    <td class='time'></td>
+                    <td class='date'></td>
+                    <td class='diff'></td>
+                    <td class='sunmoon'></td>
+                </tr>
+                <tr>
+                    <td class='name'>Betty Rubble</td>
+                    <td class='location'>Mumbai, India</td>
+                    <td class='timezone'>Asia/Calcutta</td>
+                    <td class='dayOfWeek'></td>
+                    <td class='time'></td>
+                    <td class='date'></td>
+                    <td class='diff'></td>
+                    <td class='sunmoon'></td>
+                </tr>
+                <tr>
+                    <td class='name'>Pebbles Flintstone</td>
+                    <td class='location'>Perth, Australia</td>
+                    <td class='timezone'>Australia/Perth</td>
+                    <td class='dayOfWeek'></td>
+                    <td class='time'></td>
+                    <td class='date'></td>
+                    <td class='diff'></td>
+                    <td class='sunmoon'></td>
+                </tr>
+                <tr>
+                    <td class='name'>Me</td>
+                    <td class='location'>Here</td>
+                    <td class='timezone'></td>
+                    <td class='dayOfWeek'></td>
+                    <td class='time'></td>
+                    <td class='date'></td>
+                    <td class='diff'></td>
+                    <td class='sunmoon'></td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td class='currentTime' id='mtzdTime' colspan='8'></td>
+                </tr>
+                <tr>
+                    <td id='mtzdLegend' colspan='8'></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+    <h2>QUnit Tests</h2>
+    <div id="qunit"></div>
+    <div id="qunit-fixture"></div>
+    <script src="test-moment-timezone-diff.js"></script>
 </body>
 </html>
