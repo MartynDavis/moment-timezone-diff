@@ -38,7 +38,7 @@ module.exports = function(grunt) {
         undef: true,        // Prohibits the use of explicitly undeclared variables
         boss: false,        // Suppresses warnings about the use of assignments in cases where comparisons are expected
         eqnull: true,       // Suppresses warnings about == null comparisons.
-        browser: false,     // Defines globals exposed by modern browsers (but not alert and console)
+        browser: true,      // Defines globals exposed by modern browsers (but not alert and console)
         node: true,         // Defines globals available when your code is running inside of the Node runtime environment
         globals: {
         }

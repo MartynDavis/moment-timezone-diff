@@ -17,34 +17,37 @@
 </style>
 </head>
 <script>
-    var env,
-        dte1,
-        dte2,
-        dte3;
+    var testVars = { };
     function initialise() {
-        dte1 = new momentTimezoneDiff.DateTimeElements('mtzdDate12hour', { mode: momentTimezoneDiff.MODE_SPLIT_HOUR12,
-                                                                           dateOrder: momentTimezoneDiff.DATE_ORDER_DMY,
-                                                                           locale: 'fr',
-                                                                           currentTime: "Régler l'heure actuelle",
-                                                                           currentTimeTitle: "l'heure actuelle",
-                                                                           currentTimeClass: 'currentTimeFrench',
-                                                                           hourTitle: "Sélectionnez les heures de la journée",
-                                                                           minuteTitle: "Sélectionner les minutes de l'heure",
-                                                                           ampmTitle: "Sélectionnez le matin ou l'après-midi",
-                                                                           monthTitle: "Sélectionnez un mois de l'année",
-                                                                           dayTitle: "Choisir jour du mois",
-                                                                           yearTitle: "Sélectionnez l'année",
-                                                                           timezoneTitle: "Sélectionnez le fuseau horaire",
-                                                                           monthFormat: "MMMM"
-                                                                         });
-        dte2 = new momentTimezoneDiff.DateTimeElements('mtzdDate24hour', { mode: momentTimezoneDiff.MODE_SPLIT_HOUR24,
-                                                                           dateOrder: momentTimezoneDiff.DATE_ORDER_MDY
-                                                                         });
-        dte3 = new momentTimezoneDiff.DateTimeElements('mtzdDateSingle', { mode: momentTimezoneDiff.MODE_SINGLE
-                                                                         });
-        dte3.addTimezone('timezone1', 'US/Pacific');
-        dte3.addTimezone('timezone2', 'Australia/Melbourne');
-        env = new momentTimezoneDiff.Environment();
+        testVars.dte1 = new momentTimezoneDiff.DateTimeElements('mtzdDate12hour', { mode: momentTimezoneDiff.MODE_SPLIT_HOUR12,
+                                                                                    dateOrder: momentTimezoneDiff.DATE_ORDER_DMY,
+                                                                                    locale: 'fr',
+                                                                                    currentTime: "Régler l'heure actuelle",
+                                                                                    currentTimeTitle: "l'heure actuelle",
+                                                                                    currentTimeClass: 'currentTimeFrench',
+                                                                                    hourTitle: "Sélectionnez les heures de la journée",
+                                                                                    minuteTitle: "Sélectionner les minutes de l'heure",
+                                                                                    ampmTitle: "Sélectionnez le matin ou l'après-midi",
+                                                                                    monthTitle: "Sélectionnez un mois de l'année",
+                                                                                    dayTitle: "Choisir jour du mois",
+                                                                                    yearTitle: "Sélectionnez l'année",
+                                                                                    timezoneTitle: "Sélectionnez le fuseau horaire",
+                                                                                    monthFormat: "MMMM"
+                                                                                  });
+        testVars.dte1.addTimezone('Europe/Paris', 'Sebastian Roché');
+        testVars.dte1.addTimezone('Canada/Newfoundland', 'André Lurçat');
+        testVars.dte2 = new momentTimezoneDiff.DateTimeElements('mtzdDate24hour', { mode: momentTimezoneDiff.MODE_SPLIT_HOUR24,
+                                                                                    dateOrder: momentTimezoneDiff.DATE_ORDER_MDY
+                                                                                  });
+        testVars.dte2.addTimezone('US/Eastern');
+        testVars.dte2.addTimezone('Australia/Perth');
+        testVars.dte3 = new momentTimezoneDiff.DateTimeElements('mtzdDateSingle', { mode: momentTimezoneDiff.MODE_SINGLE,
+                                                                                    currentTimezoneText: 'The current timezone'
+                                                                                  });
+        testVars.dte3.addTimezone('US/Pacific', 'timezone1');
+        testVars.dte3.addTimezone('Australia/Melbourne', 'timezone2');
+        testVars.env = new momentTimezoneDiff.Environment();
+        testVars.env.update([2014, 8, 1, 0, 0, 0], 'Australia/Melbourne', 'Dino');
     }
 </script>
 </head>
@@ -140,9 +143,9 @@
                     <td class='sunmoon'></td>
                 </tr>
                 <tr>
-                    <td class='name'>Me</td>
-                    <td class='location'>Here</td>
-                    <td class='timezone'></td>
+                    <td class='name'>Dino</td>
+                    <td class='location'>Melbourne, Australia</td>
+                    <td class='timezone'>Australia/Melbourne</td>
                     <td class='dayOfWeek'></td>
                     <td class='time'></td>
                     <td class='date'></td>

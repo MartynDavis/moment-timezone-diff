@@ -1,5 +1,5 @@
 
-/*global document, moment*/
+/*global moment*/
 (function (root, factory) {
     "use strict";
     if (typeof exports === 'object') {
@@ -151,7 +151,7 @@
         }
         return child;
     }
-    function comboValuePresent(combo, text, value) {
+    function comboValuePresent(combo, value, text) {
         var i;
         value = String(value);
         if (text !== undefined) {
@@ -172,9 +172,9 @@
         }
         return false;
     }
-    function addComboValue(combo, text, value) {
+    function addComboValue(combo, value, text) {
         var option;
-        if (!comboValuePresent(combo, text, value)) {
+        if (!comboValuePresent(combo, value, text)) {
             option = document.createElement('option');
             option.text = text ? String(text) : String(value);
             option.value = String(value);
@@ -189,7 +189,7 @@
             if (m.locale && locale) {
                 m.locale(locale);
             }
-            addComboValue(element, m.format(format), i);
+            addComboValue(element, i, m.format(format));
         }
     }
     function populateMinuteOptions(element, format, locale) {
@@ -200,7 +200,7 @@
             if (m.locale && locale) {
                 m.locale(locale);
             }
-            addComboValue(element, m.format(format), i);
+            addComboValue(element, i, m.format(format));
         }
     }
     function populateAmpmOptions(element, format, locale) {
@@ -210,7 +210,7 @@
             if (m.locale && locale) {
                 m.locale(locale);
             }
-            addComboValue(element, m.format(format), value);
+            addComboValue(element, value, m.format(format));
         }
         var values = { 0: 6, 1: 18 },
             prop;
@@ -228,7 +228,7 @@
             if (m.locale && locale) {
                 m.locale(locale);
             }
-            addComboValue(element, m.format(format), i);
+            addComboValue(element, i, m.format(format));
         }
     }
     function populateDayOptions(element, format, locale) {
@@ -239,7 +239,7 @@
             if (m.locale && locale) {
                 m.locale(locale);
             }
-            addComboValue(element, m.format(format), i);
+            addComboValue(element, i, m.format(format));
         }
     }
     function populateYearOptions(element, format, minValue, maxValue, locale) {
@@ -250,11 +250,11 @@
             if (m.locale && locale) {
                 m.locale(locale);
             }
-            addComboValue(element, m.format(format), i);
+            addComboValue(element, i, m.format(format));
         }
     }
     function populateTimezoneOptions(element, currentTimezoneText) {
-        addComboValue(element, currentTimezoneText, '');
+        addComboValue(element, '', currentTimezoneText);
     }
     function getOptionValue(options, name, defaultValue) {
         if (options && options.hasOwnProperty(name)) {
@@ -359,9 +359,9 @@
         this.errorClassName = getOptionValue(options, 'errorClass', 'mtzdError');
         this.locale = getOptionValue(options, 'locale');
     }
-    DateTimeElements.prototype.addTimezone = function (name, timezone) {
+    DateTimeElements.prototype.addTimezone = function (timezone, name) {
         if (this.elements && this.elements.timezone) {
-            addComboValue(this.elements.timezone, name, timezone);
+            addComboValue(this.elements.timezone, timezone, name);
         }
     };
     function getSelected(element) {
@@ -670,7 +670,7 @@
                         name = name || timezone;
                         registerTimezone(this.timezones, timezone, elementFormats);
                         if (dateTimeElements) {
-                            dateTimeElements.addTimezone(name, timezone);
+                            dateTimeElements.addTimezone(timezone, name);
                         }
                         onclick = createSetTimezone(this, timezone, name);
                         for (j = 0; j < links.length; j += 1) {
@@ -753,7 +753,7 @@
     };
     Environment.prototype.update = function (value, timezone, name) {
         if (timezone) {
-            this.moment = moment(value, timezone);
+            this.moment = moment.tz(value, timezone);
             this.timezone = { text: (name || timezone), value: timezone };
         } else {
             this.moment = moment(value);
