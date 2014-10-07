@@ -1,12 +1,15 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
+<link rel="stylesheet" href="./lib/jquery-ui.css">
+<script src="./lib/jquery-1.10.2.js"></script>
+<script src="./lib/jquery-ui.js"></script>
 <script src="./lib/qunit-1.14.0.js"></script>
 <link rel="stylesheet" href="./lib/qunit-1.14.0.css">
 <script src="../moment/moment.js"></script>
 <script src="../moment/moment-timezone.js"></script>
 <script src="../scripts/moment-timezone-diff.js"></script>
-<title>Moment Timezone Difference</title>
+<title>Moment Timezone Difference with jQuery</title>
 <style>
     .div {
         clear: both;
@@ -28,118 +31,41 @@
                                                                                     hourTitle: "Sélectionnez les heures de la journée",
                                                                                     minuteTitle: "Sélectionner les minutes de l'heure",
                                                                                     ampmTitle: "Sélectionnez le matin ou l'après-midi",
-                                                                                    monthTitle: "Sélectionnez un mois de l'année",
-                                                                                    dayTitle: "Choisir jour du mois",
-                                                                                    yearTitle: "Sélectionnez l'année",
+                                                                                    dateTitle: "Entrez la date requise.",
+                                                                                    dateTitleInputFormat: "Format pris en charge est",
                                                                                     timezoneTitle: "Sélectionnez le fuseau horaire",
                                                                                     monthFormat: "MMMM"
                                                                                   });
         testVars.dte1.addTimezone('Europe/Paris', 'Sebastian Roché');
         testVars.dte1.addTimezone('Canada/Newfoundland', 'André Lurçat');
+
         testVars.dte2 = new momentTimezoneDiff.DateTimeElements('mtzdDate24hour', { mode: momentTimezoneDiff.MODE_SPLIT_HOUR24,
                                                                                     dateOrder: momentTimezoneDiff.DATE_ORDER_MDY
                                                                                   });
         testVars.dte2.addTimezone('US/Eastern');
         testVars.dte2.addTimezone('Australia/Perth');
-        testVars.dte3 = new momentTimezoneDiff.DateTimeElements('mtzdDateSingle', { mode: momentTimezoneDiff.MODE_SINGLE,
-                                                                                    currentTimezoneText: 'The current timezone'
-                                                                                  });
-        testVars.dte3.addTimezone('US/Pacific', 'timezone1');
-        testVars.dte3.addTimezone('Australia/Melbourne', 'timezone2');
 
-        testVars.dte4 = new momentTimezoneDiff.DateTimeElements('mtzdDate12hour2', { mode: momentTimezoneDiff.MODE_SPLIT_HOUR12,
-                                                                                     dateOrder: momentTimezoneDiff.DATE_ORDER_MDY,
+        testVars.dte3 = new momentTimezoneDiff.DateTimeElements('mtzdDate24hour2', { mode: momentTimezoneDiff.MODE_SPLIT_HOUR12,
+                                                                                     dateOrder: momentTimezoneDiff.DATE_ORDER_YMD,
                                                                                      usejQueryDatePicker: false
                                                                                    });
-        testVars.dte4.addTimezone('Europe/London');
-        testVars.dte4.addTimezone('Japan');
+        testVars.dte3.addTimezone('Europe/London');
+        testVars.dte3.addTimezone('Japan');
 
         testVars.env = new momentTimezoneDiff.Environment();
         testVars.env.update([2014, 8, 1, 0, 0, 0], 'Australia/Melbourne', 'Dino');
-
-        /*
-        testVars.env2dte = new momentTimezoneDiff.DateTimeElements('mtzdDate2', { mode: momentTimezoneDiff.MODE_SPLIT_HOUR24,
-                                                                                  dateOrder: momentTimezoneDiff.DATE_ORDER_MDY,
-                                                                                  locale: 'de',
-                                                                                  currentTime: "Régler l'heure actuelle",
-                                                                                  currentTimeTitle: "l'heure actuelle",
-                                                                                  currentTimeClass: 'currentTimeFrench',
-                                                                                  hourTitle: "Sélectionnez les heures de la journée",
-                                                                                  minuteTitle: "Sélectionner les minutes de l'heure",
-                                                                                  ampmTitle: "Sélectionnez le matin ou l'après-midi",
-                                                                                  monthTitle: "Sélectionnez un mois de l'année",
-                                                                                  dayTitle: "Choisir jour du mois",
-                                                                                  yearTitle: "Sélectionnez l'année",
-                                                                                  timezoneTitle: "Sélectionnez le fuseau horaire",
-                                                                                  monthFormat: "MMMM"
-                                                                                });
-// DateTimeElements
-//mode	MODE_SPLIT_HOUR12),
-//timeDelim	':'),
-//dateDelim	'-'),
-//timeDisplayFormat	'dddd h:mm a DD-MMM-YYYY');
-//timeInputFormats	[ 'dddd h:mm a DD-MMM-YYYY	
-//Enter the required date and time.');
-//timeTitleShowInputFormats	true)) {
-//timeTitleInputFormats	'Supported formats are:
-//size	28
-//maxlength	255) }));
-//hourTitle	'Select hour of the day') }));
-//hourFormat	(mode === MODE_SPLIT_HOUR12) ? 'hh' : 'HH'),
-//locale'));
-//minuteTitle	'Select minute of the hour') }));
-//minuteFormat	'mm')	
-//locale'));
-//ampmTitle	'Select morning or afternoon') }));
-//ampmFormat	'a')	
-//locale'));
-//dateOrder	DATE_ORDER_DMY);
-//dayTitle	'Select day of the month') }));
-//dayFormat	'DD')	
-//locale'));
-//monthTitle	'Select month of the year') }));
-//monthFormat	'MMM')	
-//locale'));
-//yearTitle	'Select year') }));
-//yearFormat	'YYYY'),
-//minYear	2010),
-//maxYear	2020),
-//locale'));
-//timezoneTitle	'Select timezone') }));
-//currentTimezoneText	''));
-//currentTime	'\u25d4'),
-//currentTimeTitle	'Current Time'),
-//currentTimeClass	'mtzdCurrentTime') }));
-//errorClass	'mtzdError');
-//locale');
-//
-// Environment options
-//dateTimeElements
-//dateId	mtzdDate
-//containerId	mtzdContainer
-//formatsId	mtzdFormats
-//timeId	mtzdTime
-//legendId	mtzdLegend
-//tokenSeparator	|
-//linkClass	mtzdLink
-//autoRefresh	true
-//autoUpdate	false
-//autoUpdateSeconds	30
-*/
     }
 </script>
 </head>
 <body onload='initialise();'>
-    <h1>Moment Timezone Difference Tests (no jQuery loaded)</h1>
+    <h1>Moment Timezone Difference Tests (with jQuery)</h1>
     <h2>Test #1 - DateTimeElements (12 hour)</h2>
     <div class='date' id='mtzdDate12hour'></div>
     <h2>Test #2 - DateTimeElements (24 hour)</h2>
     <div class='date' id='mtzdDate24hour'></div>
-    <h2>Test #3 - DateTimeElements (single)</h2>
-    <div class='date' id='mtzdDateSingle'></div>
-    <h2>Test #4 - DateTimeElements (12 hour - explicitly no DatePicker)</h2>
-    <div class='date' id='mtzdDate12hour2'></div>
-    <h2>Test #5 - 12 hour clock (TABLE)</h2>
+    <h2>Test #3 - DateTimeElements (24 hour - no date picker)</h2>
+    <div class='date' id='mtzdDate24hour2'></div>
+    <h2>Test #4 - 12 hour clock (TABLE)</h2>
     <div class='date' id='mtzdDate'></div>
     <div class='table'>
         <table>
@@ -243,72 +169,9 @@
             </tfoot>
         </table>
     </div>
-    <!--
-    <h2>Test #6 - Single (DIV)</h2>
-    <div class='date' id='mtzdDate2'></div>
-    <div class='table'>
-        <table>
-            <thead>
-                <tr>
-                    <th class='timezone'>Timezone</th>
-                    <th>Local Time</th>
-                </tr>
-                <tr class='hide' id='mtzdFormats2'>
-                    <th>LINK&TIMEZONE</th>
-                    <th>LINK&dddd HH:mm MMMM-DD-YYYY DIFF sunmoon</th>
-                </tr>
-            </thead>
-            <tbody id='mtzdContainer2'>
-                <tr>
-                    <td class='name'>Fred Flintstone</td>
-                    <td class='timezone'>US/Pacific</td>
-                    <td class='fullDate'></td>
-                </tr>
-                <tr>
-                    <td class='name'>Barny Rubble</td>
-                    <td class='timezone'>US/Eastern</td>
-                    <td class='fullDate'></td>
-                </tr>
-                <tr>
-                    <td class='name'>Bamm Bamm Rubble</td>
-                    <td class='timezone'>Europe/London</td>
-                    <td class='fullDate'></td>
-                </tr>
-                <tr>
-                    <td class='name'>Wilma Flintstone</td>
-                    <td class='timezone'>Europe/Paris</td>
-                    <td class='fullDate'></td>
-                </tr>
-                <tr>
-                    <td class='name'>Betty Rubble</td>
-                    <td class='timezone'>Asia/Calcutta</td>
-                    <td class='fullDate'></td>
-                </tr>
-                <tr>
-                    <td class='name'>Pebbles Flintstone</td>
-                    <td class='timezone'>Australia/Perth</td>
-                    <td class='fullDate'></td>
-                </tr>
-                <tr>
-                    <td class='name'>Dino</td>
-                    <td class='timezone'>Australia/Melbourne</td>
-                    <td class='fullDate'></td>
-                </tr>
-            </tbody>
-            <tfoot>
-                <tr>
-                    <td class='currentTime' id='mtzdTime2' colspan='8'></td>
-                </tr>
-                <tr>
-                    <td id='mtzdLegend2' colspan='8'></td>
-                </tr>
-            </tfoot>
-        </table>
-    </div>
-    -->
     <h2>QUnit Tests</h2>
     <div id="qunit"></div>
     <div id="qunit-fixture"></div>
-    <script src="test-moment-timezone-diff.js"></script>
+    <script src="test-moment-timezone-diff-jquery.js"></script>
 </body>
 </html>

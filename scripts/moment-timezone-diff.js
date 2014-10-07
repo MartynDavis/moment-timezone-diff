@@ -1,5 +1,5 @@
 
-/*global moment*/
+/*global moment, $*/
 (function (root, factory) {
     "use strict";
     if (typeof exports === 'object') {
@@ -220,6 +220,35 @@
             }
         }
     }
+    function getMonthNames(format, locale) {
+        var names = [ ],
+            m,
+            i;
+        for (i = 0; i < 12; i += 1) {
+            m = moment([2014, i, 1, 0, 0, 0]);
+            if (m.locale && locale) {
+                m.locale(locale);
+            }
+            names.push(m.format(format));
+        }
+        return names;
+    }
+    function getWeekdayNames(format, locale) {
+        var names = [ ],
+            m = moment([2014, 0, 1, 0, 0, 0]),
+            i;
+        if (m.locale && locale) {
+            m.locale(locale);
+        }
+        while (m.day() !== 0) {
+            m.add(1, 'day');
+        }
+        for (i = 0; i < 7; i += 1) {
+            names.push(m.format(format));
+            m.add(1, 'day');
+        }
+        return names;
+    }
     function populateMonthOptions(element, format, locale) {
         var m,
             i;
@@ -262,16 +291,56 @@
         }
         return defaultValue;
     }
+    // convertFormats - Converts moment().format() formats to jQuery datepicker.formatDate() formats
+    function convertFormats(formats) {
+        var newFormats = [ ],
+            newFormat,
+            i;
+        for (i = 0; i < formats.length; i += 1) {
+            switch (formats[i]) {
+                case 'YYYY': newFormat = 'yy'; break;
+                case 'YY':   newFormat = 'y';  break;
+                case 'M':    newFormat = 'm';  break;
+                case 'MM':   newFormat = 'mm'; break;
+                case 'MMM':  newFormat = 'M';  break;
+                case 'MMMM': newFormat = 'MM'; break;
+                case 'D':    newFormat = 'd';  break;
+                case 'DD':   newFormat = 'dd'; break;
+                case 'Do':   newFormat = 'd';  break;
+                default:     newFormat = formats[i]; break;
+            }
+            newFormats.push(newFormat);
+        }
+        return newFormats;
+    }
+    function fireChangeEvent(element) {
+        if (typeof document.createEvent === 'function') {
+            var event = document.createEvent('HTMLEvents');
+            event.initEvent('change', false, true);
+            element.dispatchEvent(event);
+        } else {
+            element.fireEvent('onchange');
+        }
+    }
     function DateTimeElements(id, options) {
         var element = document.getElementById(id),
             mode = getOptionValue(options, 'mode', MODE_SPLIT_HOUR12),
             timeDelim = getOptionValue(options, 'timeDelim', ':'),
             dateDelim = getOptionValue(options, 'dateDelim', '-'),
             hourFormat = getOptionValue(options, 'hourFormat', (mode === MODE_SPLIT_HOUR12) ? 'hh' : 'HH'),
+            yearFormat = getOptionValue(options, 'yearFormat', 'YYYY'),
+            monthFormat = getOptionValue(options, 'monthFormat', 'MMM'),
+            dayFormat = getOptionValue(options, 'dayFormat', 'DD'),
             elements,
             title,
             dateOrder,
             dateControlsOrder,
+            datePickerOptions,
+            datePickerLocale,
+            minYear = getOptionValue(options, 'minYear', 2010),
+            maxYear = getOptionValue(options, 'maxYear', 2020),
+            locale = getOptionValue(options, 'locale'),
+            dateFormats,
             i;
         if (!element) {
             console.error('Element with id "' + id + '" not found');
@@ -306,41 +375,74 @@
         } else if ((mode === MODE_SPLIT_HOUR24) || (mode === MODE_SPLIT_HOUR12)) {
             elements = { };
             elements.hour = appendChild(element, createElement('select', { title: getOptionValue(options, 'hourTitle', 'Select hour of the day') }));
-            populateHourOptions(elements.hour, hourFormat, (mode === MODE_SPLIT_HOUR24), getOptionValue(options, 'locale'));
+            populateHourOptions(elements.hour, hourFormat, (mode === MODE_SPLIT_HOUR24), locale);
             appendChild(element, createElement('span', { textContent: timeDelim }));
             elements.minute = appendChild(element, createElement('select', { title: getOptionValue(options, 'minuteTitle', 'Select minute of the hour') }));
-            populateMinuteOptions(elements.minute, getOptionValue(options, 'minuteFormat', 'mm'), getOptionValue(options, 'locale'));
+            populateMinuteOptions(elements.minute, getOptionValue(options, 'minuteFormat', 'mm'), locale);
             if ((mode !== MODE_SPLIT_HOUR24)) {
                 appendChild(element, createElement('span', { textContent: ' ' }));
                 elements.ampm = appendChild(element, createElement('select', { title: getOptionValue(options, 'ampmTitle', 'Select morning or afternoon') }));
-                populateAmpmOptions(elements.ampm, getOptionValue(options, 'ampmFormat', 'a'), getOptionValue(options, 'locale'));
+                populateAmpmOptions(elements.ampm, getOptionValue(options, 'ampmFormat', 'a'), locale);
             }
             appendChild(element, createElement('span', { textContent: ' ' }));
             
             dateOrder = getOptionValue(options, 'dateOrder', DATE_ORDER_DMY);
-            if (dateOrder === DATE_ORDER_MDY) {
-                dateControlsOrder = [ 1, 0, 2];
-            } else if (dateOrder === DATE_ORDER_YMD) {
-                dateControlsOrder = [ 2, 1, 0];
-            } else {
-                dateControlsOrder = [ 0, 1, 2];
-            }
-            for (i = 0; i < dateControlsOrder.length; i += 1) {
-                if (i > 0) {
-                    appendChild(element, createElement('span', { textContent: dateDelim }));
+            if (getOptionValue(options, 'usejQueryDatePicker', true) && window.jQuery && $ && $.datepicker) {
+                datePickerLocale = getOptionValue(options, 'datePickerLocale');
+                datePickerOptions = { showButtonPanel: false,
+                                      changeYear: true,
+                                      changeMonth: true,
+                                      yearRange: minYear + ':' + maxYear,
+                                      onSelect: function (text) { fireChangeEvent(this); }
+                                    };
+                if (!datePickerLocale) {
+                    datePickerOptions.dayNames = getWeekdayNames('dddd', locale);
+                    datePickerOptions.dayNamesShort = getWeekdayNames('ddd', locale);
+                    datePickerOptions.dayNamesMin = getWeekdayNames('dd', locale);
+                    datePickerOptions.monthNames = getMonthNames('MMMM', locale);
+                    datePickerOptions.monthNamesShort = getMonthNames('MMM', locale);
                 }
-                if (dateControlsOrder[i] === 0) {
-                    elements.day = appendChild(element, createElement('select', { title: getOptionValue(options, 'dayTitle', 'Select day of the month') }));
-                    populateDayOptions(elements.day, getOptionValue(options, 'dayFormat', 'DD'), getOptionValue(options, 'locale'));
-                } else if (dateControlsOrder[i] === 1) {
-                    elements.month = appendChild(element, createElement('select', { title: getOptionValue(options, 'monthTitle', 'Select month of the year') }));
-                    populateMonthOptions(elements.month, getOptionValue(options, 'monthFormat', 'MMM'), getOptionValue(options, 'locale'));
-                } else if (dateControlsOrder[i] === 2) {
-                    elements.year = appendChild(element, createElement('select', { title: getOptionValue(options, 'yearTitle', 'Select year') }));
-                    populateYearOptions(elements.year, getOptionValue(options, 'yearFormat', 'YYYY'),
-                                                       getOptionValue(options, 'minYear', 2010),
-                                                       getOptionValue(options, 'maxYear', 2020),
-                                                       getOptionValue(options, 'locale'));
+                if (dateOrder === DATE_ORDER_MDY) {
+                    dateFormats = [ monthFormat, dayFormat, yearFormat ];
+                } else if (dateOrder === DATE_ORDER_YMD) {
+                    dateFormats = [ yearFormat, monthFormat, dayFormat ];
+                } else {
+                    dateFormats = [ dayFormat, monthFormat, yearFormat ];
+                }
+                this.datePickerFormat = dateFormats.join(dateDelim);
+                datePickerOptions.dateFormat = convertFormats(dateFormats).join(dateDelim);
+                
+                title = getOptionValue(options, 'dateTitle', 'Enter the required date.');
+                if (getOptionValue(options, 'dateTitleShowInputFormats', true)) {
+                    title += ' ' + getOptionValue(options, 'dateTitleInputFormat', 'Supported format is') + ' ' + this.datePickerFormat;
+                }
+                elements.datePicker = appendChild(element, createElement('input', {type: 'text', title: title, size: getOptionValue(options, 'size', 10), maxlength: getOptionValue(options, 'maxlength', 30) }));
+                $(elements.datePicker).datepicker(datePickerOptions);
+                if (datePickerLocale) {
+                    $(elements.datePicker).datepicker( $.datepicker.regional[ datePickerLocale ] );
+                }
+            } else {
+                if (dateOrder === DATE_ORDER_MDY) {
+                    dateControlsOrder = [ 1, 0, 2];
+                } else if (dateOrder === DATE_ORDER_YMD) {
+                    dateControlsOrder = [ 2, 1, 0];
+                } else {
+                    dateControlsOrder = [ 0, 1, 2];
+                }
+                for (i = 0; i < dateControlsOrder.length; i += 1) {
+                    if (i > 0) {
+                        appendChild(element, createElement('span', { textContent: dateDelim }));
+                    }
+                    if (dateControlsOrder[i] === 0) {
+                        elements.day = appendChild(element, createElement('select', { title: getOptionValue(options, 'dayTitle', 'Select day of the month') }));
+                        populateDayOptions(elements.day, dayFormat, locale);
+                    } else if (dateControlsOrder[i] === 1) {
+                        elements.month = appendChild(element, createElement('select', { title: getOptionValue(options, 'monthTitle', 'Select month of the year') }));
+                        populateMonthOptions(elements.month, monthFormat, locale);
+                    } else if (dateControlsOrder[i] === 2) {
+                        elements.year = appendChild(element, createElement('select', { title: getOptionValue(options, 'yearTitle', 'Select year') }));
+                        populateYearOptions(elements.year, yearFormat, minYear, maxYear, locale);
+                    }
                 }
             }
         } else {
@@ -357,7 +459,7 @@
         this.mode = mode;
         this.elements = elements;
         this.errorClassName = getOptionValue(options, 'errorClass', 'mtzdError');
-        this.locale = getOptionValue(options, 'locale');
+        this.locale = locale;
     }
     DateTimeElements.prototype.addTimezone = function (timezone, name) {
         if (this.elements && this.elements.timezone) {
@@ -432,9 +534,10 @@
             ampm,
             m;
         if (this.mode === MODE_SINGLE) {
-            m = moment(this.elements.datetime.value, this.timeInputFormats);
             if (m.locale && this.locale) {
-                m.locale(this.locale);
+                m = moment(this.elements.datetime.value, this.timeInputFormats, this.locale);
+            } else {
+                m = moment(this.elements.datetime.value, this.timeInputFormats);
             }
             if (m.isValid()) {
                 selected = { };
@@ -447,14 +550,33 @@
                 classRemove(this.elements.datetime, this.errorClassName);
             } else {
                 classAdd(this.elements.datetime, this.errorClassName);
+                return;
             }
         } else if ((this.mode === MODE_SPLIT_HOUR12) || (this.mode === MODE_SPLIT_HOUR24)) {
             selected = { };
             selected.hour = getSelected(this.elements.hour);
             selected.minute = getSelected(this.elements.minute);
-            selected.month = getSelected(this.elements.month);
-            selected.day = getSelected(this.elements.day);
-            selected.year = getSelected(this.elements.year);
+            if (this.elements.datePicker) {
+                m = moment(this.elements.datePicker.value, this.datePickerFormat);
+                if (m.locale && this.locale) {
+                    m = moment(this.elements.datePicker.value, this.datePickerFormat, this.locale);
+                } else {
+                    m = moment(this.elements.datePicker.value, this.datePickerFormat);
+                }
+                if (m.isValid()) {
+                    selected.month = m.month();
+                    selected.day = m.date();
+                    selected.year = m.year();
+                    classRemove(this.elements.datePicker, this.errorClassName);
+                } else {
+                    classAdd(this.elements.datePicker, this.errorClassName);
+                    return;
+                }
+            } else {
+                selected.month = getSelected(this.elements.month);
+                selected.day = getSelected(this.elements.day);
+                selected.year = getSelected(this.elements.year);
+            }
             if (this.mode === MODE_SPLIT_HOUR12) {
                 ampm = getSelected(this.elements.ampm);
                 if (ampm === 0) {
@@ -493,9 +615,17 @@
             }
             this.elements.datetime.value = m.format(this.timeDisplayFormat);
         } else if ((this.mode === MODE_SPLIT_HOUR12) || (this.mode === MODE_SPLIT_HOUR24)) {
-            setSelected(this.elements.year, selected.year);
-            setSelected(this.elements.month, selected.month);
-            setSelected(this.elements.day, selected.day);
+            if (this.elements.datePicker) {
+                m = moment([selected.year, selected.month, selected.day, selected.hour, selected.minute, 0]);
+                if (m.locale && this.locale) {
+                    m.locale(this.locale);
+                }
+                this.elements.datePicker.value = m.format(this.datePickerFormat);
+            } else {
+                setSelected(this.elements.year, selected.year);
+                setSelected(this.elements.month, selected.month);
+                setSelected(this.elements.day, selected.day);
+            }
             hour = selected.hour;
             if (this.mode === MODE_SPLIT_HOUR12) {
                 if (hour === 0) {

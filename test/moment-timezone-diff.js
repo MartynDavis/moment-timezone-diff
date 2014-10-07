@@ -22,7 +22,7 @@ describe('options', function () {
                                timeFormat: 'dddd h:mm a DD-MMM-YYYY',
                                timeShowTimezoneName: true,
                                defaultTimezone: momentTimezoneDiff.getDefaultTimezone()
-                             };
+                               };
         //
         // copy(...)
         //
