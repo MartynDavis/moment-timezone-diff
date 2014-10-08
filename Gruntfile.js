@@ -53,8 +53,16 @@ module.exports = function(grunt) {
       }
     },
     qunit: {
-      all: ['qunit-tests/*.html']
+      all: [ 'qunit-tests/*.html' ]
     },
+    version: {
+      minor: {
+        options: {
+          release: 'minor'
+        },
+        src: [ 'package.json', 'scripts/*.js' ]
+      }
+    }
   });
 
   // Load tasks
@@ -62,9 +70,11 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-mocha-test');
   grunt.loadNpmTasks('grunt-contrib-qunit');
+  grunt.loadNpmTasks('grunt-version');
 
   // Default task.
   grunt.registerTask('default', [ 'jshint', 'mochaTest', 'qunit' ]);
   grunt.registerTask('jshint-job', [ 'jshint' ]);
   grunt.registerTask('qunit-job', [ 'jshint', 'qunit' ]);
+  grunt.registerTask('build', [ 'jshint', 'mochaTest', 'qunit', 'version.minor' ]);
 };

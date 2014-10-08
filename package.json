@@ -3,13 +3,14 @@
   "version": "0.1.0",
   "description": "Moment Timezone Difference",
   "devDependencies": {
-    "should": "*",
     "grunt": "~0.4.5",
     "grunt-contrib-jshint": "*",
     "grunt-contrib-nodeunit": "~0.4.1",
+    "grunt-contrib-qunit": "*",
     "grunt-contrib-uglify": "~0.5.0",
     "grunt-contrib-watch": "~0.5.1",
-    "grunt-contrib-qunit": "*",
-    "grunt-mocha-test": "^0.11.0"
+    "grunt-mocha-test": "^0.11.0",
+    "grunt-version": "^0.3.0",
+    "should": "*"
   }
 }
