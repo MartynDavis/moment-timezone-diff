@@ -27,6 +27,9 @@ module.exports = function(grunt) {
       tests: {
         src: [ 'test/**/*.js', 'qunit-tests/**/test*.js' ],
       },
+      grunt: {
+        src: [ 'GruntFile.js' ],
+      },
       options: {
         curly: true,        // Always put curly braces around blocks in loops and conditionals.
         eqeqeq: true,       // prohibits the use of == and != in favor of === and !==
@@ -58,9 +61,10 @@ module.exports = function(grunt) {
     version: {
       minor: {
         options: {
+          prefix: '[^\\-]version[\'"]?\\s*[,:=]\\s*[\'"]',
           release: 'minor'
         },
-        src: [ 'package.json', 'scripts/*.js' ]
+        src: [ 'package.json', 'scripts/*.js', 'qunit-tests/test-moment-timezone-diff.js' ]
       }
     }
   });

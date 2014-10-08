@@ -1,9 +1,9 @@
-﻿"use strict";
+"use strict";
 
 /*global QUnit, moment, momentTimezoneDiff, testVars*/
 
 QUnit.test('momentTimezoneDiff', function (assert) {
-    assert.equal(momentTimezoneDiff.version, '0.1.0', 'Moment timezone diff version is correct');
+    assert.equal(momentTimezoneDiff.version, '0.2.0', 'Moment timezone diff version is correct');
     assert.equal(momentTimezoneDiff.MODE_SINGLE, 0, 'Moment timezone diff MODE_SINGLE is correct');
     assert.equal(momentTimezoneDiff.MODE_SPLIT_HOUR24, 1, 'Moment timezone diff MODE_SPLIT_HOUR24 is correct');
     assert.equal(momentTimezoneDiff.MODE_SPLIT_HOUR12, 2, 'Moment timezone diff MODE_SPLIT_HOUR12 is correct');

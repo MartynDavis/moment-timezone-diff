@@ -1,4 +1,4 @@
-﻿"use strict";
+"use strict";
 
 /*global QUnit, moment, momentTimezoneDiff, testVars*/
 
