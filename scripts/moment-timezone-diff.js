@@ -593,7 +593,7 @@
             date = new Date(selected.year, selected.month, selected.day, selected.hour, selected.minute, 0, 0);
         }
         return date;
-    }
+    };
     DateTimeElements.prototype.setSelected = function (selected) {
         var hour,
             ampm,
