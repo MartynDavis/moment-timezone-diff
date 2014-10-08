@@ -186,7 +186,7 @@
             i;
         for (i = 0; i < (hours24 ? 24 : 12); i += 1) {
             m = moment([2014, 0, 1, i, 0, 0]);
-            if (m.locale && locale) {
+            if (locale) {
                 m.locale(locale);
             }
             addComboValue(element, i, m.format(format));
@@ -197,7 +197,7 @@
             i;
         for (i = 0; i < 60; i += 1) {
             m = moment([2014, 0, 1, 0, i, 0]);
-            if (m.locale && locale) {
+            if (locale) {
                 m.locale(locale);
             }
             addComboValue(element, i, m.format(format));
@@ -207,7 +207,7 @@
         function add(value, hour) {
             var m;
             m = moment([2014, 0, 1, hour, 0, 0]);
-            if (m.locale && locale) {
+            if (locale) {
                 m.locale(locale);
             }
             addComboValue(element, value, m.format(format));
@@ -226,7 +226,7 @@
             i;
         for (i = 0; i < 12; i += 1) {
             m = moment([2014, i, 1, 0, 0, 0]);
-            if (m.locale && locale) {
+            if (locale) {
                 m.locale(locale);
             }
             names.push(m.format(format));
@@ -237,7 +237,7 @@
         var names = [ ],
             m = moment([2014, 0, 1, 0, 0, 0]),
             i;
-        if (m.locale && locale) {
+        if (locale) {
             m.locale(locale);
         }
         while (m.day() !== 0) {
@@ -254,7 +254,7 @@
             i;
         for (i = 0; i < 12; i += 1) {
             m = moment([2014, i, 1, 0, 0, 0]);
-            if (m.locale && locale) {
+            if (locale) {
                 m.locale(locale);
             }
             addComboValue(element, i, m.format(format));
@@ -265,7 +265,7 @@
             i;
         for (i = 1; i <= 31; i += 1) {
             m = moment([2014, 0, i, 0, 0, 0]);
-            if (m.locale && locale) {
+            if (locale) {
                 m.locale(locale);
             }
             addComboValue(element, i, m.format(format));
@@ -276,7 +276,7 @@
             i;
         for (i = minValue; i <= maxValue; i += 1) {
             m = moment([i, 0, 1, 0, 0, 0]);
-            if (m.locale && locale) {
+            if (locale) {
                 m.locale(locale);
             }
             addComboValue(element, i, m.format(format));
@@ -291,28 +291,6 @@
         }
         return defaultValue;
     }
-    // convertFormats - Converts moment().format() formats to jQuery datepicker.formatDate() formats
-    function convertFormats(formats) {
-        var newFormats = [ ],
-            newFormat,
-            i;
-        for (i = 0; i < formats.length; i += 1) {
-            switch (formats[i]) {
-                case 'YYYY': newFormat = 'yy'; break;
-                case 'YY':   newFormat = 'y';  break;
-                case 'M':    newFormat = 'm';  break;
-                case 'MM':   newFormat = 'mm'; break;
-                case 'MMM':  newFormat = 'M';  break;
-                case 'MMMM': newFormat = 'MM'; break;
-                case 'D':    newFormat = 'd';  break;
-                case 'DD':   newFormat = 'dd'; break;
-                case 'Do':   newFormat = 'd';  break;
-                default:     newFormat = formats[i]; break;
-            }
-            newFormats.push(newFormat);
-        }
-        return newFormats;
-    }
     function fireChangeEvent(element) {
         if (typeof document.createEvent === 'function') {
             var event = document.createEvent('HTMLEvents');
@@ -321,6 +299,35 @@
         } else {
             element.fireEvent('onchange');
         }
+    }
+    function getDatePickerOnclick(dte, minYear, maxYear) {
+        return function () {
+            var date = dte.getSelectedDate() || new Date();
+            if (date.getFullYear() < minYear) {
+                date.setYear(minYear);
+            } else if (date.getFullYear() > maxYear) {
+                date.setYear(maxYear);
+            }
+            $(dte.elements.datePicker).datepicker('setDate', date);
+            $(dte.elements.datePicker).show().focus().hide();
+        };
+    }
+    function getDatePickerOnSelect(dte) {
+        return function () {
+            var selected = dte.getSelected(),
+                date = $(dte.elements.datePicker).datepicker( "getDate" );
+            if (date) {
+                if (!selected) {
+                    selected = { };
+                    selected.hour = 0;
+                    selected.minute = 0;
+                }
+                selected.year = date.getFullYear();
+                selected.month = date.getMonth();
+                selected.day = date.getDate();
+                dte.setSelected(selected);
+            }
+        };
     }
     function DateTimeElements(id, options) {
         var element = document.getElementById(id),
@@ -340,7 +347,7 @@
             minYear = getOptionValue(options, 'minYear', 2010),
             maxYear = getOptionValue(options, 'maxYear', 2020),
             locale = getOptionValue(options, 'locale'),
-            dateFormats,
+            image,
             i;
         if (!element) {
             console.error('Element with id "' + id + '" not found');
@@ -387,67 +394,60 @@
             appendChild(element, createElement('span', { textContent: ' ' }));
             
             dateOrder = getOptionValue(options, 'dateOrder', DATE_ORDER_DMY);
-            if (getOptionValue(options, 'usejQueryDatePicker', true) && window.jQuery && $ && $.datepicker) {
-                datePickerLocale = getOptionValue(options, 'datePickerLocale');
-                datePickerOptions = { showButtonPanel: false,
-                                      changeYear: true,
-                                      changeMonth: true,
-                                      yearRange: minYear + ':' + maxYear,
-                                      onSelect: function (text) { fireChangeEvent(this); }
-                                    };
-                if (!datePickerLocale) {
-                    datePickerOptions.dayNames = getWeekdayNames('dddd', locale);
-                    datePickerOptions.dayNamesShort = getWeekdayNames('ddd', locale);
-                    datePickerOptions.dayNamesMin = getWeekdayNames('dd', locale);
-                    datePickerOptions.monthNames = getMonthNames('MMMM', locale);
-                    datePickerOptions.monthNamesShort = getMonthNames('MMM', locale);
-                }
-                if (dateOrder === DATE_ORDER_MDY) {
-                    dateFormats = [ monthFormat, dayFormat, yearFormat ];
-                } else if (dateOrder === DATE_ORDER_YMD) {
-                    dateFormats = [ yearFormat, monthFormat, dayFormat ];
-                } else {
-                    dateFormats = [ dayFormat, monthFormat, yearFormat ];
-                }
-                this.datePickerFormat = dateFormats.join(dateDelim);
-                datePickerOptions.dateFormat = convertFormats(dateFormats).join(dateDelim);
-                
-                title = getOptionValue(options, 'dateTitle', 'Enter the required date.');
-                if (getOptionValue(options, 'dateTitleShowInputFormats', true)) {
-                    title += ' ' + getOptionValue(options, 'dateTitleInputFormat', 'Supported format is') + ' ' + this.datePickerFormat;
-                }
-                elements.datePicker = appendChild(element, createElement('input', {type: 'text', title: title, size: getOptionValue(options, 'size', 10), maxlength: getOptionValue(options, 'maxlength', 30) }));
-                $(elements.datePicker).datepicker(datePickerOptions);
-                if (datePickerLocale) {
-                    $(elements.datePicker).datepicker( $.datepicker.regional[ datePickerLocale ] );
-                }
+            if (dateOrder === DATE_ORDER_MDY) {
+                dateControlsOrder = [ 1, 0, 2];
+            } else if (dateOrder === DATE_ORDER_YMD) {
+                dateControlsOrder = [ 2, 1, 0];
             } else {
-                if (dateOrder === DATE_ORDER_MDY) {
-                    dateControlsOrder = [ 1, 0, 2];
-                } else if (dateOrder === DATE_ORDER_YMD) {
-                    dateControlsOrder = [ 2, 1, 0];
-                } else {
-                    dateControlsOrder = [ 0, 1, 2];
+                dateControlsOrder = [ 0, 1, 2];
+            }
+            for (i = 0; i < dateControlsOrder.length; i += 1) {
+                if (i > 0) {
+                    appendChild(element, createElement('span', { textContent: dateDelim }));
                 }
-                for (i = 0; i < dateControlsOrder.length; i += 1) {
-                    if (i > 0) {
-                        appendChild(element, createElement('span', { textContent: dateDelim }));
-                    }
-                    if (dateControlsOrder[i] === 0) {
-                        elements.day = appendChild(element, createElement('select', { title: getOptionValue(options, 'dayTitle', 'Select day of the month') }));
-                        populateDayOptions(elements.day, dayFormat, locale);
-                    } else if (dateControlsOrder[i] === 1) {
-                        elements.month = appendChild(element, createElement('select', { title: getOptionValue(options, 'monthTitle', 'Select month of the year') }));
-                        populateMonthOptions(elements.month, monthFormat, locale);
-                    } else if (dateControlsOrder[i] === 2) {
-                        elements.year = appendChild(element, createElement('select', { title: getOptionValue(options, 'yearTitle', 'Select year') }));
-                        populateYearOptions(elements.year, yearFormat, minYear, maxYear, locale);
-                    }
+                if (dateControlsOrder[i] === 0) {
+                    elements.day = appendChild(element, createElement('select', { title: getOptionValue(options, 'dayTitle', 'Select day of the month') }));
+                    populateDayOptions(elements.day, dayFormat, locale);
+                } else if (dateControlsOrder[i] === 1) {
+                    elements.month = appendChild(element, createElement('select', { title: getOptionValue(options, 'monthTitle', 'Select month of the year') }));
+                    populateMonthOptions(elements.month, monthFormat, locale);
+                } else if (dateControlsOrder[i] === 2) {
+                    elements.year = appendChild(element, createElement('select', { title: getOptionValue(options, 'yearTitle', 'Select year') }));
+                    populateYearOptions(elements.year, yearFormat, minYear, maxYear, locale);
                 }
             }
         } else {
             console.error('Mode "' + mode + '" is invalid');
             return;
+        }
+        if (getOptionValue(options, 'usejQueryDatePicker', true) && window.jQuery && $ && $.datepicker) {
+            datePickerLocale = getOptionValue(options, 'datePickerLocale');
+            datePickerOptions = { showButtonPanel: false,
+                                  changeYear: true,
+                                  changeMonth: true,
+                                  yearRange: minYear + ':' + maxYear,
+                                  onSelect: getDatePickerOnSelect(this)
+                                };
+            if (!datePickerLocale) {
+                datePickerOptions.dayNames = getWeekdayNames('dddd', locale);
+                datePickerOptions.dayNamesShort = getWeekdayNames('ddd', locale);
+                datePickerOptions.dayNamesMin = getWeekdayNames('dd', locale);
+                datePickerOptions.monthNames = getMonthNames('MMMM', locale);
+                datePickerOptions.monthNamesShort = getMonthNames('MMM', locale);
+            }
+            appendChild(element, createElement('span', { textContent: ' ' }));
+            elements.datePicker = appendChild(element, createElement('input', { type: 'text', 
+                                                                                className: getOptionValue(options, 'datePickerClass', 'mtzdDatePicker')
+                                                                              }));
+            $(elements.datePicker).datepicker(datePickerOptions);
+            if (datePickerLocale) {
+                $(elements.datePicker).datepicker( $.datepicker.regional[ datePickerLocale ] );
+            }
+            elements.datePickerImage = appendChild(element, createElement('img', { className: getOptionValue(options, 'datePickerImageClass', 'mtzdDatePickerImage'), 
+                                                                                   title: getOptionValue(options, 'datePickerTitle', 'Select the date using a calendar'),
+                                                                                   src: getOptionValue(options, 'datePickerImage', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAUCAMAAAC+oj0CAAAABGdBTUEAALGPC/xhBQAAAwBQTFRFY2RmZ2hqampqb3BydXZ4e3x+Ll2NMWqfJmajN2mjOm6lP3GtPn25XnSKWXaWW32bQ3euRHerSHOkSHirQn26RX68Tn6xS366Y3qQYX6eZX6YfX6AQ4K+RIG/T4CzToO6ToW6U4CyUYW+UIi9V4q8Woq8X42/ZICTZ4GUa4eZbYKZb4SZboidaYWibommbY+tZYmyYoy7eo+iepypdJOyfpiye5y6fpm5RoXBTo7JV4nFUIrIUo/LXI7GW47KXpLHXpLJYpfDY53RbZ7acJvNdaDRgICBioyMj4+SjZaYk5OVlZaZlJiTl5mZgJ65nZ6gmpmtnqCeiaCwjKa0jqm3maurkaW2k627l6i4mam4oJiwoaKlo6ijpaqkpqipqaqsqKuwra2zr7Cyu7y9gqLAkq3Bla/MlLPKobbHoLrGpLrJqL3OurvCv8K9v8S+p8PWrMHUu8TAvsDIuMjVrNbuvNfqu93svuLuwcHBwcLFwsTGxMTEwsPKwMnGxsrEwsnPw8zKxM3KycbIyMvGyM3HycjJycrMyM3Jy8zOzsrPzc3Oy8bdys7Rzc7Ry9DKwdLRxNfXwtPcwdnfxtrbydPVz9LTy9XZzN/f08/U0dLN0tXO0NDT1dTT1dXV1tbZ1trW19zW19rf2dfT2tvW2dnZ2trd2t/Y29zf3Nnd3t/Z3d7ez87jwNrz1Nbo2NPq3dzh2+Db2eHf3uDdwuHsxuDoxuLtz+DhxuHxyeLwzOLxzOTx2eDj3eDn3Obp0ef10u732+zw3O7x3fL03fj74d/c4Nvg4N7i4eHi4uHk4uTj5eLi5OLk5+bk5ufq4+jj5+zm4evt5ejt6eXp6ezl7ezn6+vr4uP25+f85Ovy7ej67+n/6/Dp7fDr7vDv4fL15/P27/Dx7fX56vn86/z78u7w8fHu8fHx8fL08/Xy8vT29/Py9fXx9fX18/X59fb49fb89vjy8/v89/j69/j99vz5+PX//fb++Pn2/P33+vn6+vr8+vz8///7/fz9AAAAAAAAtJTP7AAAAQB0Uk5T////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////AFP3ByUAAAAJcEhZcwAAFiQAABYkAZsVxhQAAAAYdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuM4zml1AAAAHXSURBVChTAcwBM/4Aw8KSVFe0wmpSa97BaFaR3nNYWcDf4gBlKSdpUywoGL4NKyoycBouDnUtLS5mAA82L2dONGQOvxlONzVvMEUhdDFFRBIAB0IgIyAfQBBBCkA9ESQiPhdACzpDCQAIOTgMHB08HRQUOzsUFSIeFhMWJSYGADe4uLe4uKy4t7m6urm4tbO1dne1tTMAYOCVjXqIr6fIxsbGxsi7tpCTl4/jVQBe4IrJqorm+eyk+fnq0vrvrdbXq/pQAFzPh86wg+X995389+XM/fWu2dqL9loAXdyEpqCD0/Drqfjr1Mz57aHR0Yz9WwBM225+jm2ao6mZmcSimZ+xfYCBcfRHAFHmsujmpNX365zr6uXK6eGWvdCU8UkATd2q+uyk5vnsgv3k5Mb74ZbY2H/hSQBL5pulxo2or8iJqMWomK+8cnJ8bPNKAEjsnsfVisvV1YXV1cuezdF5bHxh+kcAStWd1e6K1e7Vhezm1aTs7mN6lU/7SgBK1ar5+aTV6uak5uzVx+7yY3qeX/sbAEfVhXhjeIWFhXh7hXh4eYZhX15b50cATeb3/f397Pv9/fn9/f39+unp+fvgRgBHRgICAgICAgICAgICAgIBBAMAAgVPytv2Q9UZjMgAAAAASUVORK5CYII=') 
+                                                                                 }));
+            elements.datePickerImage.addEventListener('click', getDatePickerOnclick(this, minYear, maxYear), false);
         }
         appendChild(element, createElement('span', { textContent: ' ' }));
         elements.timezone = appendChild(element, createElement('select', { title: getOptionValue(options, 'timezoneTitle', 'Select timezone') }));
@@ -534,7 +534,7 @@
             ampm,
             m;
         if (this.mode === MODE_SINGLE) {
-            if (m.locale && this.locale) {
+            if (this.locale) {
                 m = moment(this.elements.datetime.value, this.timeInputFormats, this.locale);
             } else {
                 m = moment(this.elements.datetime.value, this.timeInputFormats);
@@ -556,27 +556,9 @@
             selected = { };
             selected.hour = getSelected(this.elements.hour);
             selected.minute = getSelected(this.elements.minute);
-            if (this.elements.datePicker) {
-                m = moment(this.elements.datePicker.value, this.datePickerFormat);
-                if (m.locale && this.locale) {
-                    m = moment(this.elements.datePicker.value, this.datePickerFormat, this.locale);
-                } else {
-                    m = moment(this.elements.datePicker.value, this.datePickerFormat);
-                }
-                if (m.isValid()) {
-                    selected.month = m.month();
-                    selected.day = m.date();
-                    selected.year = m.year();
-                    classRemove(this.elements.datePicker, this.errorClassName);
-                } else {
-                    classAdd(this.elements.datePicker, this.errorClassName);
-                    return;
-                }
-            } else {
-                selected.month = getSelected(this.elements.month);
-                selected.day = getSelected(this.elements.day);
-                selected.year = getSelected(this.elements.year);
-            }
+            selected.month = getSelected(this.elements.month);
+            selected.day = getSelected(this.elements.day);
+            selected.year = getSelected(this.elements.year);
             if (this.mode === MODE_SPLIT_HOUR12) {
                 ampm = getSelected(this.elements.ampm);
                 if (ampm === 0) {
@@ -604,28 +586,28 @@
         }
         return selected;
     };
+    DateTimeElements.prototype.getSelectedDate = function () {
+        var selected = this.getSelected(),
+            date;
+        if (selected) {
+            date = new Date(selected.year, selected.month, selected.day, selected.hour, selected.minute, 0, 0);
+        }
+        return date;
+    }
     DateTimeElements.prototype.setSelected = function (selected) {
         var hour,
             ampm,
             m;
         if (this.mode === MODE_SINGLE) {
             m = moment([selected.year, selected.month, selected.day, selected.hour, selected.minute, 0]);
-            if (m.locale && this.locale) {
+            if (this.locale) {
                 m.locale(this.locale);
             }
             this.elements.datetime.value = m.format(this.timeDisplayFormat);
         } else if ((this.mode === MODE_SPLIT_HOUR12) || (this.mode === MODE_SPLIT_HOUR24)) {
-            if (this.elements.datePicker) {
-                m = moment([selected.year, selected.month, selected.day, selected.hour, selected.minute, 0]);
-                if (m.locale && this.locale) {
-                    m.locale(this.locale);
-                }
-                this.elements.datePicker.value = m.format(this.datePickerFormat);
-            } else {
-                setSelected(this.elements.year, selected.year);
-                setSelected(this.elements.month, selected.month);
-                setSelected(this.elements.day, selected.day);
-            }
+            setSelected(this.elements.year, selected.year);
+            setSelected(this.elements.month, selected.month);
+            setSelected(this.elements.day, selected.day);
             hour = selected.hour;
             if (this.mode === MODE_SPLIT_HOUR12) {
                 if (hour === 0) {
@@ -775,7 +757,7 @@
             setOptionValues(this.options, options);
         }
         this.moment = moment();
-        if (this.moment.locale && this.options.locale) {
+        if (this.options.locale) {
             this.moment.locale(this.options.locale);
         }
         this.timezone = undefined;
@@ -889,14 +871,14 @@
             this.moment = moment(value);
             this.timezone = undefined;
         }
-        if (this.moment.locale && this.options.locale) {
+        if (this.options.locale) {
             this.moment.locale(this.options.locale);
         }
         this.refresh();
     };
     Environment.prototype.setCurrentTime = function () {
         this.moment = moment();
-        if (this.moment.locale && this.options.locale) {
+        if (this.options.locale) {
             this.moment.locale(this.options.locale);
         }
         this.timezone = undefined;
@@ -910,7 +892,7 @@
         } else {
             this.moment = moment(values);
         }
-        if (this.moment.locale && this.options.locale) {
+        if (this.options.locale) {
             this.moment.locale(this.options.locale);
         }
         this.timezone = { text: (name || timezone), value: timezone };
@@ -929,7 +911,7 @@
             } else {
                 this.moment = moment(values);
             }
-            if (this.moment.locale && this.options.locale) {
+            if (this.options.locale) {
                 this.moment.locale(this.options.locale);
             }
             this.timezone = selected.timezone;

@@ -17,6 +17,16 @@
         margin: 0 auto;
         text-align: center;
     }
+    .mtzdDatePicker {
+        display: none;
+    }
+    .mtzdDatePickerImage {
+        position: relative;
+        cursor: pointer;
+        height: 20px;
+        width: 22px;
+        top: 5px;
+    }
 </style>
 </head>
 <script>
@@ -31,9 +41,11 @@
                                                                                     hourTitle: "Sélectionnez les heures de la journée",
                                                                                     minuteTitle: "Sélectionner les minutes de l'heure",
                                                                                     ampmTitle: "Sélectionnez le matin ou l'après-midi",
-                                                                                    dateTitle: "Entrez la date requise.",
-                                                                                    dateTitleInputFormat: "Format pris en charge est",
+                                                                                    monthTitle: "Sélectionnez un mois de l'année",
+                                                                                    dayTitle: "Choisir jour du mois",
+                                                                                    yearTitle: "Sélectionnez l'année",
                                                                                     timezoneTitle: "Sélectionnez le fuseau horaire",
+                                                                                    datePickerTitle: "Sélectionnez la date en utilisant le calendrier.",
                                                                                     monthFormat: "MMMM"
                                                                                   });
         testVars.dte1.addTimezone('Europe/Paris', 'Sebastian Roché');
@@ -45,12 +57,24 @@
         testVars.dte2.addTimezone('US/Eastern');
         testVars.dte2.addTimezone('Australia/Perth');
 
-        testVars.dte3 = new momentTimezoneDiff.DateTimeElements('mtzdDate24hour2', { mode: momentTimezoneDiff.MODE_SPLIT_HOUR12,
+        testVars.dte3 = new momentTimezoneDiff.DateTimeElements('mtzdDate12hour2', { mode: momentTimezoneDiff.MODE_SPLIT_HOUR12,
                                                                                      dateOrder: momentTimezoneDiff.DATE_ORDER_YMD,
                                                                                      usejQueryDatePicker: false
                                                                                    });
         testVars.dte3.addTimezone('Europe/London');
         testVars.dte3.addTimezone('Japan');
+
+        testVars.dte4 = new momentTimezoneDiff.DateTimeElements('mtzdDateSingle', { mode: momentTimezoneDiff.MODE_SINGLE,
+                                                                                    usejQueryDatePicker: true
+                                                                                  });
+        testVars.dte4.addTimezone('America/Argentina/Buenos_Aires', 'Barry');
+        testVars.dte4.addTimezone('Europe/Budapest', 'Bruce');
+        testVars.dte4.addTimezone('Pacific/Norfolk', 'Brett');
+
+        testVars.dte5 = new momentTimezoneDiff.DateTimeElements('mtzdDateSingle2', { mode: momentTimezoneDiff.MODE_SINGLE,
+                                                                                    usejQueryDatePicker: false
+                                                                                  });
+        testVars.dte5.addTimezone('America/Blanc-Sablon');
 
         testVars.env = new momentTimezoneDiff.Environment();
         testVars.env.update([2014, 8, 1, 0, 0, 0], 'Australia/Melbourne', 'Dino');
@@ -63,9 +87,13 @@
     <div class='date' id='mtzdDate12hour'></div>
     <h2>Test #2 - DateTimeElements (24 hour)</h2>
     <div class='date' id='mtzdDate24hour'></div>
-    <h2>Test #3 - DateTimeElements (24 hour - no date picker)</h2>
-    <div class='date' id='mtzdDate24hour2'></div>
-    <h2>Test #4 - 12 hour clock (TABLE)</h2>
+    <h2>Test #3 - DateTimeElements (12 hour - no date picker)</h2>
+    <div class='date' id='mtzdDate12hour2'></div>
+    <h2>Test #4 - DateTimeElements (single)</h2>
+    <div class='date' id='mtzdDateSingle'></div>
+    <h2>Test #5 - DateTimeElements (single - no date picker)</h2>
+    <div class='date' id='mtzdDateSingle2'></div>
+    <h2>Test #6 - 12 hour clock (TABLE)</h2>
     <div class='date' id='mtzdDate'></div>
     <div class='table'>
         <table>

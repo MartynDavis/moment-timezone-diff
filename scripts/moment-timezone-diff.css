@@ -11,3 +11,13 @@
 .mtzdLink:hover {
     text-decoration: underline;
 }
+.mtzdDatePicker {
+    display: none;
+}
+.mtzdDatePickerImage {
+    position: relative;
+    cursor: pointer;
+    height: 20px;
+    width: 22px;
+    top: 5px;
+}

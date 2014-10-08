@@ -60,13 +60,27 @@ function makeOptions(from, to, length, exceptions) {
     }
     return values;
 }
+function classPresentInClassName(className, classNameToCheck) {
+    var classes = className.split(/\s+/),
+        i;
+    for (i = 0; i < classes.length; i += 1) {
+        if (classes[i] === classNameToCheck) {
+            return true;
+        }
+    }
+    return false;
+}
 QUnit.test('DateTimeElements1', function (assert) {
     var dateElement,
         index = 0,
         hourElement,
         minuteElement,
         ampmElement,
+        dayElement,
+        monthElement,
+        yearElement,
         datePickerElement,
+        datePickerImageElement,
         timezoneElement,
         currentTimeElement;
     dateElement = document.getElementById('mtzdDate12hour');
@@ -94,11 +108,47 @@ QUnit.test('DateTimeElements1', function (assert) {
     expectChild(assert, dateElement, index++, { tagName: 'SPAN', 
                                                 textContent: ' '
                                               });
+    dayElement = expectChild(assert, dateElement, index++, { tagName: 'SELECT', 
+                                                             title: "Choisir jour du mois",
+                                                             options: makeOptions(1, 31, 2)
+                                                           });
+    expectChild(assert, dateElement, index++, { tagName: 'SPAN', 
+                                                textContent: '-'
+                                              });
+    monthElement = expectChild(assert, dateElement, index++, { tagName: 'SELECT', 
+                                                               title: "Sélectionnez un mois de l'année",
+                                                               options: [ { text: 'janvier',   value:  '0' },
+                                                                          { text: 'février',   value:  '1' },
+                                                                          { text: 'mars',      value:  '2' },
+                                                                          { text: 'avril',     value:  '3' },
+                                                                          { text: 'mai',       value:  '4' },
+                                                                          { text: 'juin',      value:  '5' },
+                                                                          { text: 'juillet',   value:  '6' },
+                                                                          { text: 'août',      value:  '7' },
+                                                                          { text: 'septembre', value:  '8' },
+                                                                          { text: 'octobre',   value:  '9' },
+                                                                          { text: 'novembre',  value: '10' },
+                                                                          { text: 'décembre',  value: '11' }
+                                                                        ]
+                                                             });
+    expectChild(assert, dateElement, index++, { tagName: 'SPAN', 
+                                                textContent: '-'
+                                              });
+    yearElement = expectChild(assert, dateElement, index++, { tagName: 'SELECT', 
+                                                              title: "Sélectionnez l'année",
+                                                              options: makeOptions(2010, 2020)
+                                                            });
+    expectChild(assert, dateElement, index++, { tagName: 'SPAN', 
+                                                textContent: ' '
+                                              });
     datePickerElement = expectChild(assert, dateElement, index++, { tagName: 'INPUT',
-                                                                    type: 'text',
-                                                                    title: "Entrez la date requise. Format pris en charge est DD-MMMM-YYYY",
-                                                                    size: 10
+                                                                    type: 'text'
                                                                   });
+    assert.ok(classPresentInClassName(datePickerElement.className, 'mtzdDatePicker'), 'Class name "mtzdDatePicker" is present in "' + datePickerElement.className + '"');
+    datePickerImageElement = expectChild(assert, dateElement, index++, { tagName: 'IMG',
+                                                                         className: 'mtzdDatePickerImage',
+                                                                         title: "Sélectionnez la date en utilisant le calendrier."
+                                                                       });
     expectChild(assert, dateElement, index++, { tagName: 'SPAN', 
                                                 textContent: ' '
                                               });
@@ -125,22 +175,26 @@ QUnit.test('DateTimeElements1', function (assert) {
     assert.equal(testVars.dte1.elements.hour, hourElement, 'Hour element matches');
     assert.equal(testVars.dte1.elements.minute, minuteElement, 'Minute element matches');
     assert.equal(testVars.dte1.elements.ampm, ampmElement, 'AmPm element matches');
-    assert.equal(testVars.dte1.elements.day, undefined, 'Day element is not defined');
-    assert.equal(testVars.dte1.elements.month, undefined, 'Month element is not defined');
-    assert.equal(testVars.dte1.elements.year, undefined, 'Year element is not defined');
+    assert.equal(testVars.dte1.elements.day, dayElement, 'Day element matches');
+    assert.equal(testVars.dte1.elements.month, monthElement, 'Month element matches');
+    assert.equal(testVars.dte1.elements.year, yearElement, 'Year element matches');
     assert.equal(testVars.dte1.elements.timezone, timezoneElement, 'Timezone element matches');
     assert.equal(testVars.dte1.elements.datetime, undefined, 'Date/time element is not defined');
     assert.equal(testVars.dte1.timeDisplayFormat, undefined, 'Display format is not defined');
     assert.equal(testVars.dte1.timeInputFormats, undefined, 'Input formats is not defined');
     assert.equal(testVars.dte1.elements.datePicker, datePickerElement, 'Date Picker element matches');
-    assert.equal(testVars.dte1.datePickerFormat, 'DD-MMMM-YYYY', 'Date display/input format matches');
+    assert.equal(testVars.dte1.elements.datePickerImage, datePickerImageElement, 'Date Picker image element matches');
 });
 QUnit.test('DateTimeElements2', function (assert) {
     var dateElement,
         index = 0,
         hourElement,
         minuteElement,
+        dayElement,
+        monthElement,
+        yearElement,
         datePickerElement,
+        datePickerImageElement,
         timezoneElement,
         currentTimeElement;
     dateElement = document.getElementById('mtzdDate24hour');
@@ -159,11 +213,47 @@ QUnit.test('DateTimeElements2', function (assert) {
     expectChild(assert, dateElement, index++, { tagName: 'SPAN', 
                                                 textContent: ' '
                                               });
+    monthElement = expectChild(assert, dateElement, index++, { tagName: 'SELECT', 
+                                                               title: "Select month of the year",
+                                                               options: [ { text: 'Jan', value:  '0'},
+                                                                          { text: 'Feb', value:  '1'},
+                                                                          { text: 'Mar', value:  '2'},
+                                                                          { text: 'Apr', value:  '3'},
+                                                                          { text: 'May', value:  '4'},
+                                                                          { text: 'Jun', value:  '5'},
+                                                                          { text: 'Jul', value:  '6'},
+                                                                          { text: 'Aug', value:  '7'},
+                                                                          { text: 'Sep', value:  '8'},
+                                                                          { text: 'Oct', value:  '9'},
+                                                                          { text: 'Nov', value: '10'},
+                                                                          { text: 'Dec', value: '11'}
+                                                                        ]
+                                                             });
+    expectChild(assert, dateElement, index++, { tagName: 'SPAN', 
+                                                textContent: '-'
+                                              });
+    dayElement = expectChild(assert, dateElement, index++, { tagName: 'SELECT', 
+                                                             title: "Select day of the month",
+                                                             options: makeOptions(1, 31, 2)
+                                                           });
+    expectChild(assert, dateElement, index++, { tagName: 'SPAN', 
+                                                textContent: '-'
+                                              });
+    yearElement = expectChild(assert, dateElement, index++, { tagName: 'SELECT', 
+                                                              title: "Select year",
+                                                              options: makeOptions(2010, 2020)
+                                                            });
+    expectChild(assert, dateElement, index++, { tagName: 'SPAN', 
+                                                textContent: ' '
+                                              });
     datePickerElement = expectChild(assert, dateElement, index++, { tagName: 'INPUT',
-                                                                    type: 'text',
-                                                                    title: "Enter the required date. Supported format is MMM-DD-YYYY",
-                                                                    size: 10
+                                                                    type: 'text'
                                                                   });
+    assert.ok(classPresentInClassName(datePickerElement.className, 'mtzdDatePicker'), 'Class name "mtzdDatePicker" is present in "' + datePickerElement.className + '"');
+    datePickerImageElement = expectChild(assert, dateElement, index++, { tagName: 'IMG',
+                                                                         className: 'mtzdDatePickerImage',
+                                                                         title: "Select the date using a calendar"
+                                                                       });
     expectChild(assert, dateElement, index++, { tagName: 'SPAN', 
                                                 textContent: ' '
                                               });
@@ -190,15 +280,15 @@ QUnit.test('DateTimeElements2', function (assert) {
     assert.equal(testVars.dte2.elements.hour, hourElement, 'Hour element matches');
     assert.equal(testVars.dte2.elements.minute, minuteElement, 'Minute element matches');
     assert.equal(testVars.dte2.elements.ampm, undefined, 'AmPm element is not defined');
-    assert.equal(testVars.dte2.elements.day, undefined, 'Day element is not defined');
-    assert.equal(testVars.dte2.elements.month, undefined, 'Month element is not defined');
-    assert.equal(testVars.dte2.elements.year, undefined, 'Year element is not defined');
+    assert.equal(testVars.dte2.elements.day, dayElement, 'Day element matches');
+    assert.equal(testVars.dte2.elements.month, monthElement, 'Month element matches');
+    assert.equal(testVars.dte2.elements.year, yearElement, 'Year element matches');
     assert.equal(testVars.dte2.elements.timezone, timezoneElement, 'Timezone element matches');
     assert.equal(testVars.dte2.elements.datetime, undefined, 'Date/time element is not defined');
     assert.equal(testVars.dte2.timeDisplayFormat, undefined, 'Display format is not defined');
     assert.equal(testVars.dte2.timeInputFormats, undefined, 'Input formats is not defined');
     assert.equal(testVars.dte2.elements.datePicker, datePickerElement, 'Date Picker element matches');
-    assert.equal(testVars.dte2.datePickerFormat, 'MMM-DD-YYYY', 'Date display/input format matches');
+    assert.equal(testVars.dte2.elements.datePickerImage, datePickerImageElement, 'Date Picker image element matches');
 });
 QUnit.test('DateTimeElements3', function (assert) {
     var dateElement,
@@ -211,7 +301,7 @@ QUnit.test('DateTimeElements3', function (assert) {
         yearElement,
         timezoneElement,
         currentTimeElement;
-    dateElement = document.getElementById('mtzdDate24hour2');
+    dateElement = document.getElementById('mtzdDate12hour2');
     assert.ok(dateElement, 'Date element exists');
     hourElement = expectChild(assert, dateElement, index++, { tagName: 'SELECT', 
                                                               title: 'Select hour of the day',
@@ -302,6 +392,159 @@ QUnit.test('DateTimeElements3', function (assert) {
     assert.equal(testVars.dte3.elements.datePicker, undefined, 'Date Picker element is not defined');
     assert.equal(testVars.dte3.datePickerFormat, undefined, 'Date display/input format is not defined');
 });
+QUnit.test('DateTimeElements4', function (assert) {
+    var dateElement,
+        index = 0,
+        datetimeElement,
+        datePickerElement,
+        datePickerImageElement,
+        timezoneElement,
+        currentTimeElement;
+    dateElement = document.getElementById('mtzdDateSingle');
+    assert.ok(dateElement, 'Date element exists');
+    datetimeElement = expectChild(assert, dateElement, index++, { tagName: 'INPUT',
+                                                                  type: 'text',
+                                                                  title: 'Enter the required date and time.  Supported formats are:\n' +
+                                                                         '\n' +
+                                                                         '  dddd h:mm a DD-MMM-YYYY\n' +
+                                                                         '  dddd H:mm DD-MMM-YYYY\n' +
+                                                                         '  h:mm a DD-MMM-YYYY\n' +
+                                                                         '  H:mm DD-MMM-YYYY\n' +
+                                                                         '  h:mm a MMM-DD-YYYY\n' +
+                                                                         '  H:mm MMM-DD-YYYY\n' +
+                                                                         '  h:mm a DD-MM-YYYY\n' +
+                                                                         '  H:mm DD-MM-YYYY\n' +
+                                                                         '  h:mm a MM-DD-YYYY\n' +
+                                                                         '  H:mm MM-DD-YYYY',
+                                                                  size: 28
+                                                                });
+    expectChild(assert, dateElement, index++, { tagName: 'SPAN', 
+                                                textContent: ' '
+                                              });
+    datePickerElement = expectChild(assert, dateElement, index++, { tagName: 'INPUT',
+                                                                    type: 'text'
+                                                                  });
+    assert.ok(classPresentInClassName(datePickerElement.className, 'mtzdDatePicker'), 'Class name "mtzdDatePicker" is present in "' + datePickerElement.className + '"');
+    datePickerImageElement = expectChild(assert, dateElement, index++, { tagName: 'IMG',
+                                                                         className: 'mtzdDatePickerImage',
+                                                                         title: "Select the date using a calendar"
+                                                                       });
+    expectChild(assert, dateElement, index++, { tagName: 'SPAN', 
+                                                textContent: ' '
+                                              });
+    timezoneElement = expectChild(assert, dateElement, index++, { tagName: 'SELECT', 
+                                                                  title: "Select timezone",
+                                                                  options: [ { text: '',      value: '' },
+                                                                             { text: 'Barry', value: 'America/Argentina/Buenos_Aires' },
+                                                                             { text: 'Bruce', value: 'Europe/Budapest' },
+                                                                             { text: 'Brett', value: 'Pacific/Norfolk' }
+                                                                           ]
+                                                                });
+    expectChild(assert, dateElement, index++, { tagName: 'SPAN', 
+                                                textContent: ' '
+                                              });
+    currentTimeElement = expectChild(assert, dateElement, index++, { tagName: 'SPAN', 
+                                                                     className: 'mtzdCurrentTime',
+                                                                     title: 'Current Time',
+                                                                     textContent: '\u25d4'
+                                                                   });
+    expectChildren(assert, dateElement, index);
+    assert.equal(testVars.dte4.locale, undefined, 'locale is not defined');
+    assert.equal(testVars.dte4.mode, momentTimezoneDiff.MODE_SINGLE, 'Mode matches');
+    assert.equal(testVars.dte4.errorClassName, 'mtzdError', 'Error class matches');
+    assert.equal(testVars.dte4.currentTime, currentTimeElement, 'Current time element matches');
+    assert.equal(testVars.dte4.elements.hour, undefined, 'Hour element is not defined');
+    assert.equal(testVars.dte4.elements.minute, undefined, 'Minute element is not defined');
+    assert.equal(testVars.dte4.elements.ampm, undefined, 'AmPm element is not defined');
+    assert.equal(testVars.dte4.elements.day, undefined, 'Day element is not defined');
+    assert.equal(testVars.dte4.elements.month, undefined, 'Month element is not defined');
+    assert.equal(testVars.dte4.elements.year, undefined, 'Year element is not defined');
+    assert.equal(testVars.dte4.elements.datetime, datetimeElement, 'Date/time element matches');
+    assert.equal(testVars.dte4.elements.timezone, timezoneElement, 'Timezone element matches');
+    assert.equal(testVars.dte4.timeDisplayFormat, 'dddd h:mm a DD-MMM-YYYY', 'Display format matches');
+    assert.deepEqual(testVars.dte4.timeInputFormats, [ 'dddd h:mm a DD-MMM-YYYY', 
+                                                       'dddd H:mm DD-MMM-YYYY', 
+                                                       'h:mm a DD-MMM-YYYY', 
+                                                       'H:mm DD-MMM-YYYY', 
+                                                       'h:mm a MMM-DD-YYYY', 
+                                                       'H:mm MMM-DD-YYYY', 
+                                                       'h:mm a DD-MM-YYYY', 
+                                                       'H:mm DD-MM-YYYY', 
+                                                       'h:mm a MM-DD-YYYY', 
+                                                       'H:mm MM-DD-YYYY'
+                                                     ], 'Input formats match');
+    assert.equal(testVars.dte4.elements.datePicker, datePickerElement, 'Date Picker element matches');
+    assert.equal(testVars.dte4.elements.datePickerImage, datePickerImageElement, 'Date Picker element matches');
+});
+QUnit.test('DateTimeElements5', function (assert) {
+    var dateElement,
+        index = 0,
+        datetimeElement,
+        timezoneElement,
+        currentTimeElement;
+    dateElement = document.getElementById('mtzdDateSingle2');
+    assert.ok(dateElement, 'Date element exists');
+    datetimeElement = expectChild(assert, dateElement, index++, { tagName: 'INPUT',
+                                                                  type: 'text',
+                                                                  title: 'Enter the required date and time.  Supported formats are:\n' +
+                                                                         '\n' +
+                                                                         '  dddd h:mm a DD-MMM-YYYY\n' +
+                                                                         '  dddd H:mm DD-MMM-YYYY\n' +
+                                                                         '  h:mm a DD-MMM-YYYY\n' +
+                                                                         '  H:mm DD-MMM-YYYY\n' +
+                                                                         '  h:mm a MMM-DD-YYYY\n' +
+                                                                         '  H:mm MMM-DD-YYYY\n' +
+                                                                         '  h:mm a DD-MM-YYYY\n' +
+                                                                         '  H:mm DD-MM-YYYY\n' +
+                                                                         '  h:mm a MM-DD-YYYY\n' +
+                                                                         '  H:mm MM-DD-YYYY',
+                                                                  size: 28
+                                                                });
+    expectChild(assert, dateElement, index++, { tagName: 'SPAN', 
+                                                textContent: ' '
+                                              });
+    timezoneElement = expectChild(assert, dateElement, index++, { tagName: 'SELECT', 
+                                                                  title: "Select timezone",
+                                                                  options: [ { text: '',                     value: '' },
+                                                                             { text: 'America/Blanc-Sablon', value: 'America/Blanc-Sablon' }
+                                                                           ]
+                                                                });
+    expectChild(assert, dateElement, index++, { tagName: 'SPAN', 
+                                                textContent: ' '
+                                              });
+    currentTimeElement = expectChild(assert, dateElement, index++, { tagName: 'SPAN', 
+                                                                     className: 'mtzdCurrentTime',
+                                                                     title: 'Current Time',
+                                                                     textContent: '\u25d4'
+                                                                   });
+    expectChildren(assert, dateElement, index);
+    assert.equal(testVars.dte5.locale, undefined, 'locale is not defined');
+    assert.equal(testVars.dte5.mode, momentTimezoneDiff.MODE_SINGLE, 'Mode matches');
+    assert.equal(testVars.dte5.errorClassName, 'mtzdError', 'Error class matches');
+    assert.equal(testVars.dte5.currentTime, currentTimeElement, 'Current time element matches');
+    assert.equal(testVars.dte5.elements.hour, undefined, 'Hour element is not defined');
+    assert.equal(testVars.dte5.elements.minute, undefined, 'Minute element is not defined');
+    assert.equal(testVars.dte5.elements.ampm, undefined, 'AmPm element is not defined');
+    assert.equal(testVars.dte5.elements.day, undefined, 'Day element is not defined');
+    assert.equal(testVars.dte5.elements.month, undefined, 'Month element is not defined');
+    assert.equal(testVars.dte5.elements.year, undefined, 'Year element is not defined');
+    assert.equal(testVars.dte5.elements.datetime, datetimeElement, 'Date/time element matches');
+    assert.equal(testVars.dte5.elements.timezone, timezoneElement, 'Timezone element matches');
+    assert.equal(testVars.dte5.timeDisplayFormat, 'dddd h:mm a DD-MMM-YYYY', 'Display format matches');
+    assert.deepEqual(testVars.dte5.timeInputFormats, [ 'dddd h:mm a DD-MMM-YYYY', 
+                                                       'dddd H:mm DD-MMM-YYYY', 
+                                                       'h:mm a DD-MMM-YYYY', 
+                                                       'H:mm DD-MMM-YYYY', 
+                                                       'h:mm a MMM-DD-YYYY', 
+                                                       'H:mm MMM-DD-YYYY', 
+                                                       'h:mm a DD-MM-YYYY', 
+                                                       'H:mm DD-MM-YYYY', 
+                                                       'h:mm a MM-DD-YYYY', 
+                                                       'H:mm MM-DD-YYYY'
+                                                     ], 'Input formats match');
+    assert.equal(testVars.dte5.elements.datePicker, undefined, 'Date Picker element is not defined');
+    assert.equal(testVars.dte5.elements.datePickerImage, undefined, 'Date Picker element is not defined');
+});
 function expectTimezone(assert, timezones, index, timezone, formats) {
     var i;
     assert.ok(timezones[index], 'Timezone exists');
@@ -358,16 +601,6 @@ function getTimezone(element) {
     }
     return undefined;
 }
-function classPresentInClassName(className, classNameToCheck) {
-    var classes = className.split(/\s+/),
-        i;
-    for (i = 0; i < classes.length; i += 1) {
-        if (classes[i] === classNameToCheck) {
-            return true;
-        }
-    }
-    return false;
-}
 function verifyLink(assert, env, containerElement, row, col, timezone, name, linkClass) {
     var cells = containerElement && containerElement.children && containerElement.children[row],
         cell,
@@ -392,7 +625,11 @@ QUnit.test('Environment', function (assert) {
         hourElement,
         minuteElement,
         ampmElement,
+        dayElement,
+        monthElement,
+        yearElement,
         datePickerElement,
+        datePickerImageElement,
         timezoneElement,
         currentTimeElement,
         formats,
@@ -450,11 +687,47 @@ QUnit.test('Environment', function (assert) {
     expectChild(assert, dateElement, index++, { tagName: 'SPAN', 
                                                 textContent: ' '
                                               });
+    dayElement = expectChild(assert, dateElement, index++, { tagName: 'SELECT', 
+                                                             title: "Select day of the month",
+                                                             options: makeOptions(1, 31, 2)
+                                                           });
+    expectChild(assert, dateElement, index++, { tagName: 'SPAN', 
+                                                textContent: '-'
+                                              });
+    monthElement = expectChild(assert, dateElement, index++, { tagName: 'SELECT', 
+                                                               title: "Select month of the year",
+                                                               options: [ { text: 'Jan', value:  '0'},
+                                                                          { text: 'Feb', value:  '1'},
+                                                                          { text: 'Mar', value:  '2'},
+                                                                          { text: 'Apr', value:  '3'},
+                                                                          { text: 'May', value:  '4'},
+                                                                          { text: 'Jun', value:  '5'},
+                                                                          { text: 'Jul', value:  '6'},
+                                                                          { text: 'Aug', value:  '7'},
+                                                                          { text: 'Sep', value:  '8'},
+                                                                          { text: 'Oct', value:  '9'},
+                                                                          { text: 'Nov', value: '10'},
+                                                                          { text: 'Dec', value: '11'}
+                                                                        ]
+                                                             });
+    expectChild(assert, dateElement, index++, { tagName: 'SPAN', 
+                                                textContent: '-'
+                                              });
+    yearElement = expectChild(assert, dateElement, index++, { tagName: 'SELECT', 
+                                                              title: "Select year",
+                                                              options: makeOptions(2010, 2020)
+                                                            });
+    expectChild(assert, dateElement, index++, { tagName: 'SPAN', 
+                                                textContent: ' '
+                                              });
     datePickerElement = expectChild(assert, dateElement, index++, { tagName: 'INPUT',
-                                                                    type: 'text',
-                                                                    title: "Enter the required date. Supported format is DD-MMM-YYYY",
-                                                                    size: 10
+                                                                    type: 'text'
                                                                   });
+    assert.ok(classPresentInClassName(datePickerElement.className, 'mtzdDatePicker'), 'Class name "mtzdDatePicker" is present in "' + datePickerElement.className + '"');
+    datePickerImageElement = expectChild(assert, dateElement, index++, { tagName: 'IMG',
+                                                                         className: 'mtzdDatePickerImage',
+                                                                         title: "Select the date using a calendar"
+                                                                       });
     expectChild(assert, dateElement, index++, { tagName: 'SPAN', 
                                                 textContent: ' '
                                               });
@@ -487,15 +760,15 @@ QUnit.test('Environment', function (assert) {
     assert.equal(testVars.env.dateTimeElements.elements.hour, hourElement, 'Hour element matches');
     assert.equal(testVars.env.dateTimeElements.elements.minute, minuteElement, 'Minute element matches');
     assert.equal(testVars.env.dateTimeElements.elements.ampm, ampmElement, 'AmPm element matches');
-    assert.equal(testVars.env.dateTimeElements.elements.day, undefined, 'Day element is not defined');
-    assert.equal(testVars.env.dateTimeElements.elements.month, undefined, 'Month element is not defined');
-    assert.equal(testVars.env.dateTimeElements.elements.year, undefined, 'Year element is not defined');
+    assert.equal(testVars.env.dateTimeElements.elements.day, dayElement, 'Day element matches');
+    assert.equal(testVars.env.dateTimeElements.elements.month, monthElement, 'Month element matches');
+    assert.equal(testVars.env.dateTimeElements.elements.year, yearElement, 'Year element matches');
     assert.equal(testVars.env.dateTimeElements.elements.timezone, timezoneElement, 'Timezone element matches');
     assert.equal(testVars.env.dateTimeElements.elements.datetime, undefined, 'Date/time element is not defined');
     assert.equal(testVars.env.dateTimeElements.timeDisplayFormat, undefined, 'Display format is not defined');
     assert.equal(testVars.env.dateTimeElements.timeInputFormats, undefined, 'Input formats is not defined');
     assert.equal(testVars.env.dateTimeElements.elements.datePicker, datePickerElement, 'Date Picker element matches');
-    assert.equal(testVars.env.dateTimeElements.datePickerFormat, 'DD-MMM-YYYY', 'Date display/input format matches');
+    assert.equal(testVars.env.dateTimeElements.elements.datePickerImage, datePickerImageElement, 'Date Picker image element matches');
 
     assert.deepEqual(testVars.env.options, defaultOptions, 'options matches default options');
     assert.deepEqual(testVars.env.getOptions(), defaultOptions, 'getOptions() matches default options');
