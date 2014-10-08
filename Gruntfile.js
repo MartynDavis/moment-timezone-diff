@@ -76,5 +76,5 @@ module.exports = function(grunt) {
   grunt.registerTask('default', [ 'jshint', 'mochaTest', 'qunit' ]);
   grunt.registerTask('jshint-job', [ 'jshint' ]);
   grunt.registerTask('qunit-job', [ 'jshint', 'qunit' ]);
-  grunt.registerTask('build', [ 'jshint', 'mochaTest', 'qunit', 'version.minor' ]);
+  grunt.registerTask('build', [ 'jshint', 'mochaTest', 'qunit', 'version' ]);
 };

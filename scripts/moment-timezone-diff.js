@@ -1056,7 +1056,7 @@
         setOptionValues(this.options, o);
     };
     var mtzd = { };
-    mtzd.version = '0.1.0';
+    mtzd.version = '0.2.0';
     mtzd.MODE_SINGLE = MODE_SINGLE;
     mtzd.MODE_SPLIT_HOUR24 = MODE_SPLIT_HOUR24;
     mtzd.MODE_SPLIT_HOUR12 = MODE_SPLIT_HOUR12;
