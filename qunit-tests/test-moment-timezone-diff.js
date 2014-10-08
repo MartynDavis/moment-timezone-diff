@@ -99,6 +99,40 @@ function makeOptions(from, to, length, exceptions) {
     }
     return values;
 }
+function getDateTimeElementValues(dte) {
+    var values = { },
+        name;
+    if (dte && dte.elements && values) {
+        for (name in dte.elements) {
+            if (dte.elements.hasOwnProperty(name)) {
+                if (dte.elements[name]) {
+                    if (dte.elements[name].options) {
+                        values[name] = dte.elements[name].selectedIndex;
+                    } else {
+                        values[name] = dte.elements[name].value;
+                    }
+                }
+            }
+        }
+    }
+    return values;
+}
+function setDateTimeElementValues(dte, values) {
+    var name;
+    if (dte && dte.elements && values) {
+        for (name in dte.elements) {
+            if (dte.elements.hasOwnProperty(name) && values.hasOwnProperty(name)) {
+                if (dte.elements[name]) {
+                    if (dte.elements[name].options) {
+                        dte.elements[name].selectedIndex = values[name];
+                    } else {
+                        dte.elements[name].value = values[name];
+                    }
+                }
+            }
+        }
+    }
+}
 QUnit.test('DateTimeElements1', function (assert) {
     var dateElement,
         index = 0,
@@ -109,7 +143,8 @@ QUnit.test('DateTimeElements1', function (assert) {
         monthElement,
         yearElement,
         timezoneElement,
-        currentTimeElement;
+        currentTimeElement,
+        values;
     dateElement = document.getElementById('mtzdDate12hour');
     assert.ok(dateElement, 'Date element exists');
     hourElement = expectChild(assert, dateElement, index++, { tagName: 'SELECT', 
@@ -200,6 +235,13 @@ QUnit.test('DateTimeElements1', function (assert) {
     assert.equal(testVars.dte1.timeInputFormats, undefined, 'Input formats is not defined');
     assert.equal(testVars.dte1.elements.datePicker, undefined, 'Date Picker element is not defined');
     assert.equal(testVars.dte1.datePickerFormat, undefined, 'Date display/input format is not defined');
+    
+    setDateTimeElementValues(testVars.dte1, { hour: 5, minute: 42, ampm: 1, day: 5, month: 7, year: 3, timezone: 0 });
+    values = testVars.dte1.getSelected();
+    assert.deepEqual(values, { hour: 17, minute: 42, day: 6, month: 7, year: 2013, timezone: { text: '', value: '' } }, 'Selected matches date');
+    testVars.dte1.setSelected({ hour: 6, minute: 13, day: 17, month: 3, year: 2014, timezone: { text: 'André Lurçat', value: 'Canada/Newfoundland' } });
+    values = getDateTimeElementValues(testVars.dte1);
+    assert.deepEqual(values, { hour: 6, minute: 13, ampm: 0, day: 16, month: 3, year: 4, timezone: 2 }, 'Selected values matches date');
 });
 QUnit.test('DateTimeElements2', function (assert) {
     var dateElement,
@@ -210,7 +252,8 @@ QUnit.test('DateTimeElements2', function (assert) {
         monthElement,
         yearElement,
         timezoneElement,
-        currentTimeElement;
+        currentTimeElement,
+        values;
     dateElement = document.getElementById('mtzdDate24hour');
     assert.ok(dateElement, 'Date element exists');
     hourElement = expectChild(assert, dateElement, index++, { tagName: 'SELECT', 
@@ -292,13 +335,21 @@ QUnit.test('DateTimeElements2', function (assert) {
     assert.equal(testVars.dte2.timeInputFormats, undefined, 'Input formats is not defined');
     assert.equal(testVars.dte2.elements.datePicker, undefined, 'Date Picker element is not defined');
     assert.equal(testVars.dte2.datePickerFormat, undefined, 'Date display/input format is not defined');
+
+    testVars.dte2.setSelected({ hour: 17, minute: 55, day: 21, month: 8, year: 2017, timezone: { text: 'US/Eastern', value: 'US/Eastern' } });
+    values = getDateTimeElementValues(testVars.dte2);
+    assert.deepEqual(values, { hour: 17, minute: 55, day: 20, month: 8, year: 7, timezone: 1 }, 'Selected values matches date');
+    setDateTimeElementValues(testVars.dte2, { hour: 5, minute: 42, day: 5, month: 7, year: 3, timezone: 2 });
+    values = testVars.dte2.getSelected();
+    assert.deepEqual(values, { hour: 5, minute: 42, day: 6, month: 7, year: 2013, timezone: { text: 'Australia/Perth', value: 'Australia/Perth' } }, 'Selected matches date');
 });
 QUnit.test('DateTimeElements3', function (assert) {
     var dateElement,
         index = 0,
         datetimeElement,
         timezoneElement,
-        currentTimeElement;
+        currentTimeElement,
+        values;
     dateElement = document.getElementById('mtzdDateSingle');
     assert.ok(dateElement, 'Date element exists');
     datetimeElement = expectChild(assert, dateElement, index++, { tagName: 'INPUT',
@@ -362,6 +413,13 @@ QUnit.test('DateTimeElements3', function (assert) {
                                                      ], 'Input formats match');
     assert.equal(testVars.dte3.elements.datePicker, undefined, 'Date Picker element is not defined');
     assert.equal(testVars.dte3.datePickerFormat, undefined, 'Date display/input format is not defined');
+
+    testVars.dte3.setSelected({ hour: 7, minute: 14, day: 18, month: 4, year: 2015, timezone: { text: 'timezone1', value: 'US/Pacific' } });
+    values = getDateTimeElementValues(testVars.dte3);
+    assert.deepEqual(values, { datetime: 'Monday 7:14 am 18-May-2015', timezone: 1 }, 'Selected values matches date');
+    setDateTimeElementValues(testVars.dte3, { datetime: 'Wednesday 8:58 pm 8-Oct-2014', timezone: 0 });
+    values = testVars.dte3.getSelected();
+    assert.deepEqual(values, { hour: 20, minute: 58, day: 8, month: 9, year: 2014, timezone: { text: 'The current timezone', value: '' } }, 'Selected matches date');
 });
 QUnit.test('DateTimeElements4', function (assert) {
     var dateElement,
@@ -373,7 +431,8 @@ QUnit.test('DateTimeElements4', function (assert) {
         monthElement,
         yearElement,
         timezoneElement,
-        currentTimeElement;
+        currentTimeElement,
+        values;
     dateElement = document.getElementById('mtzdDate12hour2');
     assert.ok(dateElement, 'Date element exists');
     hourElement = expectChild(assert, dateElement, index++, { tagName: 'SELECT', 
@@ -464,6 +523,13 @@ QUnit.test('DateTimeElements4', function (assert) {
     assert.equal(testVars.dte4.timeInputFormats, undefined, 'Input formats is not defined');
     assert.equal(testVars.dte4.elements.datePicker, undefined, 'Date Picker element is not defined');
     assert.equal(testVars.dte4.datePickerFormat, undefined, 'Date display/input format is not defined');
+
+    testVars.dte4.setSelected({ hour: 0, minute: 0, day: 1, month: 0, year: 2010, timezone: { text: '', value: '' } });
+    values = getDateTimeElementValues(testVars.dte4);
+    assert.deepEqual(values, { hour: 0, minute: 0, ampm: 0, day: 0, month: 0, year: 0, timezone: 0 }, 'Selected values matches date');
+    setDateTimeElementValues(testVars.dte4, { hour: 11, minute: 59, ampm: 1, day: 30, month: 11, year: 10, timezone: 2 });
+    values = testVars.dte4.getSelected();
+    assert.deepEqual(values, { hour: 23, minute: 59, day: 31, month: 11, year: 2020, timezone: { text: 'Japan', value: 'Japan' } }, 'Selected matches date');
 });
 function expectTimezone(assert, timezones, index, timezone, formats) {
     var i;
