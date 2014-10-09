@@ -318,14 +318,14 @@
             } else if (date.getFullYear() > maxYear) {
                 date.setYear(maxYear);
             }
-            $(dte._elements.datepicker).datepicker('setDate', date);
-            $(dte._elements.datepicker).show().focus().hide();
+            $(dte._datepicker).datepicker('setDate', date);
+            $(dte._datepicker).show().focus().hide();
         };
     }
     function getDatepickerOnSelect(dte) {
         return function () {
             var selected = dte.getSelected(),
-                date = $(dte._elements.datepicker).datepicker( "getDate" );
+                date = $(dte._datepicker).datepicker( "getDate" );
             if (date) {
                 if (!selected) {
                     selected = { };
@@ -337,7 +337,29 @@
                 selected.day = date.getDate();
                 dte.setSelected(selected);
                 // Trigger a change event so the environment is updated
+                // Use the timezone control as this is common to all modes
                 fireChangeEvent(dte._elements.timezone);
+            }
+        };
+    }
+    function createSetCurrentTime(dte) {
+        return function() {
+            if (dte) {
+                dte.setCurrentTime();
+                fireChangeEvent(dte._elements.timezone);
+            }
+        };
+    }
+    function createOnchange(dte) {
+        return function () {
+            if (dte) {
+                var selected = dte.getSelected(),
+                    i;
+                if (selected) {
+                    for (i = 0; i < dte._callbacks.length; i += 1) {
+                        dte._callbacks[i](selected);
+                    }
+                }
             }
         };
     }
@@ -360,7 +382,7 @@
             minYear = getOptionValue(options, 'minYear', 2010),
             maxYear = getOptionValue(options, 'maxYear', 2020),
             locale = getOptionValue(options, 'locale'),
-            image,
+            property,
             i;
         if (!element) {
             console.error('Element with id "' + id + '" not found');
@@ -442,31 +464,49 @@
                 datepickerOptions.monthNamesShort = getMonthNames('MMM', locale);
             }
             appendChild(element, createElement('span', { textContent: ' ' }));
-            elements.datepicker = appendChild(element, createElement('input', { type: 'text', 
+            this._datepicker = appendChild(element, createElement('input', { type: 'text', 
                                                                                 className: getOptionValue(options, 'datepickerClass', 'mtzdDatepicker')
                                                                               }));
-            $(elements.datepicker).datepicker(datepickerOptions);
+            $(this._datepicker).datepicker(datepickerOptions);
             if (datepickerLocale) {
-                $(elements.datepicker).datepicker( $.datepicker.regional[ datepickerLocale ] );
+                $(this._datepicker).datepicker( $.datepicker.regional[ datepickerLocale ] );
             }
-            elements.datepickerImage = appendChild(element, createElement('img', { className: getOptionValue(options, 'datepickerImageClass', 'mtzdDatepickerImage'), 
-                                                                                   title: getOptionValue(options, 'datepickerTitle', 'Select the date using a calendar'),
-                                                                                   src: getOptionValue(options, 'datepickerImage', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAUCAMAAAC+oj0CAAAABGdBTUEAALGPC/xhBQAAAwBQTFRFY2RmZ2hqampqb3BydXZ4e3x+Ll2NMWqfJmajN2mjOm6lP3GtPn25XnSKWXaWW32bQ3euRHerSHOkSHirQn26RX68Tn6xS366Y3qQYX6eZX6YfX6AQ4K+RIG/T4CzToO6ToW6U4CyUYW+UIi9V4q8Woq8X42/ZICTZ4GUa4eZbYKZb4SZboidaYWibommbY+tZYmyYoy7eo+iepypdJOyfpiye5y6fpm5RoXBTo7JV4nFUIrIUo/LXI7GW47KXpLHXpLJYpfDY53RbZ7acJvNdaDRgICBioyMj4+SjZaYk5OVlZaZlJiTl5mZgJ65nZ6gmpmtnqCeiaCwjKa0jqm3maurkaW2k627l6i4mam4oJiwoaKlo6ijpaqkpqipqaqsqKuwra2zr7Cyu7y9gqLAkq3Bla/MlLPKobbHoLrGpLrJqL3OurvCv8K9v8S+p8PWrMHUu8TAvsDIuMjVrNbuvNfqu93svuLuwcHBwcLFwsTGxMTEwsPKwMnGxsrEwsnPw8zKxM3KycbIyMvGyM3HycjJycrMyM3Jy8zOzsrPzc3Oy8bdys7Rzc7Ry9DKwdLRxNfXwtPcwdnfxtrbydPVz9LTy9XZzN/f08/U0dLN0tXO0NDT1dTT1dXV1tbZ1trW19zW19rf2dfT2tvW2dnZ2trd2t/Y29zf3Nnd3t/Z3d7ez87jwNrz1Nbo2NPq3dzh2+Db2eHf3uDdwuHsxuDoxuLtz+DhxuHxyeLwzOLxzOTx2eDj3eDn3Obp0ef10u732+zw3O7x3fL03fj74d/c4Nvg4N7i4eHi4uHk4uTj5eLi5OLk5+bk5ufq4+jj5+zm4evt5ejt6eXp6ezl7ezn6+vr4uP25+f85Ovy7ej67+n/6/Dp7fDr7vDv4fL15/P27/Dx7fX56vn86/z78u7w8fHu8fHx8fL08/Xy8vT29/Py9fXx9fX18/X59fb49fb89vjy8/v89/j69/j99vz5+PX//fb++Pn2/P33+vn6+vr8+vz8///7/fz9AAAAAAAAtJTP7AAAAQB0Uk5T////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////AFP3ByUAAAAJcEhZcwAAFiQAABYkAZsVxhQAAAAYdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuM4zml1AAAAHXSURBVChTAcwBM/4Aw8KSVFe0wmpSa97BaFaR3nNYWcDf4gBlKSdpUywoGL4NKyoycBouDnUtLS5mAA82L2dONGQOvxlONzVvMEUhdDFFRBIAB0IgIyAfQBBBCkA9ESQiPhdACzpDCQAIOTgMHB08HRQUOzsUFSIeFhMWJSYGADe4uLe4uKy4t7m6urm4tbO1dne1tTMAYOCVjXqIr6fIxsbGxsi7tpCTl4/jVQBe4IrJqorm+eyk+fnq0vrvrdbXq/pQAFzPh86wg+X995389+XM/fWu2dqL9loAXdyEpqCD0/Drqfjr1Mz57aHR0Yz9WwBM225+jm2ao6mZmcSimZ+xfYCBcfRHAFHmsujmpNX365zr6uXK6eGWvdCU8UkATd2q+uyk5vnsgv3k5Mb74ZbY2H/hSQBL5pulxo2or8iJqMWomK+8cnJ8bPNKAEjsnsfVisvV1YXV1cuezdF5bHxh+kcAStWd1e6K1e7Vhezm1aTs7mN6lU/7SgBK1ar5+aTV6uak5uzVx+7yY3qeX/sbAEfVhXhjeIWFhXh7hXh4eYZhX15b50cATeb3/f397Pv9/fn9/f39+unp+fvgRgBHRgICAgICAgICAgICAgIBBAMAAgVPytv2Q9UZjMgAAAAASUVORK5CYII=') 
-                                                                                 }));
-            elements.datepickerImage.addEventListener('click', getDatepickerOnclick(this, minYear, maxYear), false);
+            this._datepickerImage = appendChild(element, createElement('img', { className: getOptionValue(options, 'datepickerImageClass', 'mtzdDatepickerImage'), 
+                                                                                title: getOptionValue(options, 'datepickerTitle', 'Select the date using a calendar'),
+                                                                                src: getOptionValue(options, 'datepickerImage', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAUCAMAAAC+oj0CAAAABGdBTUEAALGPC/xhBQAAAwBQTFRFY2RmZ2hqampqb3BydXZ4e3x+Ll2NMWqfJmajN2mjOm6lP3GtPn25XnSKWXaWW32bQ3euRHerSHOkSHirQn26RX68Tn6xS366Y3qQYX6eZX6YfX6AQ4K+RIG/T4CzToO6ToW6U4CyUYW+UIi9V4q8Woq8X42/ZICTZ4GUa4eZbYKZb4SZboidaYWibommbY+tZYmyYoy7eo+iepypdJOyfpiye5y6fpm5RoXBTo7JV4nFUIrIUo/LXI7GW47KXpLHXpLJYpfDY53RbZ7acJvNdaDRgICBioyMj4+SjZaYk5OVlZaZlJiTl5mZgJ65nZ6gmpmtnqCeiaCwjKa0jqm3maurkaW2k627l6i4mam4oJiwoaKlo6ijpaqkpqipqaqsqKuwra2zr7Cyu7y9gqLAkq3Bla/MlLPKobbHoLrGpLrJqL3OurvCv8K9v8S+p8PWrMHUu8TAvsDIuMjVrNbuvNfqu93svuLuwcHBwcLFwsTGxMTEwsPKwMnGxsrEwsnPw8zKxM3KycbIyMvGyM3HycjJycrMyM3Jy8zOzsrPzc3Oy8bdys7Rzc7Ry9DKwdLRxNfXwtPcwdnfxtrbydPVz9LTy9XZzN/f08/U0dLN0tXO0NDT1dTT1dXV1tbZ1trW19zW19rf2dfT2tvW2dnZ2trd2t/Y29zf3Nnd3t/Z3d7ez87jwNrz1Nbo2NPq3dzh2+Db2eHf3uDdwuHsxuDoxuLtz+DhxuHxyeLwzOLxzOTx2eDj3eDn3Obp0ef10u732+zw3O7x3fL03fj74d/c4Nvg4N7i4eHi4uHk4uTj5eLi5OLk5+bk5ufq4+jj5+zm4evt5ejt6eXp6ezl7ezn6+vr4uP25+f85Ovy7ej67+n/6/Dp7fDr7vDv4fL15/P27/Dx7fX56vn86/z78u7w8fHu8fHx8fL08/Xy8vT29/Py9fXx9fX18/X59fb49fb89vjy8/v89/j69/j99vz5+PX//fb++Pn2/P33+vn6+vr8+vz8///7/fz9AAAAAAAAtJTP7AAAAQB0Uk5T////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////AFP3ByUAAAAJcEhZcwAAFiQAABYkAZsVxhQAAAAYdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuM4zml1AAAAHXSURBVChTAcwBM/4Aw8KSVFe0wmpSa97BaFaR3nNYWcDf4gBlKSdpUywoGL4NKyoycBouDnUtLS5mAA82L2dONGQOvxlONzVvMEUhdDFFRBIAB0IgIyAfQBBBCkA9ESQiPhdACzpDCQAIOTgMHB08HRQUOzsUFSIeFhMWJSYGADe4uLe4uKy4t7m6urm4tbO1dne1tTMAYOCVjXqIr6fIxsbGxsi7tpCTl4/jVQBe4IrJqorm+eyk+fnq0vrvrdbXq/pQAFzPh86wg+X995389+XM/fWu2dqL9loAXdyEpqCD0/Drqfjr1Mz57aHR0Yz9WwBM225+jm2ao6mZmcSimZ+xfYCBcfRHAFHmsujmpNX365zr6uXK6eGWvdCU8UkATd2q+uyk5vnsgv3k5Mb74ZbY2H/hSQBL5pulxo2or8iJqMWomK+8cnJ8bPNKAEjsnsfVisvV1YXV1cuezdF5bHxh+kcAStWd1e6K1e7Vhezm1aTs7mN6lU/7SgBK1ar5+aTV6uak5uzVx+7yY3qeX/sbAEfVhXhjeIWFhXh7hXh4eYZhX15b50cATeb3/f397Pv9/fn9/f39+unp+fvgRgBHRgICAgICAgICAgICAgIBBAMAAgVPytv2Q9UZjMgAAAAASUVORK5CYII=') 
+                                                                              }));
         }
+        // Setup timezone dropdown
         appendChild(element, createElement('span', { textContent: ' ' }));
         elements.timezone = appendChild(element, createElement('select', { title: getOptionValue(options, 'timezoneTitle', 'Select timezone') }));
         populateTimezoneOptions(elements.timezone, getOptionValue(options, 'currentTimezoneText', ''));
+        // Setup current time
         appendChild(element, createElement('span', { textContent: ' ' }));
         this._currentTime = appendChild(element, createElement('span', { textContent: getOptionValue(options, 'currentTime', '\u25d4'),
                                                                          title: getOptionValue(options, 'currentTimeTitle', 'Current Time'),
                                                                          className: getOptionValue(options, 'currentTimeClass', 'mtzdCurrentTime') }));
+        // Register events
+        this._currentTime.addEventListener('click', createSetCurrentTime(this), false);
+        if (this._datepickerImage) {
+            this._datepickerImage.addEventListener('click', getDatepickerOnclick(this, minYear, maxYear), false);
+        }
+        for (property in elements) {
+            if (elements.hasOwnProperty(property)) {
+                elements[property].addEventListener('change', createOnchange(this), false);
+            }
+        }
+        // Setup 'this' properties
         this._mode = mode;
         this._elements = elements;
         this._errorClassName = getOptionValue(options, 'errorClass', 'mtzdError');
         this._locale = locale;
+        this._callbacks = [ ];
     }
+    DateTimeElements.prototype.registerCallback = function (callback) {
+        if (callback && (typeof callback === 'function')) {
+            this._callbacks.push(callback);
+        }
+    };
     DateTimeElements.prototype.addTimezone = function (timezone, name) {
         if (this._elements && this._elements.timezone) {
             addComboValue(this._elements.timezone, timezone, name);
@@ -630,6 +670,17 @@
             setSelectedIndex(this._elements.timezone, 0);
         }
     };
+    DateTimeElements.prototype.setCurrentTime = function () {
+        var date = new Date(),
+            selected = { };
+        selected.hour = date.getHours();
+        selected.minute = date.getMinutes();
+        selected.month = date.getMonth();
+        selected.day = date.getDate();
+        selected.year = date.getFullYear();
+        selected.timezone = undefined;
+        this.setSelected(selected);
+    };
     function registerTimezone(timezones, timezone, elementFormats) {
         timezones.push({ timezone: timezone, elementFormats: elementFormats });
     }
@@ -661,21 +712,6 @@
             appendChild(legendElement, createElement('span', { textContent: lines[i] }));
         }
     }
-    function createOnchange(env) {
-        return function () {
-            if (env) {
-                env.updated();
-            }
-        };
-    }
-    function createSetCurrentTime(env) {
-        return function() {
-            if (env) {
-                env.setCurrentTime();
-            }
-        };
-    }
-    
     function createSetTimezone(env, timezone, name) {
         return function () {
             if (env) {
@@ -687,6 +723,13 @@
         return function () {
             if (env) {
                 env.setCurrentTime();
+            }
+        };
+    }
+    function getDateTimeElementsCallback(env) {
+        return function (selected) {
+            if (env) {
+                env.updated(selected);
             }
         };
     }
@@ -789,17 +832,7 @@
             }
         }
         if (dateTimeElements) {
-            if (dateTimeElements._elements) {
-                onchange = createOnchange(this);
-                for (param in dateTimeElements._elements) {
-                    if (dateTimeElements._elements.hasOwnProperty(param)) {
-                        dateTimeElements._elements[param].addEventListener('change', onchange, false);
-                    }
-                }
-            }
-            if (dateTimeElements._currentTime) {
-                dateTimeElements._currentTime.addEventListener('click', createSetCurrentTime(this), false);
-            }
+            dateTimeElements.registerCallback(getDateTimeElementsCallback(this));
             this._dateTimeElements = dateTimeElements;
         }
         if (legendElement) {
@@ -891,10 +924,9 @@
         this.timezone = { text: (name || timezone), value: timezone };
         this.refresh();
     };
-    Environment.prototype.updated = function () {
-        var selected,
-            values;
-        if (this._dateTimeElements) {
+    Environment.prototype.updated = function (selected) {
+        var values;
+        if (this._dateTimeElements && !selected) {
             selected = this._dateTimeElements.getSelected();
         }
         if (selected) {

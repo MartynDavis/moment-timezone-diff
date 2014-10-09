@@ -230,7 +230,8 @@ QUnit.test('DateTimeElements1', function (assert) {
     assert.equal(dte._elements.datetime, undefined, 'Date/time element is not defined');
     assert.equal(dte._timeDisplayFormat, undefined, 'Display format is not defined');
     assert.equal(dte._timeInputFormats, undefined, 'Input formats is not defined');
-    assert.equal(dte._elements.datepicker, undefined, 'Date Picker element is not defined');
+    assert.equal(dte._datepicker, undefined, 'Date picker element is not defined');
+    assert.equal(dte._datepickerImage, undefined, 'Date picker image element is not defined');
 
     setDateTimeElementValues(dte, { hour: 5, minute: 42, ampm: 1, day: 5, month: 7, year: 3, timezone: 0 });
     values = dte.getSelected();
@@ -394,7 +395,8 @@ QUnit.test('DateTimeElements2', function (assert) {
     assert.equal(dte._elements.datetime, undefined, 'Date/time element is not defined');
     assert.equal(dte._timeDisplayFormat, undefined, 'Display format is not defined');
     assert.equal(dte._timeInputFormats, undefined, 'Input formats is not defined');
-    assert.equal(dte._elements.datepicker, undefined, 'Date Picker element is not defined');
+    assert.equal(dte._datepicker, undefined, 'Date picker element is not defined');
+    assert.equal(dte._datepickerImage, undefined, 'Date picker image element is not defined');
 
     dte.setSelected({ hour: 17, minute: 55, day: 21, month: 8, year: 2017, timezone: { text: 'US/Eastern', value: 'US/Eastern' } });
     values = getDateTimeElementValues(dte);
@@ -521,7 +523,8 @@ QUnit.test('DateTimeElements3', function (assert) {
                                               'H:mm DD-MMM-YYYY',
                                               'DD-MMM-YYYY'
                                             ], 'Input formats match');
-    assert.equal(dte._elements.datepicker, undefined, 'Date Picker element is not defined');
+    assert.equal(dte._datepicker, undefined, 'Date picker element is not defined');
+    assert.equal(dte._datepickerImage, undefined, 'Date picker image element is not defined');
 
     dte.setSelected({ hour: 7, minute: 14, day: 18, month: 4, year: 2015, timezone: { text: 'timezone1', value: 'US/Pacific' } });
     values = getDateTimeElementValues(dte);
@@ -656,7 +659,8 @@ QUnit.test('DateTimeElements4', function (assert) {
     assert.equal(dte._elements.datetime, undefined, 'Date/time element is not defined');
     assert.equal(dte._timeDisplayFormat, undefined, 'Display format is not defined');
     assert.equal(dte._timeInputFormats, undefined, 'Input formats is not defined');
-    assert.equal(dte._elements.datepicker, undefined, 'Date Picker element is not defined');
+    assert.equal(dte._datepicker, undefined, 'Date picker element is not defined');
+    assert.equal(dte._datepickerImage, undefined, 'Date picker image element is not defined');
 
     dte.setSelected({ hour: 0, minute: 0, day: 1, month: 0, year: 2010, timezone: { text: '', value: '' } });
     values = getDateTimeElementValues(dte);
@@ -893,7 +897,8 @@ QUnit.test('Environment1', function (assert) {
     assert.equal(env._dateTimeElements._elements.datetime, undefined, 'Date/time element is not defined');
     assert.equal(env._dateTimeElements._timeDisplayFormat, undefined, 'Display format is not defined');
     assert.equal(env._dateTimeElements._timeInputFormats, undefined, 'Input formats is not defined');
-    assert.equal(env._dateTimeElements._elements.datepicker, undefined, 'Date Picker element is not defined');
+    assert.equal(env._dateTimeElements._datepicker, undefined, 'Date picker element is not defined');
+    assert.equal(env._dateTimeElements._datepickerImage, undefined, 'Date picker image element is not defined');
     assert.deepEqual(env._options, defaultOptions, 'options matches default options');
     assert.deepEqual(env.getOptions(), defaultOptions, 'getOptions() matches default options');
     assert.notEqual(env._options, env.getOptions(), 'getOptions() returns a copy');
