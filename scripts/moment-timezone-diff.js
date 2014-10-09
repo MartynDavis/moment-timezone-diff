@@ -114,22 +114,34 @@
         return days;
     }
     //
+    // getDays
+    //
+    // Calculates the number of days since the base year
+    //
+    // This allows a difference to be calculated should days be in different years
+    //
+    function getDays(m, baseYear) {
+        var year,
+            days = 0;
+        if (m.year() > baseYear) {
+            for (year = baseYear; year < m.year(); year += 1) {
+                days += daysInYear(year);
+            }
+        }
+        days += m.dayOfYear() - 1;
+        return days;
+    }
+    //
     // getMinutes
     //
     // Calculates the number of minutes since the base year
     //
-    // This allows a difference to be calculated should dayes be in different years
+    // This allows a difference to be calculated should days be in different years
     //
     function getMinutes(m, baseYear) {
         var year,
-            minutes = 0;
-        if (m.year() > baseYear) {
-            for (year = baseYear; year < m.year(); year += 1) {
-                minutes += daysInYear(year) * (24 * 60);
-            }
-        }
-        minutes += ((m.dayOfYear() - 1) * (24 * 60)) +
-                   (m.hour() * 60) +
+            minutes = getDays(m, baseYear) * (24 * 60);
+        minutes += (m.hour() * 60) +
                    m.minute();
         return minutes;
     }
@@ -338,6 +350,7 @@
             yearFormat = getOptionValue(options, 'yearFormat', 'YYYY'),
             monthFormat = getOptionValue(options, 'monthFormat', 'MMM'),
             dayFormat = getOptionValue(options, 'dayFormat', 'DD'),
+            minuteFormat = getOptionValue(options, 'minuteFormat', 'mm'),
             elements,
             title,
             dateOrder,
@@ -354,17 +367,10 @@
             return;
         }
         if (mode === MODE_SINGLE) {
-            this.timeDisplayFormat = getOptionValue(options, 'timeDisplayFormat', 'dddd h:mm a DD-MMM-YYYY');
-            this.timeInputFormats = getOptionValue(options, 'timeInputFormats', [ 'dddd h:mm a DD-MMM-YYYY', 
-                                                                                  'dddd H:mm DD-MMM-YYYY', 
-                                                                                  'h:mm a DD-MMM-YYYY', 
-                                                                                  'H:mm DD-MMM-YYYY', 
-                                                                                  'h:mm a MMM-DD-YYYY', 
-                                                                                  'H:mm MMM-DD-YYYY', 
-                                                                                  'h:mm a DD-MM-YYYY', 
-                                                                                  'H:mm DD-MM-YYYY', 
-                                                                                  'h:mm a MM-DD-YYYY', 
-                                                                                  'H:mm MM-DD-YYYY'
+            this.timeDisplayFormat = getOptionValue(options, 'timeDisplayFormat', hourFormat + timeDelim + minuteFormat + ' ' + dayFormat + dateDelim + monthFormat + dateDelim + yearFormat);
+            this.timeInputFormats = getOptionValue(options, 'timeInputFormats', [ 'h' + timeDelim + 'mm a ' + dayFormat + dateDelim + monthFormat + dateDelim + yearFormat,
+                                                                                  'H' + timeDelim + 'mm ' + dayFormat + dateDelim + monthFormat + dateDelim + yearFormat,
+                                                                                  dayFormat + dateDelim + monthFormat + dateDelim + yearFormat
                                                                                 ]); 
             elements = { };
             title = getOptionValue(options, 'timeTitle', 'Enter the required date and time.');
@@ -385,7 +391,7 @@
             populateHourOptions(elements.hour, hourFormat, (mode === MODE_SPLIT_HOUR24), locale);
             appendChild(element, createElement('span', { textContent: timeDelim }));
             elements.minute = appendChild(element, createElement('select', { title: getOptionValue(options, 'minuteTitle', 'Select minute of the hour') }));
-            populateMinuteOptions(elements.minute, getOptionValue(options, 'minuteFormat', 'mm'), locale);
+            populateMinuteOptions(elements.minute, minuteFormat, locale);
             if ((mode !== MODE_SPLIT_HOUR24)) {
                 appendChild(element, createElement('span', { textContent: ' ' }));
                 elements.ampm = appendChild(element, createElement('select', { title: getOptionValue(options, 'ampmTitle', 'Select morning or afternoon') }));
@@ -561,14 +567,8 @@
             selected.year = getSelected(this.elements.year);
             if (this.mode === MODE_SPLIT_HOUR12) {
                 ampm = getSelected(this.elements.ampm);
-                if (ampm === 0) {
-                    if (selected.hour === 12) {
-                        selected.hour = 0;
-                    }
-                } else {
-                    if (selected.hour < 12) {
-                        selected.hour += 12;
-                    }
+                if (ampm !== 0) {
+                    selected.hour += 12;
                 }
             }
             selected.timezone = getSelectedValueText(this.elements.timezone);
@@ -595,9 +595,7 @@
         return date;
     };
     DateTimeElements.prototype.setSelected = function (selected) {
-        var hour,
-            ampm,
-            m;
+        var m;
         if (this.mode === MODE_SINGLE) {
             m = moment([selected.year, selected.month, selected.day, selected.hour, selected.minute, 0]);
             if (this.locale) {
@@ -608,22 +606,17 @@
             setSelected(this.elements.year, selected.year);
             setSelected(this.elements.month, selected.month);
             setSelected(this.elements.day, selected.day);
-            hour = selected.hour;
             if (this.mode === MODE_SPLIT_HOUR12) {
-                if (hour === 0) {
-                    hour = 12;
-                    ampm = 0;
-                } else if (hour < 12) {
-                    ampm = 0;
-                } else if (hour === 12) {
-                    ampm = 1;
+                if (selected.hour < 12) {
+                    setSelected(this.elements.hour, selected.hour);
+                    setSelected(this.elements.ampm, 0);
                 } else {
-                    hour -= 12;
-                    ampm = 1;
+                    setSelected(this.elements.hour, selected.hour - 12);
+                    setSelected(this.elements.ampm, 1);
                 }
-                setSelected(this.elements.ampm, ampm);
+            } else {
+                setSelected(this.elements.hour, selected.hour);
             }
-            setSelected(this.elements.hour, hour);
             setSelected(this.elements.minute, selected.minute);
         } else {
             console.error('Unknown mode "' + this.mode + '"');
@@ -947,6 +940,9 @@
     }
     TimezoneDiff.prototype.diff = function () {
         return (getMinutes(this.momentTz, this.momentReference.year()) - getMinutes(this.momentReference, this.momentTz.year())) / 60;
+    };
+    TimezoneDiff.prototype.dayDiff = function () {
+        return (getDays(this.momentTz, this.momentReference.year()) - getDays(this.momentReference, this.momentTz.year())) / 60;
     };
     function sunny(m, options) {
         var hour = m.hour(),

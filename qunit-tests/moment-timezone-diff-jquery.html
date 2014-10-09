@@ -57,19 +57,19 @@
         testVars.dte2.addTimezone('US/Eastern');
         testVars.dte2.addTimezone('Australia/Perth');
 
-        testVars.dte3 = new momentTimezoneDiff.DateTimeElements('mtzdDate12hour2', { mode: momentTimezoneDiff.MODE_SPLIT_HOUR12,
+        testVars.dte3 = new momentTimezoneDiff.DateTimeElements('mtzdDateSingle', { mode: momentTimezoneDiff.MODE_SINGLE,
+                                                                                    usejQueryDatePicker: true
+                                                                                  });
+        testVars.dte3.addTimezone('America/Argentina/Buenos_Aires', 'Barry');
+        testVars.dte3.addTimezone('Europe/Budapest', 'Bruce');
+        testVars.dte3.addTimezone('Pacific/Norfolk', 'Brett');
+
+        testVars.dte4 = new momentTimezoneDiff.DateTimeElements('mtzdDate12hour2', { mode: momentTimezoneDiff.MODE_SPLIT_HOUR12,
                                                                                      dateOrder: momentTimezoneDiff.DATE_ORDER_YMD,
                                                                                      usejQueryDatePicker: false
                                                                                    });
-        testVars.dte3.addTimezone('Europe/London');
-        testVars.dte3.addTimezone('Japan');
-
-        testVars.dte4 = new momentTimezoneDiff.DateTimeElements('mtzdDateSingle', { mode: momentTimezoneDiff.MODE_SINGLE,
-                                                                                    usejQueryDatePicker: true
-                                                                                  });
-        testVars.dte4.addTimezone('America/Argentina/Buenos_Aires', 'Barry');
-        testVars.dte4.addTimezone('Europe/Budapest', 'Bruce');
-        testVars.dte4.addTimezone('Pacific/Norfolk', 'Brett');
+        testVars.dte4.addTimezone('Europe/London');
+        testVars.dte4.addTimezone('Japan');
 
         testVars.dte5 = new momentTimezoneDiff.DateTimeElements('mtzdDateSingle2', { mode: momentTimezoneDiff.MODE_SINGLE,
                                                                                     usejQueryDatePicker: false
@@ -87,10 +87,10 @@
     <div class='date' id='mtzdDate12hour'></div>
     <h2>Test #2 - DateTimeElements (24 hour)</h2>
     <div class='date' id='mtzdDate24hour'></div>
-    <h2>Test #3 - DateTimeElements (12 hour - no date picker)</h2>
-    <div class='date' id='mtzdDate12hour2'></div>
-    <h2>Test #4 - DateTimeElements (single)</h2>
+    <h2>Test #3 - DateTimeElements (single)</h2>
     <div class='date' id='mtzdDateSingle'></div>
+    <h2>Test #4 - DateTimeElements (12 hour - no date picker)</h2>
+    <div class='date' id='mtzdDate12hour2'></div>
     <h2>Test #5 - DateTimeElements (single - no date picker)</h2>
     <div class='date' id='mtzdDateSingle2'></div>
     <h2>Test #6 - 12 hour clock (TABLE)</h2>
