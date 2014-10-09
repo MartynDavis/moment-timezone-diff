@@ -384,7 +384,7 @@
                     }
                 }
             }
-            elements.datetime = appendChild(element, createElement('input', {type: 'text', title: title, size: getOptionValue(options, 'size', 28), maxlength: getOptionValue(options, 'maxlength', 255) }));
+            elements.datetime = appendChild(element, createElement('input', {type: 'text', title: title, size: getOptionValue(options, 'size', 15), maxlength: getOptionValue(options, 'maxlength', 255) }));
         } else if ((mode === MODE_SPLIT_HOUR24) || (mode === MODE_SPLIT_HOUR12)) {
             elements = { };
             elements.hour = appendChild(element, createElement('select', { title: getOptionValue(options, 'hourTitle', 'Select hour of the day') }));

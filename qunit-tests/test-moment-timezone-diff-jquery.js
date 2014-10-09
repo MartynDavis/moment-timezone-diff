@@ -488,7 +488,7 @@ QUnit.test('DateTimeElements3', function (assert) {
                                                                          '  h:mm a DD-MMM-YYYY\n' +
                                                                          '  H:mm DD-MMM-YYYY\n' +
                                                                          '  DD-MMM-YYYY',
-                                                                  size: 28
+                                                                  size: 15
                                                                 });
     expectChild(assert, dateElement, index++, { tagName: 'SPAN', 
                                                 textContent: ' '
@@ -703,7 +703,7 @@ QUnit.test('DateTimeElements5', function (assert) {
                                                                          '  h:mm a DD-MMM-YYYY\n' +
                                                                          '  H:mm DD-MMM-YYYY\n' +
                                                                          '  DD-MMM-YYYY',
-                                                                  size: 28
+                                                                  size: 15
                                                                 });
     expectChild(assert, dateElement, index++, { tagName: 'SPAN', 
                                                 textContent: ' '
