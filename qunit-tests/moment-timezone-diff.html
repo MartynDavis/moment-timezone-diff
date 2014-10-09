@@ -49,13 +49,13 @@
 
         testVars.dte4 = new momentTimezoneDiff.DateTimeElements('mtzdDate12hour2', { mode: momentTimezoneDiff.MODE_SPLIT_HOUR12,
                                                                                      dateOrder: momentTimezoneDiff.DATE_ORDER_MDY,
-                                                                                     usejQueryDatePicker: false
+                                                                                     usejQueryDatepicker: false
                                                                                    });
         testVars.dte4.addTimezone('Europe/London');
         testVars.dte4.addTimezone('Japan');
 
-        testVars.env = new momentTimezoneDiff.Environment();
-        testVars.env.update([2014, 8, 1, 0, 0, 0], 'Australia/Melbourne', 'Dino');
+        testVars.env1 = new momentTimezoneDiff.Environment();
+        testVars.env1.update([2014, 8, 1, 0, 0, 0], 'Australia/Melbourne', 'Dino');
 
         /*
         testVars.env2dte = new momentTimezoneDiff.DateTimeElements('mtzdDate2', { mode: momentTimezoneDiff.MODE_SPLIT_HOUR24,
@@ -137,7 +137,7 @@
     <div class='date' id='mtzdDate24hour'></div>
     <h2>Test #3 - DateTimeElements (single)</h2>
     <div class='date' id='mtzdDateSingle'></div>
-    <h2>Test #4 - DateTimeElements (12 hour - explicitly no DatePicker)</h2>
+    <h2>Test #4 - DateTimeElements (12 hour - explicitly no Datepicker)</h2>
     <div class='date' id='mtzdDate12hour2'></div>
     <h2>Test #5 - 12 hour clock (TABLE)</h2>
     <div class='date' id='mtzdDate'></div>

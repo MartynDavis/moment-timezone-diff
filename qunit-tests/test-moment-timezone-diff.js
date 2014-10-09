@@ -96,14 +96,14 @@ function makeOptions(from, to, length, exceptions) {
 function getDateTimeElementValues(dte) {
     var values = { },
         name;
-    if (dte && dte.elements && values) {
-        for (name in dte.elements) {
-            if (dte.elements.hasOwnProperty(name)) {
-                if (dte.elements[name]) {
-                    if (dte.elements[name].options) {
-                        values[name] = dte.elements[name].selectedIndex;
-                    } else if (dte.elements[name].value !== undefined) {
-                        values[name] = dte.elements[name].value;
+    if (dte && dte._elements && values) {
+        for (name in dte._elements) {
+            if (dte._elements.hasOwnProperty(name)) {
+                if (dte._elements[name]) {
+                    if (dte._elements[name].options) {
+                        values[name] = dte._elements[name].selectedIndex;
+                    } else if (dte._elements[name].value !== undefined) {
+                        values[name] = dte._elements[name].value;
                     }
                 }
             }
@@ -113,14 +113,14 @@ function getDateTimeElementValues(dte) {
 }
 function setDateTimeElementValues(dte, values) {
     var name;
-    if (dte && dte.elements && values) {
-        for (name in dte.elements) {
-            if (dte.elements.hasOwnProperty(name) && values.hasOwnProperty(name)) {
-                if (dte.elements[name]) {
-                    if (dte.elements[name].options) {
-                        dte.elements[name].selectedIndex = values[name];
+    if (dte && dte._elements && values) {
+        for (name in dte._elements) {
+            if (dte._elements.hasOwnProperty(name) && values.hasOwnProperty(name)) {
+                if (dte._elements[name]) {
+                    if (dte._elements[name].options) {
+                        dte._elements[name].selectedIndex = values[name];
                     } else {
-                        dte.elements[name].value = values[name];
+                        dte._elements[name].value = values[name];
                     }
                 }
             }
@@ -139,7 +139,8 @@ QUnit.test('DateTimeElements1', function (assert) {
         timezoneElement,
         currentTimeElement,
         values,
-        timezones;
+        timezones,
+        dte;
     dateElement = document.getElementById('mtzdDate12hour');
     assert.ok(dateElement, 'Date element exists');
     hourElement = expectChild(assert, dateElement, index++, { tagName: 'SELECT',
@@ -214,59 +215,59 @@ QUnit.test('DateTimeElements1', function (assert) {
                                                                      textContent: "Régler l'heure actuelle"
                                                                    });
     expectChildren(assert, dateElement, index);
-    assert.equal(testVars.dte1.locale, 'fr', 'Locale is "fr"');
-    assert.equal(testVars.dte1.mode, momentTimezoneDiff.MODE_SPLIT_HOUR12, 'Mode matches');
-    assert.equal(testVars.dte1.errorClassName, 'mtzdError', 'Error class matches');
-    assert.equal(testVars.dte1.currentTime, currentTimeElement, 'Current time element matches');
-    assert.equal(testVars.dte1.elements.hour, hourElement, 'Hour element matches');
-    assert.equal(testVars.dte1.elements.minute, minuteElement, 'Minute element matches');
-    assert.equal(testVars.dte1.elements.ampm, ampmElement, 'AmPm element matches');
-    assert.equal(testVars.dte1.elements.day, dayElement, 'Day element matches');
-    assert.equal(testVars.dte1.elements.month, monthElement, 'Month element matches');
-    assert.equal(testVars.dte1.elements.year, yearElement, 'Year element matches');
-    assert.equal(testVars.dte1.elements.timezone, timezoneElement, 'Timezone element matches');
-    assert.equal(testVars.dte1.elements.datetime, undefined, 'Date/time element is not defined');
-    assert.equal(testVars.dte1.timeDisplayFormat, undefined, 'Display format is not defined');
-    assert.equal(testVars.dte1.timeInputFormats, undefined, 'Input formats is not defined');
-    assert.equal(testVars.dte1.elements.datePicker, undefined, 'Date Picker element is not defined');
-    assert.equal(testVars.dte1.datePickerFormat, undefined, 'Date display/input format is not defined');
+    dte = testVars.dte1;
+    assert.equal(dte._locale, 'fr', 'Locale is "fr"');
+    assert.equal(dte._mode, momentTimezoneDiff.MODE_SPLIT_HOUR12, 'Mode matches');
+    assert.equal(dte._errorClassName, 'mtzdError', 'Error class matches');
+    assert.equal(dte._currentTime, currentTimeElement, 'Current time element matches');
+    assert.equal(dte._elements.hour, hourElement, 'Hour element matches');
+    assert.equal(dte._elements.minute, minuteElement, 'Minute element matches');
+    assert.equal(dte._elements.ampm, ampmElement, 'AmPm element matches');
+    assert.equal(dte._elements.day, dayElement, 'Day element matches');
+    assert.equal(dte._elements.month, monthElement, 'Month element matches');
+    assert.equal(dte._elements.year, yearElement, 'Year element matches');
+    assert.equal(dte._elements.timezone, timezoneElement, 'Timezone element matches');
+    assert.equal(dte._elements.datetime, undefined, 'Date/time element is not defined');
+    assert.equal(dte._timeDisplayFormat, undefined, 'Display format is not defined');
+    assert.equal(dte._timeInputFormats, undefined, 'Input formats is not defined');
+    assert.equal(dte._elements.datepicker, undefined, 'Date Picker element is not defined');
 
-    setDateTimeElementValues(testVars.dte1, { hour: 5, minute: 42, ampm: 1, day: 5, month: 7, year: 3, timezone: 0 });
-    values = testVars.dte1.getSelected();
+    setDateTimeElementValues(dte, { hour: 5, minute: 42, ampm: 1, day: 5, month: 7, year: 3, timezone: 0 });
+    values = dte.getSelected();
     assert.deepEqual(values, { hour: 17, minute: 42, day: 6, month: 7, year: 2013, timezone: { text: '', value: '' } }, 'Selected matches date');
 
-    testVars.dte1.setSelected({ hour: 6, minute: 13, day: 17, month: 3, year: 2014, timezone: { text: 'André Lurçat', value: 'Canada/Newfoundland' } });
-    values = getDateTimeElementValues(testVars.dte1);
+    dte.setSelected({ hour: 6, minute: 13, day: 17, month: 3, year: 2014, timezone: { text: 'André Lurçat', value: 'Canada/Newfoundland' } });
+    values = getDateTimeElementValues(dte);
     assert.deepEqual(values, { hour: 6, minute: 13, ampm: 0, day: 16, month: 3, year: 4, timezone: 2 }, 'Selected values matches date');
 
     // Cycle through hour/ampm values
     for (index = 0; index < 24; index += 1) {
-        setDateTimeElementValues(testVars.dte1, { hour: (index < 12) ? index : index - 12, minute: 42, ampm: (index < 12) ? 0 : 1, day: 5, month: 7, year: 3, timezone: 0 });
-        values = testVars.dte1.getSelected();
+        setDateTimeElementValues(dte, { hour: (index < 12) ? index : index - 12, minute: 42, ampm: (index < 12) ? 0 : 1, day: 5, month: 7, year: 3, timezone: 0 });
+        values = dte.getSelected();
         assert.deepEqual(values, { hour: index, minute: 42, day: 6, month: 7, year: 2013, timezone: { text: '', value: '' } }, 'Selected matches date');
     }
     // Cycle through minute values
     for (index = 0; index < 60; index += 1) {
-        setDateTimeElementValues(testVars.dte1, { hour: 3, minute: index, ampm: 1, day: 5, month: 7, year: 3, timezone: 0 });
-        values = testVars.dte1.getSelected();
+        setDateTimeElementValues(dte, { hour: 3, minute: index, ampm: 1, day: 5, month: 7, year: 3, timezone: 0 });
+        values = dte.getSelected();
         assert.deepEqual(values, { hour: 15, minute: index, day: 6, month: 7, year: 2013, timezone: { text: '', value: '' } }, 'Selected matches date');
     }
     // Cycle through day values (note 31 daay month selected)
     for (index = 0; index < 31; index += 1) {
-        setDateTimeElementValues(testVars.dte1, { hour: 3, minute: 13, ampm: 1, day: index, month: 7, year: 3, timezone: 0 });
-        values = testVars.dte1.getSelected();
+        setDateTimeElementValues(dte, { hour: 3, minute: 13, ampm: 1, day: index, month: 7, year: 3, timezone: 0 });
+        values = dte.getSelected();
         assert.deepEqual(values, { hour: 15, minute: 13, day: index + 1, month: 7, year: 2013, timezone: { text: '', value: '' } }, 'Selected matches date');
     }
     // Cycle through month values
     for (index = 0; index < 12; index += 1) {
-        setDateTimeElementValues(testVars.dte1, { hour: 3, minute: 13, ampm: 1, day: 13, month: index, year: 3, timezone: 0 });
-        values = testVars.dte1.getSelected();
+        setDateTimeElementValues(dte, { hour: 3, minute: 13, ampm: 1, day: 13, month: index, year: 3, timezone: 0 });
+        values = dte.getSelected();
         assert.deepEqual(values, { hour: 15, minute: 13, day: 14, month: index, year: 2013, timezone: { text: '', value: '' } }, 'Selected matches date');
     }
     // Cycle through year values
     for (index = 0; index < (2020 - 2010 + 1); index += 1) {
-        setDateTimeElementValues(testVars.dte1, { hour: 3, minute: 13, ampm: 1, day: 13, month: 4, year: index, timezone: 0 });
-        values = testVars.dte1.getSelected();
+        setDateTimeElementValues(dte, { hour: 3, minute: 13, ampm: 1, day: 13, month: 4, year: index, timezone: 0 });
+        values = dte.getSelected();
         assert.deepEqual(values, { hour: 15, minute: 13, day: 14, month: 4, year: 2010 + index, timezone: { text: '', value: '' } }, 'Selected matches date');
     }
     // cycle through timezones
@@ -275,29 +276,29 @@ QUnit.test('DateTimeElements1', function (assert) {
                   { text: 'André Lurçat',    value: 'Canada/Newfoundland' }
                 ];
     for (index = 0; index < timezones.length; index += 1) {
-        setDateTimeElementValues(testVars.dte1, { hour: 3, minute: 13, ampm: 1, day: 13, month: 4, year: 3, timezone: index });
-        values = testVars.dte1.getSelected();
+        setDateTimeElementValues(dte, { hour: 3, minute: 13, ampm: 1, day: 13, month: 4, year: 3, timezone: index });
+        values = dte.getSelected();
         assert.deepEqual(values, { hour: 15, minute: 13, day: 14, month: 4, year: 2013, timezone: timezones[index] }, 'Selected matches date');
     }
     // Test month rollover for months which have less than 31 days (31-Apr => 1-May)
-    setDateTimeElementValues(testVars.dte1, { hour: 5, minute: 42, ampm: 1, day: 30, month: 3, year: 3, timezone: 0 });
-    values = testVars.dte1.getSelected();
+    setDateTimeElementValues(dte, { hour: 5, minute: 42, ampm: 1, day: 30, month: 3, year: 3, timezone: 0 });
+    values = dte.getSelected();
     assert.deepEqual(values, { hour: 17, minute: 42, day: 1, month: 4, year: 2013, timezone: { text: '', value: '' } }, 'Selected matches date');
     // Test month rollover for months which have less than 31 days (31-Feb => 3-Mar for non-leap years)
-    setDateTimeElementValues(testVars.dte1, { hour: 5, minute: 42, ampm: 1, day: 30, month: 1, year: 3, timezone: 0 });
-    values = testVars.dte1.getSelected();
+    setDateTimeElementValues(dte, { hour: 5, minute: 42, ampm: 1, day: 30, month: 1, year: 3, timezone: 0 });
+    values = dte.getSelected();
     assert.deepEqual(values, { hour: 17, minute: 42, day: 3, month: 2, year: 2013, timezone: { text: '', value: '' } }, 'Selected matches date');
     // Test month rollover for months which have less than 31 days (31-Feb => 2-Mar for leap years)
-    setDateTimeElementValues(testVars.dte1, { hour: 5, minute: 42, ampm: 1, day: 30, month: 1, year: 2, timezone: 0 });
-    values = testVars.dte1.getSelected();
+    setDateTimeElementValues(dte, { hour: 5, minute: 42, ampm: 1, day: 30, month: 1, year: 2, timezone: 0 });
+    values = dte.getSelected();
     assert.deepEqual(values, { hour: 17, minute: 42, day: 2, month: 2, year: 2012, timezone: { text: '', value: '' } }, 'Selected matches date');
     // Test 29-Feb is valid for leap years
-    setDateTimeElementValues(testVars.dte1, { hour: 5, minute: 42, ampm: 1, day: 28, month: 1, year: 2, timezone: 0 });
-    values = testVars.dte1.getSelected();
+    setDateTimeElementValues(dte, { hour: 5, minute: 42, ampm: 1, day: 28, month: 1, year: 2, timezone: 0 });
+    values = dte.getSelected();
     assert.deepEqual(values, { hour: 17, minute: 42, day: 29, month: 1, year: 2012, timezone: { text: '', value: '' } }, 'Selected matches date');
     // Test 29-Feb rolls over for non-leap years
-    setDateTimeElementValues(testVars.dte1, { hour: 5, minute: 42, ampm: 1, day: 28, month: 1, year: 4, timezone: 0 });
-    values = testVars.dte1.getSelected();
+    setDateTimeElementValues(dte, { hour: 5, minute: 42, ampm: 1, day: 28, month: 1, year: 4, timezone: 0 });
+    values = dte.getSelected();
     assert.deepEqual(values, { hour: 17, minute: 42, day: 1, month: 2, year: 2014, timezone: { text: '', value: '' } }, 'Selected matches date');
 });
 QUnit.test('DateTimeElements2', function (assert) {
@@ -311,7 +312,8 @@ QUnit.test('DateTimeElements2', function (assert) {
         timezoneElement,
         currentTimeElement,
         values,
-        timezones;
+        timezones,
+        dte;
     dateElement = document.getElementById('mtzdDate24hour');
     assert.ok(dateElement, 'Date element exists');
     hourElement = expectChild(assert, dateElement, index++, { tagName: 'SELECT',
@@ -377,59 +379,59 @@ QUnit.test('DateTimeElements2', function (assert) {
                                                                      textContent: '\u25d4'
                                                                    });
     expectChildren(assert, dateElement, index);
-    assert.equal(testVars.dte2.locale, undefined, 'locale is not defined');
-    assert.equal(testVars.dte2.mode, momentTimezoneDiff.MODE_SPLIT_HOUR24, 'Mode matches');
-    assert.equal(testVars.dte2.errorClassName, 'mtzdError', 'Error class matches');
-    assert.equal(testVars.dte2.currentTime, currentTimeElement, 'Current time element matches');
-    assert.equal(testVars.dte2.elements.hour, hourElement, 'Hour element matches');
-    assert.equal(testVars.dte2.elements.minute, minuteElement, 'Minute element matches');
-    assert.equal(testVars.dte2.elements.ampm, undefined, 'AmPm element is not defined');
-    assert.equal(testVars.dte2.elements.day, dayElement, 'Day element matches');
-    assert.equal(testVars.dte2.elements.month, monthElement, 'Month element matches');
-    assert.equal(testVars.dte2.elements.year, yearElement, 'Year element matches');
-    assert.equal(testVars.dte2.elements.timezone, timezoneElement, 'Timezone element matches');
-    assert.equal(testVars.dte2.elements.datetime, undefined, 'Date/time element is not defined');
-    assert.equal(testVars.dte2.timeDisplayFormat, undefined, 'Display format is not defined');
-    assert.equal(testVars.dte2.timeInputFormats, undefined, 'Input formats is not defined');
-    assert.equal(testVars.dte2.elements.datePicker, undefined, 'Date Picker element is not defined');
-    assert.equal(testVars.dte2.datePickerFormat, undefined, 'Date display/input format is not defined');
+    dte = testVars.dte2;
+    assert.equal(dte._locale, undefined, 'locale is not defined');
+    assert.equal(dte._mode, momentTimezoneDiff.MODE_SPLIT_HOUR24, 'Mode matches');
+    assert.equal(dte._errorClassName, 'mtzdError', 'Error class matches');
+    assert.equal(dte._currentTime, currentTimeElement, 'Current time element matches');
+    assert.equal(dte._elements.hour, hourElement, 'Hour element matches');
+    assert.equal(dte._elements.minute, minuteElement, 'Minute element matches');
+    assert.equal(dte._elements.ampm, undefined, 'AmPm element is not defined');
+    assert.equal(dte._elements.day, dayElement, 'Day element matches');
+    assert.equal(dte._elements.month, monthElement, 'Month element matches');
+    assert.equal(dte._elements.year, yearElement, 'Year element matches');
+    assert.equal(dte._elements.timezone, timezoneElement, 'Timezone element matches');
+    assert.equal(dte._elements.datetime, undefined, 'Date/time element is not defined');
+    assert.equal(dte._timeDisplayFormat, undefined, 'Display format is not defined');
+    assert.equal(dte._timeInputFormats, undefined, 'Input formats is not defined');
+    assert.equal(dte._elements.datepicker, undefined, 'Date Picker element is not defined');
 
-    testVars.dte2.setSelected({ hour: 17, minute: 55, day: 21, month: 8, year: 2017, timezone: { text: 'US/Eastern', value: 'US/Eastern' } });
-    values = getDateTimeElementValues(testVars.dte2);
+    dte.setSelected({ hour: 17, minute: 55, day: 21, month: 8, year: 2017, timezone: { text: 'US/Eastern', value: 'US/Eastern' } });
+    values = getDateTimeElementValues(dte);
     assert.deepEqual(values, { hour: 17, minute: 55, day: 20, month: 8, year: 7, timezone: 1 }, 'Selected values matches date');
 
-    setDateTimeElementValues(testVars.dte2, { hour: 5, minute: 42, day: 5, month: 7, year: 3, timezone: 2 });
-    values = testVars.dte2.getSelected();
+    setDateTimeElementValues(dte, { hour: 5, minute: 42, day: 5, month: 7, year: 3, timezone: 2 });
+    values = dte.getSelected();
     assert.deepEqual(values, { hour: 5, minute: 42, day: 6, month: 7, year: 2013, timezone: { text: 'Australia/Perth', value: 'Australia/Perth' } }, 'Selected matches date');
 
     // Cycle through hour values
     for (index = 0; index < 24; index += 1) {
-        setDateTimeElementValues(testVars.dte2, { hour: index, minute: 42, day: 5, month: 7, year: 3, timezone: 1 });
-        values = testVars.dte2.getSelected();
+        setDateTimeElementValues(dte, { hour: index, minute: 42, day: 5, month: 7, year: 3, timezone: 1 });
+        values = dte.getSelected();
         assert.deepEqual(values, { hour: index, minute: 42, day: 6, month: 7, year: 2013, timezone: { text: 'US/Eastern', value: 'US/Eastern' } }, 'Selected matches date');
     }
     // Cycle through minute values
     for (index = 0; index < 60; index += 1) {
-        setDateTimeElementValues(testVars.dte2, { hour: 3, minute: index, day: 5, month: 7, year: 3, timezone: 0 });
-        values = testVars.dte2.getSelected();
+        setDateTimeElementValues(dte, { hour: 3, minute: index, day: 5, month: 7, year: 3, timezone: 0 });
+        values = dte.getSelected();
         assert.deepEqual(values, { hour: 3, minute: index, day: 6, month: 7, year: 2013, timezone: { text: '', value: '' } }, 'Selected matches date');
     }
     // Cycle through day values (note 31 daay month selected)
     for (index = 0; index < 31; index += 1) {
-        setDateTimeElementValues(testVars.dte2, { hour: 3, minute: 13, day: index, month: 7, year: 3, timezone: 0 });
-        values = testVars.dte2.getSelected();
+        setDateTimeElementValues(dte, { hour: 3, minute: 13, day: index, month: 7, year: 3, timezone: 0 });
+        values = dte.getSelected();
         assert.deepEqual(values, { hour: 3, minute: 13, day: index + 1, month: 7, year: 2013, timezone: { text: '', value: '' } }, 'Selected matches date');
     }
     // Cycle through month values
     for (index = 0; index < 12; index += 1) {
-        setDateTimeElementValues(testVars.dte2, { hour: 3, minute: 13, day: 13, month: index, year: 3, timezone: 0 });
-        values = testVars.dte2.getSelected();
+        setDateTimeElementValues(dte, { hour: 3, minute: 13, day: 13, month: index, year: 3, timezone: 0 });
+        values = dte.getSelected();
         assert.deepEqual(values, { hour: 3, minute: 13, day: 14, month: index, year: 2013, timezone: { text: '', value: '' } }, 'Selected matches date');
     }
     // Cycle through year values
     for (index = 0; index < (2020 - 2010 + 1); index += 1) {
-        setDateTimeElementValues(testVars.dte2, { hour: 3, minute: 13, day: 13, month: 4, year: index, timezone: 0 });
-        values = testVars.dte2.getSelected();
+        setDateTimeElementValues(dte, { hour: 3, minute: 13, day: 13, month: 4, year: index, timezone: 0 });
+        values = dte.getSelected();
         assert.deepEqual(values, { hour: 3, minute: 13, day: 14, month: 4, year: 2010 + index, timezone: { text: '', value: '' } }, 'Selected matches date');
     }
     // cycle through timezones
@@ -438,29 +440,29 @@ QUnit.test('DateTimeElements2', function (assert) {
                   { text: 'Australia/Perth', value: 'Australia/Perth' }
                 ];
     for (index = 0; index < timezones.length; index += 1) {
-        setDateTimeElementValues(testVars.dte2, { hour: 3, minute: 13, day: 13, month: 4, year: 3, timezone: index });
-        values = testVars.dte2.getSelected();
+        setDateTimeElementValues(dte, { hour: 3, minute: 13, day: 13, month: 4, year: 3, timezone: index });
+        values = dte.getSelected();
         assert.deepEqual(values, { hour: 3, minute: 13, day: 14, month: 4, year: 2013, timezone: timezones[index] }, 'Selected matches date');
     }
     // Test month rollover for months which have less than 31 days (31-Apr => 1-May)
-    setDateTimeElementValues(testVars.dte2, { hour: 5, minute: 42, day: 30, month: 3, year: 3, timezone: 0 });
-    values = testVars.dte2.getSelected();
+    setDateTimeElementValues(dte, { hour: 5, minute: 42, day: 30, month: 3, year: 3, timezone: 0 });
+    values = dte.getSelected();
     assert.deepEqual(values, { hour: 5, minute: 42, day: 1, month: 4, year: 2013, timezone: { text: '', value: '' } }, 'Selected matches date');
     // Test month rollover for months which have less than 31 days (31-Feb => 3-Mar for non-leap years)
-    setDateTimeElementValues(testVars.dte2, { hour: 5, minute: 42, day: 30, month: 1, year: 3, timezone: 0 });
-    values = testVars.dte2.getSelected();
+    setDateTimeElementValues(dte, { hour: 5, minute: 42, day: 30, month: 1, year: 3, timezone: 0 });
+    values = dte.getSelected();
     assert.deepEqual(values, { hour: 5, minute: 42, day: 3, month: 2, year: 2013, timezone: { text: '', value: '' } }, 'Selected matches date');
     // Test month rollover for months which have less than 31 days (31-Feb => 2-Mar for leap years)
-    setDateTimeElementValues(testVars.dte2, { hour: 5, minute: 42, day: 30, month: 1, year: 2, timezone: 0 });
-    values = testVars.dte2.getSelected();
+    setDateTimeElementValues(dte, { hour: 5, minute: 42, day: 30, month: 1, year: 2, timezone: 0 });
+    values = dte.getSelected();
     assert.deepEqual(values, { hour: 5, minute: 42, day: 2, month: 2, year: 2012, timezone: { text: '', value: '' } }, 'Selected matches date');
     // Test 29-Feb is valid for leap years
-    setDateTimeElementValues(testVars.dte2, { hour: 5, minute: 42, day: 28, month: 1, year: 2, timezone: 0 });
-    values = testVars.dte2.getSelected();
+    setDateTimeElementValues(dte, { hour: 5, minute: 42, day: 28, month: 1, year: 2, timezone: 0 });
+    values = dte.getSelected();
     assert.deepEqual(values, { hour: 5, minute: 42, day: 29, month: 1, year: 2012, timezone: { text: '', value: '' } }, 'Selected matches date');
     // Test 29-Feb rolls over for non-leap years
-    setDateTimeElementValues(testVars.dte2, { hour: 5, minute: 42, day: 28, month: 1, year: 4, timezone: 0 });
-    values = testVars.dte2.getSelected();
+    setDateTimeElementValues(dte, { hour: 5, minute: 42, day: 28, month: 1, year: 4, timezone: 0 });
+    values = dte.getSelected();
     assert.deepEqual(values, { hour: 5, minute: 42, day: 1, month: 2, year: 2014, timezone: { text: '', value: '' } }, 'Selected matches date');
 });
 QUnit.test('DateTimeElements3', function (assert) {
@@ -469,7 +471,8 @@ QUnit.test('DateTimeElements3', function (assert) {
         datetimeElement,
         timezoneElement,
         currentTimeElement,
-        values;
+        values,
+        dte;
     dateElement = document.getElementById('mtzdDateSingle');
     assert.ok(dateElement, 'Date element exists');
     datetimeElement = expectChild(assert, dateElement, index++, { tagName: 'INPUT',
@@ -500,55 +503,55 @@ QUnit.test('DateTimeElements3', function (assert) {
                                                                      textContent: '\u25d4'
                                                                    });
     expectChildren(assert, dateElement, index);
-    assert.equal(testVars.dte3.locale, undefined, 'locale is not defined');
-    assert.equal(testVars.dte3.mode, momentTimezoneDiff.MODE_SINGLE, 'Mode matches');
-    assert.equal(testVars.dte3.errorClassName, 'mtzdError', 'Error class matches');
-    assert.equal(testVars.dte3.currentTime, currentTimeElement, 'Current time element matches');
-    assert.equal(testVars.dte3.elements.hour, undefined, 'Hour element is not defined');
-    assert.equal(testVars.dte3.elements.minute, undefined, 'Minute element is not defined');
-    assert.equal(testVars.dte3.elements.ampm, undefined, 'AmPm element is not defined');
-    assert.equal(testVars.dte3.elements.day, undefined, 'Day element is not defined');
-    assert.equal(testVars.dte3.elements.month, undefined, 'Month element is not defined');
-    assert.equal(testVars.dte3.elements.year, undefined, 'Year element is not defined');
-    assert.equal(testVars.dte3.elements.datetime, datetimeElement, 'Date/time element matches');
-    assert.equal(testVars.dte3.elements.timezone, timezoneElement, 'Timezone element matches');
-    assert.equal(testVars.dte3.timeDisplayFormat, 'HH:mm DD-MMM-YYYY', 'Display format matches');
-    assert.deepEqual(testVars.dte3.timeInputFormats, [ 'h:mm a DD-MMM-YYYY',
-                                                       'H:mm DD-MMM-YYYY',
-                                                       'DD-MMM-YYYY'
-                                                     ], 'Input formats match');
-    assert.equal(testVars.dte3.elements.datePicker, undefined, 'Date Picker element is not defined');
-    assert.equal(testVars.dte3.datePickerFormat, undefined, 'Date display/input format is not defined');
+    dte = testVars.dte3;
+    assert.equal(dte._locale, undefined, 'locale is not defined');
+    assert.equal(dte._mode, momentTimezoneDiff.MODE_SINGLE, 'Mode matches');
+    assert.equal(dte._errorClassName, 'mtzdError', 'Error class matches');
+    assert.equal(dte._currentTime, currentTimeElement, 'Current time element matches');
+    assert.equal(dte._elements.hour, undefined, 'Hour element is not defined');
+    assert.equal(dte._elements.minute, undefined, 'Minute element is not defined');
+    assert.equal(dte._elements.ampm, undefined, 'AmPm element is not defined');
+    assert.equal(dte._elements.day, undefined, 'Day element is not defined');
+    assert.equal(dte._elements.month, undefined, 'Month element is not defined');
+    assert.equal(dte._elements.year, undefined, 'Year element is not defined');
+    assert.equal(dte._elements.datetime, datetimeElement, 'Date/time element matches');
+    assert.equal(dte._elements.timezone, timezoneElement, 'Timezone element matches');
+    assert.equal(dte._timeDisplayFormat, 'HH:mm DD-MMM-YYYY', 'Display format matches');
+    assert.deepEqual(dte._timeInputFormats, [ 'h:mm a DD-MMM-YYYY',
+                                              'H:mm DD-MMM-YYYY',
+                                              'DD-MMM-YYYY'
+                                            ], 'Input formats match');
+    assert.equal(dte._elements.datepicker, undefined, 'Date Picker element is not defined');
 
-    testVars.dte3.setSelected({ hour: 7, minute: 14, day: 18, month: 4, year: 2015, timezone: { text: 'timezone1', value: 'US/Pacific' } });
-    values = getDateTimeElementValues(testVars.dte3);
+    dte.setSelected({ hour: 7, minute: 14, day: 18, month: 4, year: 2015, timezone: { text: 'timezone1', value: 'US/Pacific' } });
+    values = getDateTimeElementValues(dte);
     assert.deepEqual(values, { datetime: '07:14 18-May-2015', timezone: 1 }, 'Selected values matches date');
 
-    setDateTimeElementValues(testVars.dte3, { datetime: '8:58 pm 8-Oct-2014', timezone: 0 });
-    values = testVars.dte3.getSelected();
+    setDateTimeElementValues(dte, { datetime: '8:58 pm 8-Oct-2014', timezone: 0 });
+    values = dte.getSelected();
     assert.deepEqual(values, { hour: 20, minute: 58, day: 8, month: 9, year: 2014, timezone: { text: 'The current timezone', value: '' } }, 'Selected matches date');
 
     // Test 29-Feb is valid for leap years
-    setDateTimeElementValues(testVars.dte3, { datetime: '8:58 pm 29-Feb-2012', timezone: 1 });
-    values = testVars.dte3.getSelected();
+    setDateTimeElementValues(dte, { datetime: '8:58 pm 29-Feb-2012', timezone: 1 });
+    values = dte.getSelected();
     assert.deepEqual(values, { hour: 20, minute: 58, day: 29, month: 1, year: 2012, timezone: { text: 'timezone1', value: 'US/Pacific' } }, 'Selected matches date');
     
     // NOTE: The remaining invalid dates have been disabled, since moment() appears to sometimes say valid, and other times invalid
     // // Invalid dates are not, well, valid (April has 30 days)
-    // setDateTimeElementValues(testVars.dte3, { datetime: '8:58 pm 31-Apr-2014', timezone: 0 });
-    // values = testVars.dte3.getSelected();
+    // setDateTimeElementValues(dte, { datetime: '8:58 pm 31-Apr-2014', timezone: 0 });
+    // values = dte.getSelected();
     // assert.strictEqual(values, undefined, 'Selected is not defined');
     // // Same for 31-Feb for non-leap years)
-    // setDateTimeElementValues(testVars.dte3, { datetime: '8:58 pm 31-Feb-2014', timezone: 0 });
-    // values = testVars.dte3.getSelected();
+    // setDateTimeElementValues(dte, { datetime: '8:58 pm 31-Feb-2014', timezone: 0 });
+    // values = dte.getSelected();
     // assert.strictEqual(values, undefined, 'Selected is not defined');
     // // Same for 31-Feb for leap years)
-    // setDateTimeElementValues(testVars.dte3, { datetime: '8:58 pm 31-Feb-2012', timezone: 0 });
-    // values = testVars.dte3.getSelected();
+    // setDateTimeElementValues(dte, { datetime: '8:58 pm 31-Feb-2012', timezone: 0 });
+    // values = dte.getSelected();
     // assert.strictEqual(values, undefined, 'Selected is not defined');
     // // Test 29-Feb is NOT valid for non-leap years
-    // setDateTimeElementValues(testVars.dte3, { datetime: '8:58 pm 29-Feb-2013', timezone: 0 });
-    // values = testVars.dte3.getSelected();
+    // setDateTimeElementValues(dte, { datetime: '8:58 pm 29-Feb-2013', timezone: 0 });
+    // values = dte.getSelected();
     // assert.strictEqual(values, undefined, 'Selected is not defined');
 });
 QUnit.test('DateTimeElements4', function (assert) {
@@ -562,7 +565,8 @@ QUnit.test('DateTimeElements4', function (assert) {
         yearElement,
         timezoneElement,
         currentTimeElement,
-        values;
+        values,
+        dte;
     dateElement = document.getElementById('mtzdDate12hour2');
     assert.ok(dateElement, 'Date element exists');
     hourElement = expectChild(assert, dateElement, index++, { tagName: 'SELECT',
@@ -637,29 +641,29 @@ QUnit.test('DateTimeElements4', function (assert) {
                                                                      textContent: '\u25d4'
                                                                    });
     expectChildren(assert, dateElement, index);
-    assert.equal(testVars.dte4.locale, undefined, 'locale is not defined');
-    assert.equal(testVars.dte4.mode, momentTimezoneDiff.MODE_SPLIT_HOUR12, 'Mode matches');
-    assert.equal(testVars.dte4.errorClassName, 'mtzdError', 'Error class matches');
-    assert.equal(testVars.dte4.currentTime, currentTimeElement, 'Current time element matches');
-    assert.equal(testVars.dte4.elements.hour, hourElement, 'Hour element matches');
-    assert.equal(testVars.dte4.elements.minute, minuteElement, 'Minute element matches');
-    assert.equal(testVars.dte4.elements.ampm, ampmElement, 'AmPm element matches');
-    assert.equal(testVars.dte4.elements.day, dayElement, 'Day element matches');
-    assert.equal(testVars.dte4.elements.month, monthElement, 'Month element matches');
-    assert.equal(testVars.dte4.elements.year, yearElement, 'Year element matches');
-    assert.equal(testVars.dte4.elements.timezone, timezoneElement, 'Timezone element matches');
-    assert.equal(testVars.dte4.elements.datetime, undefined, 'Date/time element is not defined');
-    assert.equal(testVars.dte4.timeDisplayFormat, undefined, 'Display format is not defined');
-    assert.equal(testVars.dte4.timeInputFormats, undefined, 'Input formats is not defined');
-    assert.equal(testVars.dte4.elements.datePicker, undefined, 'Date Picker element is not defined');
-    assert.equal(testVars.dte4.datePickerFormat, undefined, 'Date display/input format is not defined');
+    dte = testVars.dte4;
+    assert.equal(dte._locale, undefined, 'locale is not defined');
+    assert.equal(dte._mode, momentTimezoneDiff.MODE_SPLIT_HOUR12, 'Mode matches');
+    assert.equal(dte._errorClassName, 'mtzdError', 'Error class matches');
+    assert.equal(dte._currentTime, currentTimeElement, 'Current time element matches');
+    assert.equal(dte._elements.hour, hourElement, 'Hour element matches');
+    assert.equal(dte._elements.minute, minuteElement, 'Minute element matches');
+    assert.equal(dte._elements.ampm, ampmElement, 'AmPm element matches');
+    assert.equal(dte._elements.day, dayElement, 'Day element matches');
+    assert.equal(dte._elements.month, monthElement, 'Month element matches');
+    assert.equal(dte._elements.year, yearElement, 'Year element matches');
+    assert.equal(dte._elements.timezone, timezoneElement, 'Timezone element matches');
+    assert.equal(dte._elements.datetime, undefined, 'Date/time element is not defined');
+    assert.equal(dte._timeDisplayFormat, undefined, 'Display format is not defined');
+    assert.equal(dte._timeInputFormats, undefined, 'Input formats is not defined');
+    assert.equal(dte._elements.datepicker, undefined, 'Date Picker element is not defined');
 
-    testVars.dte4.setSelected({ hour: 0, minute: 0, day: 1, month: 0, year: 2010, timezone: { text: '', value: '' } });
-    values = getDateTimeElementValues(testVars.dte4);
+    dte.setSelected({ hour: 0, minute: 0, day: 1, month: 0, year: 2010, timezone: { text: '', value: '' } });
+    values = getDateTimeElementValues(dte);
     assert.deepEqual(values, { hour: 0, minute: 0, ampm: 0, day: 0, month: 0, year: 0, timezone: 0 }, 'Selected values matches date');
 
-    setDateTimeElementValues(testVars.dte4, { hour: 11, minute: 59, ampm: 1, day: 30, month: 11, year: 10, timezone: 2 });
-    values = testVars.dte4.getSelected();
+    setDateTimeElementValues(dte, { hour: 11, minute: 59, ampm: 1, day: 30, month: 11, year: 10, timezone: 2 });
+    values = dte.getSelected();
     assert.deepEqual(values, { hour: 23, minute: 59, day: 31, month: 11, year: 2020, timezone: { text: 'Japan', value: 'Japan' } }, 'Selected matches date');
 });
 function expectTimezone(assert, timezones, index, timezone, formats) {
@@ -738,7 +742,7 @@ function verifyLink(assert, env, containerElement, row, col, timezone, name, lin
     assert.ok(simulateClick(cell), 'Click similated');
     assert.equal(env.timezone.value, timezone, 'Timezone value matches');
     assert.equal(env.timezone.text, name, 'Timezone text matches');
-    selectedTimezone = getTimezone(env && env.dateTimeElements && env.dateTimeElements.elements && env.dateTimeElements.elements.timezone);
+    selectedTimezone = getTimezone(env && env._dateTimeElements && env._dateTimeElements._elements && env._dateTimeElements._elements.timezone);
     assert.equal(selectedTimezone.value, timezone, 'Timezone value matches timezone combo');
     assert.equal(selectedTimezone.text, name, 'Timezone text matches timezone combo');
     assert.ok(classPresentInClassName(cell.className, linkClass), 'Class name "' + linkClass + '" is present in "' + cell.className + '"');
@@ -752,7 +756,7 @@ function fireChangeEvent(element) {
         element.fireEvent('onchange');
     }
 }
-QUnit.test('Environment', function (assert) {
+QUnit.test('Environment1', function (assert) {
     var dateElement,
         containerElement,
         timeElement,
@@ -769,6 +773,7 @@ QUnit.test('Environment', function (assert) {
         formats,
         values,
         col,
+        env,
         defaultOptions = { locale: undefined,
                            ahead: 'ahead',
                            behind: 'behind',
@@ -873,26 +878,26 @@ QUnit.test('Environment', function (assert) {
                                                                      textContent: '\u25d4'
                                                                    });
     expectChildren(assert, dateElement, index);
-    assert.equal(testVars.env.dateTimeElements.locale, undefined, 'env dateTimeElements locale is not defined');
-    assert.equal(testVars.env.dateTimeElements.mode, momentTimezoneDiff.MODE_SPLIT_HOUR12, 'Mode matches');
-    assert.equal(testVars.env.dateTimeElements.errorClassName, 'mtzdError', 'Error class matches');
-    assert.equal(testVars.env.dateTimeElements.currentTime, currentTimeElement, 'Current time element matches');
-    assert.equal(testVars.env.dateTimeElements.elements.hour, hourElement, 'Hour element matches');
-    assert.equal(testVars.env.dateTimeElements.elements.minute, minuteElement, 'Minute element matches');
-    assert.equal(testVars.env.dateTimeElements.elements.ampm, ampmElement, 'AmPm element matches');
-    assert.equal(testVars.env.dateTimeElements.elements.day, dayElement, 'Day element matches');
-    assert.equal(testVars.env.dateTimeElements.elements.month, monthElement, 'Month element matches');
-    assert.equal(testVars.env.dateTimeElements.elements.year, yearElement, 'Year element matches');
-    assert.equal(testVars.env.dateTimeElements.elements.timezone, timezoneElement, 'Timezone element matches');
-    assert.equal(testVars.env.dateTimeElements.elements.datetime, undefined, 'Date/time element is not defined');
-    assert.equal(testVars.env.dateTimeElements.timeDisplayFormat, undefined, 'Display format is not defined');
-    assert.equal(testVars.env.dateTimeElements.timeInputFormats, undefined, 'Input formats is not defined');
-    assert.equal(testVars.env.dateTimeElements.elements.datePicker, undefined, 'Date Picker element is not defined');
-    assert.equal(testVars.env.dateTimeElements.datePickerFormat, undefined, 'Date display/input format is not defined');
-    assert.deepEqual(testVars.env.options, defaultOptions, 'options matches default options');
-    assert.deepEqual(testVars.env.getOptions(), defaultOptions, 'getOptions() matches default options');
-    assert.notEqual(testVars.env.options, testVars.env.getOptions(), 'getOptions() returns a copy');
-    assert.equal(testVars.env.timeElement, timeElement, 'Time element matches');
+    env = testVars.env1;
+    assert.equal(env._dateTimeElements._locale, undefined, 'env dateTimeElements locale is not defined');
+    assert.equal(env._dateTimeElements._mode, momentTimezoneDiff.MODE_SPLIT_HOUR12, 'Mode matches');
+    assert.equal(env._dateTimeElements._errorClassName, 'mtzdError', 'Error class matches');
+    assert.equal(env._dateTimeElements._currentTime, currentTimeElement, 'Current time element matches');
+    assert.equal(env._dateTimeElements._elements.hour, hourElement, 'Hour element matches');
+    assert.equal(env._dateTimeElements._elements.minute, minuteElement, 'Minute element matches');
+    assert.equal(env._dateTimeElements._elements.ampm, ampmElement, 'AmPm element matches');
+    assert.equal(env._dateTimeElements._elements.day, dayElement, 'Day element matches');
+    assert.equal(env._dateTimeElements._elements.month, monthElement, 'Month element matches');
+    assert.equal(env._dateTimeElements._elements.year, yearElement, 'Year element matches');
+    assert.equal(env._dateTimeElements._elements.timezone, timezoneElement, 'Timezone element matches');
+    assert.equal(env._dateTimeElements._elements.datetime, undefined, 'Date/time element is not defined');
+    assert.equal(env._dateTimeElements._timeDisplayFormat, undefined, 'Display format is not defined');
+    assert.equal(env._dateTimeElements._timeInputFormats, undefined, 'Input formats is not defined');
+    assert.equal(env._dateTimeElements._elements.datepicker, undefined, 'Date Picker element is not defined');
+    assert.deepEqual(env._options, defaultOptions, 'options matches default options');
+    assert.deepEqual(env.getOptions(), defaultOptions, 'getOptions() matches default options');
+    assert.notEqual(env._options, env.getOptions(), 'getOptions() returns a copy');
+    assert.equal(env._timeElement, timeElement, 'Time element matches');
     formats = [ 'dddd',
                 'h:mm a',
                 'DD-MMM-YYYY',
@@ -900,18 +905,18 @@ QUnit.test('Environment', function (assert) {
                 'sunmoon'
               ];
     index = 0;
-    expectTimezone(assert, testVars.env.timezones, index++, 'US/Pacific', formats);
-    expectTimezone(assert, testVars.env.timezones, index++, 'US/Eastern', formats);
-    expectTimezone(assert, testVars.env.timezones, index++, 'Europe/London', formats);
-    expectTimezone(assert, testVars.env.timezones, index++, 'Europe/Paris', formats);
-    expectTimezone(assert, testVars.env.timezones, index++, 'Asia/Calcutta', formats);
-    expectTimezone(assert, testVars.env.timezones, index++, 'Australia/Perth', formats);
-    expectTimezone(assert, testVars.env.timezones, index++, 'Australia/Melbourne', formats);
-    expectTimezones(assert, testVars.env.timezones, index);
+    expectTimezone(assert, env._timezones, index++, 'US/Pacific', formats);
+    expectTimezone(assert, env._timezones, index++, 'US/Eastern', formats);
+    expectTimezone(assert, env._timezones, index++, 'Europe/London', formats);
+    expectTimezone(assert, env._timezones, index++, 'Europe/Paris', formats);
+    expectTimezone(assert, env._timezones, index++, 'Asia/Calcutta', formats);
+    expectTimezone(assert, env._timezones, index++, 'Australia/Perth', formats);
+    expectTimezone(assert, env._timezones, index++, 'Australia/Melbourne', formats);
+    expectTimezones(assert, env._timezones, index);
     // 1-Sep-2014 - Australia NOT in daylight savings - US IS in daylight savings
-    values = getMomentValues(testVars.env.moment);
+    values = getMomentValues(env.moment);
     assert.deepEqual(values, [ 2014, 8, 1, 0, 0, 0], 'moment matches');
-    assert.deepEqual(testVars.env.timezone, { value: 'Australia/Melbourne', text: 'Dino' }, 'timezone matches');
+    assert.deepEqual(env.timezone, { value: 'Australia/Melbourne', text: 'Dino' }, 'timezone matches');
     index = 0;
     expectValues(assert, containerElement, index++, [ 'Fred Flintstone',
                                                   'Vancouver, Canada',
@@ -979,10 +984,10 @@ QUnit.test('Environment', function (assert) {
     assert.equal(timeElement.textContent, 'Monday 12:00 am 01-Sep-2014 (Dino)', 'Time value matches');
     expectLegend(assert, legendElement, '\u263c - 6:00 am .. 7:59 pm', '\u263e - 8:00 pm .. 5:59 am', true);
     // 15-Oct-2014 - Australia IS in daylight savings - US IS in daylight savings
-    testVars.env.update([2014, 9, 15, 14, 30, 0], 'US/Pacific', 'Fred Flintstone');
-    values = getMomentValues(testVars.env.moment);
+    env.update([2014, 9, 15, 14, 30, 0], 'US/Pacific', 'Fred Flintstone');
+    values = getMomentValues(env.moment);
     assert.deepEqual(values, [ 2014, 9, 15, 14, 30, 0], 'moment matches');
-    assert.deepEqual(testVars.env.timezone, { value: 'US/Pacific', text: 'Fred Flintstone' }, 'timezone matches');
+    assert.deepEqual(env.timezone, { value: 'US/Pacific', text: 'Fred Flintstone' }, 'timezone matches');
     index = 0;
     expectValues(assert, containerElement, index++, [ 'Fred Flintstone',
                                                       'Vancouver, Canada',
@@ -1050,10 +1055,10 @@ QUnit.test('Environment', function (assert) {
     assert.equal(timeElement.textContent, 'Wednesday 2:30 pm 15-Oct-2014 (Fred Flintstone)', 'Time value matches');
     expectLegend(assert, legendElement, '\u263c - 6:00 am .. 7:59 pm', '\u263e - 8:00 pm .. 5:59 am', true);
     // 15-Nov-2014 - Australia IS in daylight savings - US NOT in daylight savings
-    testVars.env.update([2014, 10, 15, 14, 30, 0], 'Europe/Paris', 'Wilma Flintstone');
-    values = getMomentValues(testVars.env.moment);
+    env.update([2014, 10, 15, 14, 30, 0], 'Europe/Paris', 'Wilma Flintstone');
+    values = getMomentValues(env.moment);
     assert.deepEqual(values, [ 2014, 10, 15, 14, 30, 0], 'moment matches');
-    assert.deepEqual(testVars.env.timezone, { value: 'Europe/Paris', text: 'Wilma Flintstone' }, 'timezone matches');
+    assert.deepEqual(env.timezone, { value: 'Europe/Paris', text: 'Wilma Flintstone' }, 'timezone matches');
     index = 0;
     expectValues(assert, containerElement, index++, [ 'Fred Flintstone',
                                                       'Vancouver, Canada',
@@ -1123,21 +1128,21 @@ QUnit.test('Environment', function (assert) {
     // Simulate click on the LINK cells, verify action triggered and class name as been updated
     for (col = 0; col < 3; col += 1) {
         index = 0;
-        verifyLink(assert, testVars.env, containerElement, index++, col, 'US/Pacific', 'Fred Flintstone', 'mtzdLink');
-        verifyLink(assert, testVars.env, containerElement, index++, col, 'US/Eastern', 'Barny Rubble', 'mtzdLink');
-        verifyLink(assert, testVars.env, containerElement, index++, col, 'Europe/London', 'Bamm Bamm Rubble', 'mtzdLink');
-        verifyLink(assert, testVars.env, containerElement, index++, col, 'Europe/Paris', 'Wilma Flintstone', 'mtzdLink');
-        verifyLink(assert, testVars.env, containerElement, index++, col, 'Asia/Calcutta', 'Betty Rubble', 'mtzdLink');
-        verifyLink(assert, testVars.env, containerElement, index++, col, 'Australia/Perth', 'Pebbles Flintstone', 'mtzdLink');
-        verifyLink(assert, testVars.env, containerElement, index++, col, 'Australia/Melbourne', 'Dino', 'mtzdLink');
+        verifyLink(assert, env, containerElement, index++, col, 'US/Pacific', 'Fred Flintstone', 'mtzdLink');
+        verifyLink(assert, env, containerElement, index++, col, 'US/Eastern', 'Barny Rubble', 'mtzdLink');
+        verifyLink(assert, env, containerElement, index++, col, 'Europe/London', 'Bamm Bamm Rubble', 'mtzdLink');
+        verifyLink(assert, env, containerElement, index++, col, 'Europe/Paris', 'Wilma Flintstone', 'mtzdLink');
+        verifyLink(assert, env, containerElement, index++, col, 'Asia/Calcutta', 'Betty Rubble', 'mtzdLink');
+        verifyLink(assert, env, containerElement, index++, col, 'Australia/Perth', 'Pebbles Flintstone', 'mtzdLink');
+        verifyLink(assert, env, containerElement, index++, col, 'Australia/Melbourne', 'Dino', 'mtzdLink');
         assert.equal(containerElement.children.length, index, 'All rows verified');
     }
 
     // Change the DateTimeElements and trigger a change to verify that the details have changed
-    testVars.env.dateTimeElements.setSelected({ hour: 0, minute: 0, day: 1, month: 0, year: 2010, timezone: { text: 'Bamm Bamm Rubble', value: 'Europe/London' } });
-    values = getDateTimeElementValues(testVars.env.dateTimeElements);
+    env._dateTimeElements.setSelected({ hour: 0, minute: 0, day: 1, month: 0, year: 2010, timezone: { text: 'Bamm Bamm Rubble', value: 'Europe/London' } });
+    values = getDateTimeElementValues(env._dateTimeElements);
     assert.deepEqual(values, { hour: 0, minute: 0, ampm: 0, day: 0, month: 0, year: 0, timezone: 3 }, 'Selected values matches date');
-    fireChangeEvent(testVars.env.dateTimeElements.elements.hour);
+    fireChangeEvent(env._dateTimeElements._elements.hour);
     
     index = 0;
     expectValues(assert, containerElement, index++, [ 'Fred Flintstone',
@@ -1204,10 +1209,10 @@ QUnit.test('Environment', function (assert) {
                                                       '\u263c'
                                                     ]);
 
-    setDateTimeElementValues(testVars.env.dateTimeElements, { hour: 11, minute: 59, ampm: 1, day: 30, month: 11, year: 10, timezone: 2 });
-    values = testVars.env.dateTimeElements.getSelected();
+    setDateTimeElementValues(env._dateTimeElements, { hour: 11, minute: 59, ampm: 1, day: 30, month: 11, year: 10, timezone: 2 });
+    values = env._dateTimeElements.getSelected();
     assert.deepEqual(values, { hour: 23, minute: 59, day: 31, month: 11, year: 2020, timezone: { text: 'Barny Rubble', value: 'US/Eastern' } }, 'Selected matches date');
-    fireChangeEvent(testVars.env.dateTimeElements.elements.hour);
+    fireChangeEvent(env._dateTimeElements._elements.hour);
 
     index = 0;
     expectValues(assert, containerElement, index++, [ 'Fred Flintstone',

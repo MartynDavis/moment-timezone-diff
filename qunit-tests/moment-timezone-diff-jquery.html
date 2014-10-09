@@ -17,10 +17,10 @@
         margin: 0 auto;
         text-align: center;
     }
-    .mtzdDatePicker {
+    .mtzdDatepicker {
         display: none;
     }
-    .mtzdDatePickerImage {
+    .mtzdDatepickerImage {
         position: relative;
         cursor: pointer;
         height: 20px;
@@ -45,7 +45,7 @@
                                                                                     dayTitle: "Choisir jour du mois",
                                                                                     yearTitle: "Sélectionnez l'année",
                                                                                     timezoneTitle: "Sélectionnez le fuseau horaire",
-                                                                                    datePickerTitle: "Sélectionnez la date en utilisant le calendrier.",
+                                                                                    datepickerTitle: "Sélectionnez la date en utilisant le calendrier.",
                                                                                     monthFormat: "MMMM"
                                                                                   });
         testVars.dte1.addTimezone('Europe/Paris', 'Sebastian Roché');
@@ -58,7 +58,7 @@
         testVars.dte2.addTimezone('Australia/Perth');
 
         testVars.dte3 = new momentTimezoneDiff.DateTimeElements('mtzdDateSingle', { mode: momentTimezoneDiff.MODE_SINGLE,
-                                                                                    usejQueryDatePicker: true
+                                                                                    usejQueryDatepicker: true
                                                                                   });
         testVars.dte3.addTimezone('America/Argentina/Buenos_Aires', 'Barry');
         testVars.dte3.addTimezone('Europe/Budapest', 'Bruce');
@@ -66,18 +66,18 @@
 
         testVars.dte4 = new momentTimezoneDiff.DateTimeElements('mtzdDate12hour2', { mode: momentTimezoneDiff.MODE_SPLIT_HOUR12,
                                                                                      dateOrder: momentTimezoneDiff.DATE_ORDER_YMD,
-                                                                                     usejQueryDatePicker: false
+                                                                                     usejQueryDatepicker: false
                                                                                    });
         testVars.dte4.addTimezone('Europe/London');
         testVars.dte4.addTimezone('Japan');
 
         testVars.dte5 = new momentTimezoneDiff.DateTimeElements('mtzdDateSingle2', { mode: momentTimezoneDiff.MODE_SINGLE,
-                                                                                    usejQueryDatePicker: false
+                                                                                    usejQueryDatepicker: false
                                                                                   });
         testVars.dte5.addTimezone('America/Blanc-Sablon');
 
-        testVars.env = new momentTimezoneDiff.Environment();
-        testVars.env.update([2014, 8, 1, 0, 0, 0], 'Australia/Melbourne', 'Dino');
+        testVars.env1 = new momentTimezoneDiff.Environment();
+        testVars.env1.update([2014, 8, 1, 0, 0, 0], 'Australia/Melbourne', 'Dino');
     }
 </script>
 </head>

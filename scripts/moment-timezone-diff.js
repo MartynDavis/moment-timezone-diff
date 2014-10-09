@@ -35,8 +35,6 @@
     if (major < 0 || (major === 0 && minor < 2) || (major === 0 && minor === 2 && subminor < 2)) {
         throw new MomentTimezoneDiffException('Moment Timezone Diff requires moment-timezone.js >= 0.2.2. You are using moment-timezone.js ' + moment.tz.version + '.');
     }
-
-
     function duplicate(obj) {
         var copy,
             prop;
@@ -312,7 +310,7 @@
             element.fireEvent('onchange');
         }
     }
-    function getDatePickerOnclick(dte, minYear, maxYear) {
+    function getDatepickerOnclick(dte, minYear, maxYear) {
         return function () {
             var date = dte.getSelectedDate() || new Date();
             if (date.getFullYear() < minYear) {
@@ -320,14 +318,14 @@
             } else if (date.getFullYear() > maxYear) {
                 date.setYear(maxYear);
             }
-            $(dte.elements.datePicker).datepicker('setDate', date);
-            $(dte.elements.datePicker).show().focus().hide();
+            $(dte._elements.datepicker).datepicker('setDate', date);
+            $(dte._elements.datepicker).show().focus().hide();
         };
     }
-    function getDatePickerOnSelect(dte) {
+    function getDatepickerOnSelect(dte) {
         return function () {
             var selected = dte.getSelected(),
-                date = $(dte.elements.datePicker).datepicker( "getDate" );
+                date = $(dte._elements.datepicker).datepicker( "getDate" );
             if (date) {
                 if (!selected) {
                     selected = { };
@@ -338,6 +336,8 @@
                 selected.month = date.getMonth();
                 selected.day = date.getDate();
                 dte.setSelected(selected);
+                // Trigger a change event so the environment is updated
+                fireChangeEvent(dte._elements.timezone);
             }
         };
     }
@@ -355,8 +355,8 @@
             title,
             dateOrder,
             dateControlsOrder,
-            datePickerOptions,
-            datePickerLocale,
+            datepickerOptions,
+            datepickerLocale,
             minYear = getOptionValue(options, 'minYear', 2010),
             maxYear = getOptionValue(options, 'maxYear', 2020),
             locale = getOptionValue(options, 'locale'),
@@ -367,20 +367,20 @@
             return;
         }
         if (mode === MODE_SINGLE) {
-            this.timeDisplayFormat = getOptionValue(options, 'timeDisplayFormat', hourFormat + timeDelim + minuteFormat + ' ' + dayFormat + dateDelim + monthFormat + dateDelim + yearFormat);
-            this.timeInputFormats = getOptionValue(options, 'timeInputFormats', [ 'h' + timeDelim + 'mm a ' + dayFormat + dateDelim + monthFormat + dateDelim + yearFormat,
-                                                                                  'H' + timeDelim + 'mm ' + dayFormat + dateDelim + monthFormat + dateDelim + yearFormat,
-                                                                                  dayFormat + dateDelim + monthFormat + dateDelim + yearFormat
-                                                                                ]); 
+            this._timeDisplayFormat = getOptionValue(options, 'timeDisplayFormat', hourFormat + timeDelim + minuteFormat + ' ' + dayFormat + dateDelim + monthFormat + dateDelim + yearFormat);
+            this._timeInputFormats = getOptionValue(options, 'timeInputFormats', [ 'h' + timeDelim + 'mm a ' + dayFormat + dateDelim + monthFormat + dateDelim + yearFormat,
+                                                                                   'H' + timeDelim + 'mm ' + dayFormat + dateDelim + monthFormat + dateDelim + yearFormat,
+                                                                                   dayFormat + dateDelim + monthFormat + dateDelim + yearFormat
+                                                                                 ]); 
             elements = { };
             title = getOptionValue(options, 'timeTitle', 'Enter the required date and time.');
-            if (this.timeInputFormats && getOptionValue(options, 'timeTitleShowInputFormats', true)) {
+            if (this._timeInputFormats && getOptionValue(options, 'timeTitleShowInputFormats', true)) {
                 title += '  ' + getOptionValue(options, 'timeTitleInputFormats', 'Supported formats are:') + '\n';
-                if (typeof this.timeInputFormats === 'string') {
-                    title += '\n  ' + this.timeInputFormats;
-                } else if (this.timeInputFormats) {
-                    for (i = 0; i < this.timeInputFormats.length; i += 1) {
-                        title += '\n  ' + this.timeInputFormats[i];
+                if (typeof this._timeInputFormats === 'string') {
+                    title += '\n  ' + this._timeInputFormats;
+                } else if (this._timeInputFormats) {
+                    for (i = 0; i < this._timeInputFormats.length; i += 1) {
+                        title += '\n  ' + this._timeInputFormats[i];
                     }
                 }
             }
@@ -426,50 +426,50 @@
             console.error('Mode "' + mode + '" is invalid');
             return;
         }
-        if (getOptionValue(options, 'usejQueryDatePicker', true) && window.jQuery && $ && $.datepicker) {
-            datePickerLocale = getOptionValue(options, 'datePickerLocale');
-            datePickerOptions = { showButtonPanel: false,
+        if (getOptionValue(options, 'usejQueryDatepicker', true) && window.jQuery && $ && $.datepicker) {
+            datepickerLocale = getOptionValue(options, 'datepickerLocale');
+            datepickerOptions = { showButtonPanel: false,
                                   changeYear: true,
                                   changeMonth: true,
                                   yearRange: minYear + ':' + maxYear,
-                                  onSelect: getDatePickerOnSelect(this)
+                                  onSelect: getDatepickerOnSelect(this)
                                 };
-            if (!datePickerLocale) {
-                datePickerOptions.dayNames = getWeekdayNames('dddd', locale);
-                datePickerOptions.dayNamesShort = getWeekdayNames('ddd', locale);
-                datePickerOptions.dayNamesMin = getWeekdayNames('dd', locale);
-                datePickerOptions.monthNames = getMonthNames('MMMM', locale);
-                datePickerOptions.monthNamesShort = getMonthNames('MMM', locale);
+            if (!datepickerLocale) {
+                datepickerOptions.dayNames = getWeekdayNames('dddd', locale);
+                datepickerOptions.dayNamesShort = getWeekdayNames('ddd', locale);
+                datepickerOptions.dayNamesMin = getWeekdayNames('dd', locale);
+                datepickerOptions.monthNames = getMonthNames('MMMM', locale);
+                datepickerOptions.monthNamesShort = getMonthNames('MMM', locale);
             }
             appendChild(element, createElement('span', { textContent: ' ' }));
-            elements.datePicker = appendChild(element, createElement('input', { type: 'text', 
-                                                                                className: getOptionValue(options, 'datePickerClass', 'mtzdDatePicker')
+            elements.datepicker = appendChild(element, createElement('input', { type: 'text', 
+                                                                                className: getOptionValue(options, 'datepickerClass', 'mtzdDatepicker')
                                                                               }));
-            $(elements.datePicker).datepicker(datePickerOptions);
-            if (datePickerLocale) {
-                $(elements.datePicker).datepicker( $.datepicker.regional[ datePickerLocale ] );
+            $(elements.datepicker).datepicker(datepickerOptions);
+            if (datepickerLocale) {
+                $(elements.datepicker).datepicker( $.datepicker.regional[ datepickerLocale ] );
             }
-            elements.datePickerImage = appendChild(element, createElement('img', { className: getOptionValue(options, 'datePickerImageClass', 'mtzdDatePickerImage'), 
-                                                                                   title: getOptionValue(options, 'datePickerTitle', 'Select the date using a calendar'),
-                                                                                   src: getOptionValue(options, 'datePickerImage', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAUCAMAAAC+oj0CAAAABGdBTUEAALGPC/xhBQAAAwBQTFRFY2RmZ2hqampqb3BydXZ4e3x+Ll2NMWqfJmajN2mjOm6lP3GtPn25XnSKWXaWW32bQ3euRHerSHOkSHirQn26RX68Tn6xS366Y3qQYX6eZX6YfX6AQ4K+RIG/T4CzToO6ToW6U4CyUYW+UIi9V4q8Woq8X42/ZICTZ4GUa4eZbYKZb4SZboidaYWibommbY+tZYmyYoy7eo+iepypdJOyfpiye5y6fpm5RoXBTo7JV4nFUIrIUo/LXI7GW47KXpLHXpLJYpfDY53RbZ7acJvNdaDRgICBioyMj4+SjZaYk5OVlZaZlJiTl5mZgJ65nZ6gmpmtnqCeiaCwjKa0jqm3maurkaW2k627l6i4mam4oJiwoaKlo6ijpaqkpqipqaqsqKuwra2zr7Cyu7y9gqLAkq3Bla/MlLPKobbHoLrGpLrJqL3OurvCv8K9v8S+p8PWrMHUu8TAvsDIuMjVrNbuvNfqu93svuLuwcHBwcLFwsTGxMTEwsPKwMnGxsrEwsnPw8zKxM3KycbIyMvGyM3HycjJycrMyM3Jy8zOzsrPzc3Oy8bdys7Rzc7Ry9DKwdLRxNfXwtPcwdnfxtrbydPVz9LTy9XZzN/f08/U0dLN0tXO0NDT1dTT1dXV1tbZ1trW19zW19rf2dfT2tvW2dnZ2trd2t/Y29zf3Nnd3t/Z3d7ez87jwNrz1Nbo2NPq3dzh2+Db2eHf3uDdwuHsxuDoxuLtz+DhxuHxyeLwzOLxzOTx2eDj3eDn3Obp0ef10u732+zw3O7x3fL03fj74d/c4Nvg4N7i4eHi4uHk4uTj5eLi5OLk5+bk5ufq4+jj5+zm4evt5ejt6eXp6ezl7ezn6+vr4uP25+f85Ovy7ej67+n/6/Dp7fDr7vDv4fL15/P27/Dx7fX56vn86/z78u7w8fHu8fHx8fL08/Xy8vT29/Py9fXx9fX18/X59fb49fb89vjy8/v89/j69/j99vz5+PX//fb++Pn2/P33+vn6+vr8+vz8///7/fz9AAAAAAAAtJTP7AAAAQB0Uk5T////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////AFP3ByUAAAAJcEhZcwAAFiQAABYkAZsVxhQAAAAYdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuM4zml1AAAAHXSURBVChTAcwBM/4Aw8KSVFe0wmpSa97BaFaR3nNYWcDf4gBlKSdpUywoGL4NKyoycBouDnUtLS5mAA82L2dONGQOvxlONzVvMEUhdDFFRBIAB0IgIyAfQBBBCkA9ESQiPhdACzpDCQAIOTgMHB08HRQUOzsUFSIeFhMWJSYGADe4uLe4uKy4t7m6urm4tbO1dne1tTMAYOCVjXqIr6fIxsbGxsi7tpCTl4/jVQBe4IrJqorm+eyk+fnq0vrvrdbXq/pQAFzPh86wg+X995389+XM/fWu2dqL9loAXdyEpqCD0/Drqfjr1Mz57aHR0Yz9WwBM225+jm2ao6mZmcSimZ+xfYCBcfRHAFHmsujmpNX365zr6uXK6eGWvdCU8UkATd2q+uyk5vnsgv3k5Mb74ZbY2H/hSQBL5pulxo2or8iJqMWomK+8cnJ8bPNKAEjsnsfVisvV1YXV1cuezdF5bHxh+kcAStWd1e6K1e7Vhezm1aTs7mN6lU/7SgBK1ar5+aTV6uak5uzVx+7yY3qeX/sbAEfVhXhjeIWFhXh7hXh4eYZhX15b50cATeb3/f397Pv9/fn9/f39+unp+fvgRgBHRgICAgICAgICAgICAgIBBAMAAgVPytv2Q9UZjMgAAAAASUVORK5CYII=') 
+            elements.datepickerImage = appendChild(element, createElement('img', { className: getOptionValue(options, 'datepickerImageClass', 'mtzdDatepickerImage'), 
+                                                                                   title: getOptionValue(options, 'datepickerTitle', 'Select the date using a calendar'),
+                                                                                   src: getOptionValue(options, 'datepickerImage', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAUCAMAAAC+oj0CAAAABGdBTUEAALGPC/xhBQAAAwBQTFRFY2RmZ2hqampqb3BydXZ4e3x+Ll2NMWqfJmajN2mjOm6lP3GtPn25XnSKWXaWW32bQ3euRHerSHOkSHirQn26RX68Tn6xS366Y3qQYX6eZX6YfX6AQ4K+RIG/T4CzToO6ToW6U4CyUYW+UIi9V4q8Woq8X42/ZICTZ4GUa4eZbYKZb4SZboidaYWibommbY+tZYmyYoy7eo+iepypdJOyfpiye5y6fpm5RoXBTo7JV4nFUIrIUo/LXI7GW47KXpLHXpLJYpfDY53RbZ7acJvNdaDRgICBioyMj4+SjZaYk5OVlZaZlJiTl5mZgJ65nZ6gmpmtnqCeiaCwjKa0jqm3maurkaW2k627l6i4mam4oJiwoaKlo6ijpaqkpqipqaqsqKuwra2zr7Cyu7y9gqLAkq3Bla/MlLPKobbHoLrGpLrJqL3OurvCv8K9v8S+p8PWrMHUu8TAvsDIuMjVrNbuvNfqu93svuLuwcHBwcLFwsTGxMTEwsPKwMnGxsrEwsnPw8zKxM3KycbIyMvGyM3HycjJycrMyM3Jy8zOzsrPzc3Oy8bdys7Rzc7Ry9DKwdLRxNfXwtPcwdnfxtrbydPVz9LTy9XZzN/f08/U0dLN0tXO0NDT1dTT1dXV1tbZ1trW19zW19rf2dfT2tvW2dnZ2trd2t/Y29zf3Nnd3t/Z3d7ez87jwNrz1Nbo2NPq3dzh2+Db2eHf3uDdwuHsxuDoxuLtz+DhxuHxyeLwzOLxzOTx2eDj3eDn3Obp0ef10u732+zw3O7x3fL03fj74d/c4Nvg4N7i4eHi4uHk4uTj5eLi5OLk5+bk5ufq4+jj5+zm4evt5ejt6eXp6ezl7ezn6+vr4uP25+f85Ovy7ej67+n/6/Dp7fDr7vDv4fL15/P27/Dx7fX56vn86/z78u7w8fHu8fHx8fL08/Xy8vT29/Py9fXx9fX18/X59fb49fb89vjy8/v89/j69/j99vz5+PX//fb++Pn2/P33+vn6+vr8+vz8///7/fz9AAAAAAAAtJTP7AAAAQB0Uk5T////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////AFP3ByUAAAAJcEhZcwAAFiQAABYkAZsVxhQAAAAYdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuM4zml1AAAAHXSURBVChTAcwBM/4Aw8KSVFe0wmpSa97BaFaR3nNYWcDf4gBlKSdpUywoGL4NKyoycBouDnUtLS5mAA82L2dONGQOvxlONzVvMEUhdDFFRBIAB0IgIyAfQBBBCkA9ESQiPhdACzpDCQAIOTgMHB08HRQUOzsUFSIeFhMWJSYGADe4uLe4uKy4t7m6urm4tbO1dne1tTMAYOCVjXqIr6fIxsbGxsi7tpCTl4/jVQBe4IrJqorm+eyk+fnq0vrvrdbXq/pQAFzPh86wg+X995389+XM/fWu2dqL9loAXdyEpqCD0/Drqfjr1Mz57aHR0Yz9WwBM225+jm2ao6mZmcSimZ+xfYCBcfRHAFHmsujmpNX365zr6uXK6eGWvdCU8UkATd2q+uyk5vnsgv3k5Mb74ZbY2H/hSQBL5pulxo2or8iJqMWomK+8cnJ8bPNKAEjsnsfVisvV1YXV1cuezdF5bHxh+kcAStWd1e6K1e7Vhezm1aTs7mN6lU/7SgBK1ar5+aTV6uak5uzVx+7yY3qeX/sbAEfVhXhjeIWFhXh7hXh4eYZhX15b50cATeb3/f397Pv9/fn9/f39+unp+fvgRgBHRgICAgICAgICAgICAgIBBAMAAgVPytv2Q9UZjMgAAAAASUVORK5CYII=') 
                                                                                  }));
-            elements.datePickerImage.addEventListener('click', getDatePickerOnclick(this, minYear, maxYear), false);
+            elements.datepickerImage.addEventListener('click', getDatepickerOnclick(this, minYear, maxYear), false);
         }
         appendChild(element, createElement('span', { textContent: ' ' }));
         elements.timezone = appendChild(element, createElement('select', { title: getOptionValue(options, 'timezoneTitle', 'Select timezone') }));
         populateTimezoneOptions(elements.timezone, getOptionValue(options, 'currentTimezoneText', ''));
         appendChild(element, createElement('span', { textContent: ' ' }));
-        this.currentTime = appendChild(element, createElement('span', { textContent: getOptionValue(options, 'currentTime', '\u25d4'),
-                                                                        title: getOptionValue(options, 'currentTimeTitle', 'Current Time'),
-                                                                        className: getOptionValue(options, 'currentTimeClass', 'mtzdCurrentTime') }));
-        this.mode = mode;
-        this.elements = elements;
-        this.errorClassName = getOptionValue(options, 'errorClass', 'mtzdError');
-        this.locale = locale;
+        this._currentTime = appendChild(element, createElement('span', { textContent: getOptionValue(options, 'currentTime', '\u25d4'),
+                                                                         title: getOptionValue(options, 'currentTimeTitle', 'Current Time'),
+                                                                         className: getOptionValue(options, 'currentTimeClass', 'mtzdCurrentTime') }));
+        this._mode = mode;
+        this._elements = elements;
+        this._errorClassName = getOptionValue(options, 'errorClass', 'mtzdError');
+        this._locale = locale;
     }
     DateTimeElements.prototype.addTimezone = function (timezone, name) {
-        if (this.elements && this.elements.timezone) {
-            addComboValue(this.elements.timezone, timezone, name);
+        if (this._elements && this._elements.timezone) {
+            addComboValue(this._elements.timezone, timezone, name);
         }
     };
     function getSelected(element) {
@@ -539,11 +539,11 @@
         var selected,
             ampm,
             m;
-        if (this.mode === MODE_SINGLE) {
-            if (this.locale) {
-                m = moment(this.elements.datetime.value, this.timeInputFormats, this.locale);
+        if (this._mode === MODE_SINGLE) {
+            if (this._locale) {
+                m = moment(this._elements.datetime.value, this._timeInputFormats, this._locale);
             } else {
-                m = moment(this.elements.datetime.value, this.timeInputFormats);
+                m = moment(this._elements.datetime.value, this._timeInputFormats);
             }
             if (m.isValid()) {
                 selected = { };
@@ -552,26 +552,26 @@
                 selected.month = m.month();
                 selected.day = m.date();
                 selected.year = m.year();
-                selected.timezone = getSelectedValueText(this.elements.timezone);
-                classRemove(this.elements.datetime, this.errorClassName);
+                selected.timezone = getSelectedValueText(this._elements.timezone);
+                classRemove(this._elements.datetime, this._errorClassName);
             } else {
-                classAdd(this.elements.datetime, this.errorClassName);
+                classAdd(this._elements.datetime, this._errorClassName);
                 return;
             }
-        } else if ((this.mode === MODE_SPLIT_HOUR12) || (this.mode === MODE_SPLIT_HOUR24)) {
+        } else if ((this._mode === MODE_SPLIT_HOUR12) || (this._mode === MODE_SPLIT_HOUR24)) {
             selected = { };
-            selected.hour = getSelected(this.elements.hour);
-            selected.minute = getSelected(this.elements.minute);
-            selected.month = getSelected(this.elements.month);
-            selected.day = getSelected(this.elements.day);
-            selected.year = getSelected(this.elements.year);
-            if (this.mode === MODE_SPLIT_HOUR12) {
-                ampm = getSelected(this.elements.ampm);
+            selected.hour = getSelected(this._elements.hour);
+            selected.minute = getSelected(this._elements.minute);
+            selected.month = getSelected(this._elements.month);
+            selected.day = getSelected(this._elements.day);
+            selected.year = getSelected(this._elements.year);
+            if (this._mode === MODE_SPLIT_HOUR12) {
+                ampm = getSelected(this._elements.ampm);
                 if (ampm !== 0) {
                     selected.hour += 12;
                 }
             }
-            selected.timezone = getSelectedValueText(this.elements.timezone);
+            selected.timezone = getSelectedValueText(this._elements.timezone);
             // Since the month drop down has 31 days, this will cause the date to roll over 1 (Apr, Jun, Sep & Nov) 
             // or 2 or 3 (Feb) days. Therefore, use moment() to calculate the roll over values, so a valid date 
             // is returned and displayed.
@@ -582,7 +582,7 @@
             selected.hour = m.hour();
             selected.minute = m.minute();
         } else {
-            console.error('Unknown mode "' + this.mode + '"');
+            console.error('Unknown mode "' + this._mode + '"');
         }
         return selected;
     };
@@ -596,38 +596,38 @@
     };
     DateTimeElements.prototype.setSelected = function (selected) {
         var m;
-        if (this.mode === MODE_SINGLE) {
+        if (this._mode === MODE_SINGLE) {
             m = moment([selected.year, selected.month, selected.day, selected.hour, selected.minute, 0]);
-            if (this.locale) {
-                m.locale(this.locale);
+            if (this._locale) {
+                m.locale(this._locale);
             }
-            this.elements.datetime.value = m.format(this.timeDisplayFormat);
-        } else if ((this.mode === MODE_SPLIT_HOUR12) || (this.mode === MODE_SPLIT_HOUR24)) {
-            setSelected(this.elements.year, selected.year);
-            setSelected(this.elements.month, selected.month);
-            setSelected(this.elements.day, selected.day);
-            if (this.mode === MODE_SPLIT_HOUR12) {
+            this._elements.datetime.value = m.format(this._timeDisplayFormat);
+        } else if ((this._mode === MODE_SPLIT_HOUR12) || (this._mode === MODE_SPLIT_HOUR24)) {
+            setSelected(this._elements.year, selected.year);
+            setSelected(this._elements.month, selected.month);
+            setSelected(this._elements.day, selected.day);
+            if (this._mode === MODE_SPLIT_HOUR12) {
                 if (selected.hour < 12) {
-                    setSelected(this.elements.hour, selected.hour);
-                    setSelected(this.elements.ampm, 0);
+                    setSelected(this._elements.hour, selected.hour);
+                    setSelected(this._elements.ampm, 0);
                 } else {
-                    setSelected(this.elements.hour, selected.hour - 12);
-                    setSelected(this.elements.ampm, 1);
+                    setSelected(this._elements.hour, selected.hour - 12);
+                    setSelected(this._elements.ampm, 1);
                 }
             } else {
-                setSelected(this.elements.hour, selected.hour);
+                setSelected(this._elements.hour, selected.hour);
             }
-            setSelected(this.elements.minute, selected.minute);
+            setSelected(this._elements.minute, selected.minute);
         } else {
-            console.error('Unknown mode "' + this.mode + '"');
+            console.error('Unknown mode "' + this._mode + '"');
             return;
         }
         if (selected.timezone) {
-            if (!setSelected(this.elements.timezone, selected.timezone.value, selected.timezone.text)) {
-                setSelectedIndex(this.elements.timezone, 0);
+            if (!setSelected(this._elements.timezone, selected.timezone.value, selected.timezone.text)) {
+                setSelectedIndex(this._elements.timezone, 0);
             }
         } else {
-            setSelectedIndex(this.elements.timezone, 0);
+            setSelectedIndex(this._elements.timezone, 0);
         }
     };
     function registerTimezone(timezones, timezone, elementFormats) {
@@ -745,17 +745,17 @@
                 }
             }
         }
-        this.options = duplicate(defaultOptions);
+        this._options = duplicate(defaultOptions);
         if (options) {
-            setOptionValues(this.options, options);
+            setOptionValues(this._options, options);
         }
         this.moment = moment();
-        if (this.options.locale) {
-            this.moment.locale(this.options.locale);
+        if (this._options.locale) {
+            this.moment.locale(this._options.locale);
         }
         this.timezone = undefined;
-        this.timezones = [ ];
-        this.timeElement = timeElement;
+        this._timezones = [ ];
+        this._timeElement = timeElement;
         rows = container.children;
         for (i = 0; i < rows.length; i += 1) {
             if (rows[i] && rows[i].children) {
@@ -773,7 +773,7 @@
                 if (timezone !== undefined) {
                     if (elementFormats.length) {
                         name = name || timezone;
-                        registerTimezone(this.timezones, timezone, elementFormats);
+                        registerTimezone(this._timezones, timezone, elementFormats);
                         if (dateTimeElements) {
                             dateTimeElements.addTimezone(timezone, name);
                         }
@@ -789,21 +789,21 @@
             }
         }
         if (dateTimeElements) {
-            if (dateTimeElements.elements) {
+            if (dateTimeElements._elements) {
                 onchange = createOnchange(this);
-                for (param in dateTimeElements.elements) {
-                    if (dateTimeElements.elements.hasOwnProperty(param)) {
-                        dateTimeElements.elements[param].addEventListener('change', onchange, false);
+                for (param in dateTimeElements._elements) {
+                    if (dateTimeElements._elements.hasOwnProperty(param)) {
+                        dateTimeElements._elements[param].addEventListener('change', onchange, false);
                     }
                 }
             }
-            if (dateTimeElements.currentTime) {
-                dateTimeElements.currentTime.addEventListener('click', createSetCurrentTime(this), false);
+            if (dateTimeElements._currentTime) {
+                dateTimeElements._currentTime.addEventListener('click', createSetCurrentTime(this), false);
             }
-            this.dateTimeElements = dateTimeElements;
+            this._dateTimeElements = dateTimeElements;
         }
         if (legendElement) {
-            updateLegend(legendElement, this.options);
+            updateLegend(legendElement, this._options);
         }
         if (getOptionValue(setupOptions, 'autoRefresh', true)) {
             this.refresh();
@@ -813,7 +813,7 @@
         }
     }
     Environment.prototype.register = function (timezone, elementFormats) {
-        registerTimezone(this.timezones, timezone, elementFormats);
+        registerTimezone(this._timezones, timezone, elementFormats);
     };
     function updateText(element, text) {
         if (element) {
@@ -833,7 +833,7 @@
     Environment.prototype.refresh = function () {
         var selected,
             i;
-        if (this.dateTimeElements) {
+        if (this._dateTimeElements) {
             selected = { };
             selected.hour = this.moment.hour();
             selected.minute = this.moment.minute();
@@ -841,18 +841,18 @@
             selected.month = this.moment.month();
             selected.year = this.moment.year();
             selected.timezone = this.timezone;
-            this.dateTimeElements.setSelected(selected);
+            this._dateTimeElements.setSelected(selected);
         }
-        if (this.timeElement) {
-            var text = this.moment.format(this.options.timeFormat);
+        if (this._timeElement) {
+            var text = this.moment.format(this._options.timeFormat);
             if (this.timezone && this.timezone.value) {
-                text += ' (' + (this.options.timeShowTimezoneName ? this.timezone.text : this.timezone.value) + ')';
+                text += ' (' + (this._options.timeShowTimezoneName ? this.timezone.text : this.timezone.value) + ')';
             }
-            updateText(this.timeElement, text);
+            updateText(this._timeElement, text);
         }
-        if (this.timezones) {
-            for (i = 0; i < this.timezones.length; i += 1) {
-                updateTimezone(this.moment, this.timezones[i].timezone, this.timezones[i].elementFormats, this.options);
+        if (this._timezones) {
+            for (i = 0; i < this._timezones.length; i += 1) {
+                updateTimezone(this.moment, this._timezones[i].timezone, this._timezones[i].elementFormats, this._options);
             }
         }
     };
@@ -864,15 +864,15 @@
             this.moment = moment(value);
             this.timezone = undefined;
         }
-        if (this.options.locale) {
-            this.moment.locale(this.options.locale);
+        if (this._options.locale) {
+            this.moment.locale(this._options.locale);
         }
         this.refresh();
     };
     Environment.prototype.setCurrentTime = function () {
         this.moment = moment();
-        if (this.options.locale) {
-            this.moment.locale(this.options.locale);
+        if (this._options.locale) {
+            this.moment.locale(this._options.locale);
         }
         this.timezone = undefined;
         this.refresh();
@@ -885,8 +885,8 @@
         } else {
             this.moment = moment(values);
         }
-        if (this.options.locale) {
-            this.moment.locale(this.options.locale);
+        if (this._options.locale) {
+            this.moment.locale(this._options.locale);
         }
         this.timezone = { text: (name || timezone), value: timezone };
         this.refresh();
@@ -894,8 +894,8 @@
     Environment.prototype.updated = function () {
         var selected,
             values;
-        if (this.dateTimeElements) {
-            selected = this.dateTimeElements.getSelected();
+        if (this._dateTimeElements) {
+            selected = this._dateTimeElements.getSelected();
         }
         if (selected) {
             values = [selected.year, selected.month, selected.day, selected.hour, selected.minute, 0];
@@ -904,8 +904,8 @@
             } else {
                 this.moment = moment(values);
             }
-            if (this.options.locale) {
-                this.moment.locale(this.options.locale);
+            if (this._options.locale) {
+                this.moment.locale(this._options.locale);
             }
             this.timezone = selected.timezone;
             this.refresh();
@@ -920,29 +920,29 @@
         }
     }
     Environment.prototype.getOptions = function () {
-        return duplicate(this.options);
+        return duplicate(this._options);
     };
     Environment.prototype.setOptions = function (o) {
-        setOptionValues(this.options, o);
+        setOptionValues(this._options, o);
     };
     Environment.prototype.sunny = function (m, options) {
-        return sunny(m, options || this.options);
+        return sunny(m, options || this._options);
     };
     function TimezoneDiff(momentReference, timezone, options) {
-        this.momentReference = momentReference;
+        this._momentReference = momentReference;
         //this.momentTz = moment.tz(momentReference, timezone ? timezone : options.defaultTimezone);
-        this.momentTz = moment(momentReference);
-        this.momentTz.tz(timezone ? timezone : options.defaultTimezone);
-        this.options = duplicate(defaultOptions);
+        this._momentTz = moment(momentReference);
+        this._momentTz.tz(timezone ? timezone : options.defaultTimezone);
+        this._options = duplicate(defaultOptions);
         if (options) {
-            setOptionValues(this.options, options);
+            setOptionValues(this._options, options);
         }
     }
     TimezoneDiff.prototype.diff = function () {
-        return (getMinutes(this.momentTz, this.momentReference.year()) - getMinutes(this.momentReference, this.momentTz.year())) / 60;
+        return (getMinutes(this._momentTz, this._momentReference.year()) - getMinutes(this._momentReference, this._momentTz.year())) / 60;
     };
     TimezoneDiff.prototype.dayDiff = function () {
-        return (getDays(this.momentTz, this.momentReference.year()) - getDays(this.momentReference, this.momentTz.year())) / 60;
+        return (getDays(this._momentTz, this._momentReference.year()) - getDays(this._momentReference, this._momentTz.year())) / 60;
     };
     function sunny(m, options) {
         var hour = m.hour(),
@@ -961,13 +961,13 @@
         return value;
     }
     TimezoneDiff.prototype.sunny = function () {
-        return sunny(this.momentTz, this.options);
+        return sunny(this._momentTz, this._options);
     };
     Environment.prototype.timezoneDiff = function (momentReference, timezone) {
-        return new TimezoneDiff(momentReference, timezone, this.options);
+        return new TimezoneDiff(momentReference, timezone, this._options);
     };
     Environment.prototype.createLegend = function () {
-        return createLegend(this.options);
+        return createLegend(this._options);
     };
     function makeDiffText(d, useSuffix, options) {
         var suffix = '',
@@ -1003,7 +1003,7 @@
             hoursDiff = this.diff(),
             process;
         if (f.match(/^\s*$/)) {
-            return this.momentTz.format(f);
+            return this._momentTz.format(f);
         }
         while (true) {
             match = re.exec(f);
@@ -1018,11 +1018,11 @@
                         f = match[3].substr(1);
                     } else {
                         if (match[2] === 'DIFF') {
-                            value = makeDiffText(hoursDiff, true, this.options);
+                            value = makeDiffText(hoursDiff, true, this._options);
                         } else if (match[2] === 'diff') {
-                            value = makeDiffText(hoursDiff, false, this.options);
+                            value = makeDiffText(hoursDiff, false, this._options);
                         } else if (match[2] === 'sunmoon') {
-                            value = sunny(this.momentTz, this.options) ? (this.options.sun || '') : (this.options.moon || '');
+                            value = sunny(this._momentTz, this._options) ? (this._options.sun || '') : (this._options.moon || '');
                         } else {
                             value = match[2];
                         }
@@ -1043,13 +1043,13 @@
         if (fNew === '') {
             return '';
         }
-        return this.momentTz.format(fNew);
+        return this._momentTz.format(fNew);
     };
     TimezoneDiff.prototype.getOptions = function () {
-        return duplicate(this.options);
+        return duplicate(this._options);
     };
     TimezoneDiff.prototype.setOptions = function (o) {
-        setOptionValues(this.options, o);
+        setOptionValues(this._options, o);
     };
     var mtzd = { };
     mtzd.version = '0.2.0';
