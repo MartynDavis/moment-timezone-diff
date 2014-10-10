@@ -832,10 +832,14 @@
             rows,
             cells,
             links = [ ],
+            tooltips = [ ],
+            tooltip,
             nameNum = -1,
+            descriptionNum = -1,
             timezoneNum = -1,
             timeFormats = { },
             name,
+            description,
             timezone,
             elementFormats,
             tokens,
@@ -867,10 +871,14 @@
                     token = tokens[j];
                     if (token === 'NAME') {
                         nameNum = i;
+                    } else if (token === 'DESCRIPTION') {
+                        descriptionNum = i;
                     } else if (token === 'TIMEZONE') {
                         timezoneNum = i;
                     } else if (token === 'LINK') {
                         links.push(i);
+                    } else if (token === 'TOOLTIP') {
+                        tooltips.push(i);
                     } else if (token) {
                         timeFormats[i] = token;
                     }
@@ -892,8 +900,9 @@
         for (i = 0; i < rows.length; i += 1) {
             if (rows[i] && rows[i].children) {
                 cells = rows[i].children;
-                name = ((nameNum !== -1) && cells[nameNum]) ? cells[nameNum].textContent : undefined;
-                timezone = (timezoneNum !== -1) && cells[timezoneNum] ? (cells[timezoneNum].textContent || '') : undefined;
+                name = ((nameNum !== -1) && cells[nameNum]) ? (cells[nameNum].textContent || '') : undefined;
+                description = ((descriptionNum !== -1) && cells[descriptionNum]) ? (cells[descriptionNum].textContent || '') : undefined;
+                timezone = ((timezoneNum !== -1) && cells[timezoneNum]) ? (cells[timezoneNum].textContent || '') : undefined;
                 elementFormats = [ ];
                 for (param in timeFormats) {
                     if (timeFormats.hasOwnProperty(param)) {
@@ -914,6 +923,18 @@
                             if (cells[j]) {
                                 cells[j].addEventListener('click', onclick, false);
                                 classAdd(cells[j], getOptionValue(setupOptions, 'linkClass', 'mtzdLink'));
+                            }
+                        }
+                        tooltip = description || '';
+                        if (timezone) {
+                            if (tooltip) {
+                                tooltip += '\n';
+                            }
+                            tooltip += timezone;
+                        }
+                        for (j = 0; j < tooltips.length; j += 1) {
+                            if (cells[j]) {
+                                cells[j].title = tooltip;
                             }
                         }
                     }
