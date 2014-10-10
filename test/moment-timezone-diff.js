@@ -22,7 +22,7 @@ describe('options', function () {
                                hour: 'hour',
                                hours: 'hours',
                                legendFormat: 'h:mm a',
-                               legendBreak: true,
+                               legendBreak: false,
                                legendDash: ' - ',
                                legendSeparator: ' .. ',
                                timeFormat: 'dddd h:mm a DD-MMM-YYYY',

@@ -882,7 +882,7 @@ QUnit.test('Environment1', function (assert) {
                            sun: '\u263c',  // Unicode white sun with rays
                            moon: '\u263e', // Unicode last quarter moon
                            legendFormat: 'h:mm a',
-                           legendBreak: true,
+                           legendBreak: false,
                            legendDash: ' - ',
                            legendSeparator: ' .. ',
                            timeFormat: 'dddd h:mm a DD-MMM-YYYY',
@@ -1093,7 +1093,7 @@ QUnit.test('Environment1', function (assert) {
                                                       '\u263e'
                                                     ]);
     assert.equal(timeElement.textContent, 'Monday 12:00 am 01-Sep-2014 (Dino)', 'Time value matches');
-    expectLegend(assert, legendElement, '\u263c - 6:00 am .. 7:59 pm', '\u263e - 8:00 pm .. 5:59 am', true);
+    expectLegend(assert, legendElement, '\u263c - 6:00 am .. 7:59 pm', '\u263e - 8:00 pm .. 5:59 am', false);
     // 15-Oct-2014 - Australia IS in daylight savings - US IS in daylight savings
     env.update([2014, 9, 15, 14, 30, 0], 'US/Pacific', 'Fred Flintstone');
     values = getMomentValues(env.moment);
@@ -1164,7 +1164,7 @@ QUnit.test('Environment1', function (assert) {
                                                       '\u263c'
                                                     ]);
     assert.equal(timeElement.textContent, 'Wednesday 2:30 pm 15-Oct-2014 (Fred Flintstone)', 'Time value matches');
-    expectLegend(assert, legendElement, '\u263c - 6:00 am .. 7:59 pm', '\u263e - 8:00 pm .. 5:59 am', true);
+    expectLegend(assert, legendElement, '\u263c - 6:00 am .. 7:59 pm', '\u263e - 8:00 pm .. 5:59 am', false);
     // 15-Nov-2014 - Australia IS in daylight savings - US NOT in daylight savings
     env.update([2014, 10, 15, 14, 30, 0], 'Europe/Paris', 'Wilma Flintstone');
     values = getMomentValues(env.moment);
@@ -1235,7 +1235,7 @@ QUnit.test('Environment1', function (assert) {
                                                       '\u263e'
                                                     ]);
     assert.equal(timeElement.textContent, 'Saturday 2:30 pm 15-Nov-2014 (Wilma Flintstone)', 'Time value matches');
-    expectLegend(assert, legendElement, '\u263c - 6:00 am .. 7:59 pm', '\u263e - 8:00 pm .. 5:59 am', true);
+    expectLegend(assert, legendElement, '\u263c - 6:00 am .. 7:59 pm', '\u263e - 8:00 pm .. 5:59 am', false);
     // Simulate click on the LINK cells, verify action triggered and class name as been updated
     for (col = 0; col < 3; col += 1) {
         index = 0;

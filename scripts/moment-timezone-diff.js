@@ -91,7 +91,7 @@
                            sun: '\u263c',  // Unicode white sun with rays
                            moon: '\u263e', // Unicode last quarter moon
                            legendFormat: 'h:mm a',
-                           legendBreak: true,
+                           legendBreak: false,
                            legendDash: ' - ',
                            legendSeparator: ' .. ',
                            timeFormat: 'dddd h:mm a DD-MMM-YYYY',
@@ -796,8 +796,6 @@
             if (i > 0) {
                 if (options.legendBreak) {
                     appendChild(legendElement, createElement('br'));
-                } else {
-                    appendChild(legendElement, createElement('span', { textContent: ' ' }));
                 }
             }
             appendChild(legendElement, createElement('span', { textContent: lines[i] }));
