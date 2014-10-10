@@ -95,7 +95,7 @@
                            legendDash: ' - ',
                            legendSeparator: ' .. ',
                            timeFormat: 'dddd h:mm a DD-MMM-YYYY',
-                           timeShowTimezoneName: true,
+                           timeShowTimezoneName: false,
                            defaultTimezone: getDefaultTimezone()
                          },
         MODE_SINGLE = 0,

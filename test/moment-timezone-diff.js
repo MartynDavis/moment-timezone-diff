@@ -26,7 +26,7 @@ describe('options', function () {
                                legendDash: ' - ',
                                legendSeparator: ' .. ',
                                timeFormat: 'dddd h:mm a DD-MMM-YYYY',
-                               timeShowTimezoneName: true,
+                               timeShowTimezoneName: false,
                                defaultTimezone: momentTimezoneDiff.getDefaultTimezone()
                                };
         //
