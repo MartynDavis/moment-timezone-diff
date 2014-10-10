@@ -1,6 +1,6 @@
 /*
     moment-timezone-diff.js
-    version : 0.3.0
+    version : 0.4.0
     authors : Martyn Davis
     license : MIT
 */
