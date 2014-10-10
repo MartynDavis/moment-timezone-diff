@@ -26,18 +26,18 @@
         throw new MomentTimezoneDiffException('Moment-timezone has not been loaded');
     }
     // Verify that at least version 2.8.3 of moment.js is being used
-    var version = moment.version.split('.'),
-        major = +version[0],
-        minor = +version[1],
-        subminor = +version[2];
+    var thirdPartyVersion = moment.version.split('.'),
+        major = +thirdPartyVersion[0],
+        minor = +thirdPartyVersion[1],
+        subminor = +thirdPartyVersion[2];
     if (major < 2 || (major === 2 && minor < 8) || (major === 2 && minor === 8 && subminor < 3)) {
         throw new MomentTimezoneDiffException('Moment Timezone Diff requires moment.js >= 2.8.3. You are using moment.js ' + moment.version + '.');
     }
     // Verify that at least version 0.2.2 of moment-timezone.js is being used
-    version = moment.tz.version.split('.');
-    major = +version[0];
-    minor = +version[1];
-    subminor = +version[2];
+    thirdPartyVersion = moment.tz.version.split('.');
+    major = +thirdPartyVersion[0];
+    minor = +thirdPartyVersion[1];
+    subminor = +thirdPartyVersion[2];
     if (major < 0 || (major === 0 && minor < 2) || (major === 0 && minor === 2 && subminor < 2)) {
         throw new MomentTimezoneDiffException('Moment Timezone Diff requires moment-timezone.js >= 0.2.2. You are using moment-timezone.js ' + moment.tz.version + '.');
     }
