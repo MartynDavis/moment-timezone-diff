@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="./lib/qunit-1.14.0.css">
 <script src="../moment/moment.js"></script>
 <script src="../moment/moment-timezone.js"></script>
+<link rel="stylesheet" href="../scripts/moment-timezone-diff.css">
 <script src="../scripts/moment-timezone-diff.js"></script>
 <title>Moment Timezone Difference with jQuery</title>
 <style>
@@ -17,21 +18,11 @@
         margin: 0 auto;
         text-align: center;
     }
-    .mtzdDatepicker {
-        display: none;
-    }
-    .mtzdDatepickerImage {
-        position: relative;
-        cursor: pointer;
-        height: 20px;
-        width: 22px;
-        top: 5px;
-    }
-    .mtzdCurrentTime {
+    .currentTimeFrench {
         cursor: pointer;
     }
-    .mtzdError {
-        background-color: yellow;
+    .ui-datepicker {
+        font-size: 80%;
     }
 </style>
 </head>
@@ -78,8 +69,9 @@
         testVars.dte4.addTimezone('Japan');
 
         testVars.dte5 = new momentTimezoneDiff.DateTimeElements('mtzdDateSingle2', { mode: momentTimezoneDiff.MODE_SINGLE,
-                                                                                    usejQueryDatepicker: false
-                                                                                  });
+                                                                                     showCurrentTime: false,
+                                                                                     usejQueryDatepicker: false
+                                                                                   });
         testVars.dte5.addTimezone('America/Blanc-Sablon');
 
         testVars.env1 = new momentTimezoneDiff.Environment();

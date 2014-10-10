@@ -5,6 +5,7 @@
 <link rel="stylesheet" href="./lib/qunit-1.14.0.css">
 <script src="../moment/moment.js"></script>
 <script src="../moment/moment-timezone.js"></script>
+<link rel="stylesheet" href="../scripts/moment-timezone-diff.css">
 <script src="../scripts/moment-timezone-diff.js"></script>
 <title>Moment Timezone Difference</title>
 <style>
@@ -14,11 +15,8 @@
         margin: 0 auto;
         text-align: center;
     }
-    .mtzdCurrentTime {
+    .currentTimeFrench {
         cursor: pointer;
-    }
-    .mtzdError {
-        background-color: yellow;
     }
 </style>
 </head>
@@ -48,6 +46,7 @@
         testVars.dte2.addTimezone('US/Eastern');
         testVars.dte2.addTimezone('Australia/Perth');
         testVars.dte3 = new momentTimezoneDiff.DateTimeElements('mtzdDateSingle', { mode: momentTimezoneDiff.MODE_SINGLE,
+                                                                                    showCurrentTime: false,
                                                                                     currentTimezoneText: 'The current timezone'
                                                                                   });
         testVars.dte3.addTimezone('US/Pacific', 'timezone1');

@@ -111,9 +111,21 @@ function getDateTimeElementValues(dte) {
     }
     return values;
 }
-function setDateTimeElementValues(dte, values) {
+function fireChangeEvent(element) {
+    if (typeof document.createEvent === 'function') {
+        var event = document.createEvent('HTMLEvents');
+        event.initEvent('change', false, true);
+        element.dispatchEvent(event);
+    } else {
+        element.fireEvent('onchange');
+    }
+}
+function setDateTimeElementValues(dte, values, fireChange) {
     var name;
     if (dte && dte._elements && values) {
+        if (fireChange === undefined) {
+            fireChange = true;
+        }
         for (name in dte._elements) {
             if (dte._elements.hasOwnProperty(name) && values.hasOwnProperty(name)) {
                 if (dte._elements[name]) {
@@ -125,6 +137,26 @@ function setDateTimeElementValues(dte, values) {
                 }
             }
         }
+        if (fireChange) {
+            fireChangeEvent(dte._elements.timezone);
+        }
+    }
+}
+function createCallback(callbackData) {
+    return function (selected) {
+        callbackData.selected = selected;
+    };
+}
+function resetCallbackData(array) {
+    var i;
+    for (i = 0; i < array.length; i += 1) {
+        delete array[i].selected;
+    }
+}
+function checkCallbackData(assert, array, expected) {
+    var i;
+    for (i = 0; i < array.length; i += 1) {
+        assert.deepEqual(array[i].selected, expected, 'Data from "' + array[i].name + '" matches expected'); 
     }
 }
 QUnit.test('DateTimeElements1', function (assert) {
@@ -140,41 +172,53 @@ QUnit.test('DateTimeElements1', function (assert) {
         currentTimeElement,
         values,
         timezones,
-        dte;
+        dte,
+        callbackData1 = { name: 'Callback #1' },
+        callbackData2 = { name: 'Callback #2' },
+        expected;
     dateElement = document.getElementById('mtzdDate12hour');
     assert.ok(dateElement, 'Date element exists');
     hourElement = expectChild(assert, dateElement, index++, { tagName: 'SELECT',
                                                               title: 'Sélectionnez les heures de la journée',
+                                                              className: 'mtzdSelect',
                                                               options: makeOptions(0, 11, 2, { 0: '12' })
                                                             });
     expectChild(assert, dateElement, index++, { tagName: 'SPAN',
-                                                textContent: ':'
+                                                textContent: ':',
+                                                className: 'mtzdTimeDelim'
                                               });
     minuteElement = expectChild(assert, dateElement, index++, { tagName: 'SELECT',
                                                                 title: "Sélectionner les minutes de l'heure",
+                                                                className: 'mtzdSelect',
                                                                 options: makeOptions(0, 59, 2)
                                                               });
     expectChild(assert, dateElement, index++, { tagName: 'SPAN',
-                                                textContent: ' '
+                                                textContent: ' ',
+                                                className: 'mtzdDelim'
                                               });
     ampmElement = expectChild(assert, dateElement, index++, { tagName: 'SELECT',
                                                               title: "Sélectionnez le matin ou l'après-midi",
+                                                              className: 'mtzdSelect',
                                                               options: [ { text: 'am', value: '0'  },
                                                                          { text: 'pm', value: '1' }
                                                                        ]
                                                             });
     expectChild(assert, dateElement, index++, { tagName: 'SPAN',
-                                                textContent: ' '
+                                                textContent: ' ',
+                                                className: 'mtzdDelim'
                                               });
     dayElement = expectChild(assert, dateElement, index++, { tagName: 'SELECT',
                                                              title: "Choisir jour du mois",
+                                                             className: 'mtzdSelect',
                                                              options: makeOptions(1, 31, 2)
                                                            });
     expectChild(assert, dateElement, index++, { tagName: 'SPAN',
-                                                textContent: '-'
+                                                textContent: '-',
+                                                className: 'mtzdDateDelim'
                                               });
     monthElement = expectChild(assert, dateElement, index++, { tagName: 'SELECT',
                                                                title: "Sélectionnez un mois de l'année",
+                                                               className: 'mtzdSelect',
                                                                options: [ { text: 'janvier',   value:  '0' },
                                                                           { text: 'février',   value:  '1' },
                                                                           { text: 'mars',      value:  '2' },
@@ -190,24 +234,29 @@ QUnit.test('DateTimeElements1', function (assert) {
                                                                         ]
                                                              });
     expectChild(assert, dateElement, index++, { tagName: 'SPAN',
-                                                textContent: '-'
+                                                textContent: '-',
+                                                className: 'mtzdDateDelim'
                                               });
     yearElement = expectChild(assert, dateElement, index++, { tagName: 'SELECT',
                                                               title: "Sélectionnez l'année",
+                                                              className: 'mtzdSelect',
                                                               options: makeOptions(2010, 2020)
                                                             });
     expectChild(assert, dateElement, index++, { tagName: 'SPAN',
-                                                textContent: ' '
+                                                textContent: ' ',
+                                                className: 'mtzdDelim'
                                               });
     timezoneElement = expectChild(assert, dateElement, index++, { tagName: 'SELECT',
                                                                   title: "Sélectionnez le fuseau horaire",
+                                                                  className: 'mtzdSelect',
                                                                   options: [ { text: '',                value: '' },
                                                                              { text: 'Sebastian Roché', value: 'Europe/Paris' },
                                                                              { text: 'André Lurçat',    value: 'Canada/Newfoundland' }
                                                                            ]
                                                                 });
     expectChild(assert, dateElement, index++, { tagName: 'SPAN',
-                                                textContent: ' '
+                                                textContent: ' ',
+                                                className: 'mtzdDelim'
                                               });
     currentTimeElement = expectChild(assert, dateElement, index++, { tagName: 'SPAN',
                                                                      className: 'currentTimeFrench',
@@ -233,9 +282,15 @@ QUnit.test('DateTimeElements1', function (assert) {
     assert.equal(dte._datepicker, undefined, 'Date picker element is not defined');
     assert.equal(dte._datepickerImage, undefined, 'Date picker image element is not defined');
 
+    dte.registerCallback(createCallback(callbackData1));
+    dte.registerCallback(createCallback(callbackData2));
+
+    resetCallbackData([ callbackData1, callbackData2 ]);
     setDateTimeElementValues(dte, { hour: 5, minute: 42, ampm: 1, day: 5, month: 7, year: 3, timezone: 0 });
+    expected = { hour: 17, minute: 42, day: 6, month: 7, year: 2013, timezone: { text: '', value: '' } };
     values = dte.getSelected();
-    assert.deepEqual(values, { hour: 17, minute: 42, day: 6, month: 7, year: 2013, timezone: { text: '', value: '' } }, 'Selected matches date');
+    assert.deepEqual(values, expected, 'Selected matches expected');
+    checkCallbackData(assert, [ callbackData1, callbackData2 ], expected);
 
     dte.setSelected({ hour: 6, minute: 13, day: 17, month: 3, year: 2014, timezone: { text: 'André Lurçat', value: 'Canada/Newfoundland' } });
     values = getDateTimeElementValues(dte);
@@ -244,32 +299,42 @@ QUnit.test('DateTimeElements1', function (assert) {
     // Cycle through hour/ampm values
     for (index = 0; index < 24; index += 1) {
         setDateTimeElementValues(dte, { hour: (index < 12) ? index : index - 12, minute: 42, ampm: (index < 12) ? 0 : 1, day: 5, month: 7, year: 3, timezone: 0 });
+        expected = { hour: index, minute: 42, day: 6, month: 7, year: 2013, timezone: { text: '', value: '' } };
         values = dte.getSelected();
-        assert.deepEqual(values, { hour: index, minute: 42, day: 6, month: 7, year: 2013, timezone: { text: '', value: '' } }, 'Selected matches date');
+        assert.deepEqual(values, expected, 'Selected matches expected');
+        checkCallbackData(assert, [ callbackData1, callbackData2 ], expected);
     }
     // Cycle through minute values
     for (index = 0; index < 60; index += 1) {
         setDateTimeElementValues(dte, { hour: 3, minute: index, ampm: 1, day: 5, month: 7, year: 3, timezone: 0 });
+        expected = { hour: 15, minute: index, day: 6, month: 7, year: 2013, timezone: { text: '', value: '' } };
         values = dte.getSelected();
-        assert.deepEqual(values, { hour: 15, minute: index, day: 6, month: 7, year: 2013, timezone: { text: '', value: '' } }, 'Selected matches date');
+        assert.deepEqual(values, expected, 'Selected matches expected');
+        checkCallbackData(assert, [ callbackData1, callbackData2 ], expected);
     }
     // Cycle through day values (note 31 daay month selected)
     for (index = 0; index < 31; index += 1) {
         setDateTimeElementValues(dte, { hour: 3, minute: 13, ampm: 1, day: index, month: 7, year: 3, timezone: 0 });
+        expected = { hour: 15, minute: 13, day: index + 1, month: 7, year: 2013, timezone: { text: '', value: '' } };
         values = dte.getSelected();
-        assert.deepEqual(values, { hour: 15, minute: 13, day: index + 1, month: 7, year: 2013, timezone: { text: '', value: '' } }, 'Selected matches date');
+        assert.deepEqual(values, expected, 'Selected matches expected');
+        checkCallbackData(assert, [ callbackData1, callbackData2 ], expected);
     }
     // Cycle through month values
     for (index = 0; index < 12; index += 1) {
         setDateTimeElementValues(dte, { hour: 3, minute: 13, ampm: 1, day: 13, month: index, year: 3, timezone: 0 });
+        expected = { hour: 15, minute: 13, day: 14, month: index, year: 2013, timezone: { text: '', value: '' } };
         values = dte.getSelected();
-        assert.deepEqual(values, { hour: 15, minute: 13, day: 14, month: index, year: 2013, timezone: { text: '', value: '' } }, 'Selected matches date');
+        assert.deepEqual(values, expected, 'Selected matches expected');
+        checkCallbackData(assert, [ callbackData1, callbackData2 ], expected);
     }
     // Cycle through year values
     for (index = 0; index < (2020 - 2010 + 1); index += 1) {
         setDateTimeElementValues(dte, { hour: 3, minute: 13, ampm: 1, day: 13, month: 4, year: index, timezone: 0 });
+        expected = { hour: 15, minute: 13, day: 14, month: 4, year: 2010 + index, timezone: { text: '', value: '' } };
         values = dte.getSelected();
-        assert.deepEqual(values, { hour: 15, minute: 13, day: 14, month: 4, year: 2010 + index, timezone: { text: '', value: '' } }, 'Selected matches date');
+        assert.deepEqual(values, expected, 'Selected matches expected');
+        checkCallbackData(assert, [ callbackData1, callbackData2 ], expected);
     }
     // cycle through timezones
     timezones = [ { text: '',                value: '' },
@@ -278,29 +343,41 @@ QUnit.test('DateTimeElements1', function (assert) {
                 ];
     for (index = 0; index < timezones.length; index += 1) {
         setDateTimeElementValues(dte, { hour: 3, minute: 13, ampm: 1, day: 13, month: 4, year: 3, timezone: index });
+        expected = { hour: 15, minute: 13, day: 14, month: 4, year: 2013, timezone: timezones[index] };
         values = dte.getSelected();
-        assert.deepEqual(values, { hour: 15, minute: 13, day: 14, month: 4, year: 2013, timezone: timezones[index] }, 'Selected matches date');
+        assert.deepEqual(values, expected, 'Selected matches expected');
+        checkCallbackData(assert, [ callbackData1, callbackData2 ], expected);
     }
     // Test month rollover for months which have less than 31 days (31-Apr => 1-May)
     setDateTimeElementValues(dte, { hour: 5, minute: 42, ampm: 1, day: 30, month: 3, year: 3, timezone: 0 });
+    expected = { hour: 17, minute: 42, day: 1, month: 4, year: 2013, timezone: { text: '', value: '' } };
     values = dte.getSelected();
-    assert.deepEqual(values, { hour: 17, minute: 42, day: 1, month: 4, year: 2013, timezone: { text: '', value: '' } }, 'Selected matches date');
+    assert.deepEqual(values, expected, 'Selected matches expected');
+    checkCallbackData(assert, [ callbackData1, callbackData2 ], expected);
     // Test month rollover for months which have less than 31 days (31-Feb => 3-Mar for non-leap years)
     setDateTimeElementValues(dte, { hour: 5, minute: 42, ampm: 1, day: 30, month: 1, year: 3, timezone: 0 });
+    expected = { hour: 17, minute: 42, day: 3, month: 2, year: 2013, timezone: { text: '', value: '' } };
     values = dte.getSelected();
-    assert.deepEqual(values, { hour: 17, minute: 42, day: 3, month: 2, year: 2013, timezone: { text: '', value: '' } }, 'Selected matches date');
+    assert.deepEqual(values, expected, 'Selected matches expected');
+    checkCallbackData(assert, [ callbackData1, callbackData2 ], expected);
     // Test month rollover for months which have less than 31 days (31-Feb => 2-Mar for leap years)
     setDateTimeElementValues(dte, { hour: 5, minute: 42, ampm: 1, day: 30, month: 1, year: 2, timezone: 0 });
+    expected = { hour: 17, minute: 42, day: 2, month: 2, year: 2012, timezone: { text: '', value: '' } };
     values = dte.getSelected();
-    assert.deepEqual(values, { hour: 17, minute: 42, day: 2, month: 2, year: 2012, timezone: { text: '', value: '' } }, 'Selected matches date');
+    assert.deepEqual(values, expected, 'Selected matches expected');
+    checkCallbackData(assert, [ callbackData1, callbackData2 ], expected);
     // Test 29-Feb is valid for leap years
     setDateTimeElementValues(dte, { hour: 5, minute: 42, ampm: 1, day: 28, month: 1, year: 2, timezone: 0 });
+    expected = { hour: 17, minute: 42, day: 29, month: 1, year: 2012, timezone: { text: '', value: '' } };
     values = dte.getSelected();
-    assert.deepEqual(values, { hour: 17, minute: 42, day: 29, month: 1, year: 2012, timezone: { text: '', value: '' } }, 'Selected matches date');
+    assert.deepEqual(values, expected, 'Selected matches expected');
+    checkCallbackData(assert, [ callbackData1, callbackData2 ], expected);
     // Test 29-Feb rolls over for non-leap years
     setDateTimeElementValues(dte, { hour: 5, minute: 42, ampm: 1, day: 28, month: 1, year: 4, timezone: 0 });
+    expected = { hour: 17, minute: 42, day: 1, month: 2, year: 2014, timezone: { text: '', value: '' } };
     values = dte.getSelected();
-    assert.deepEqual(values, { hour: 17, minute: 42, day: 1, month: 2, year: 2014, timezone: { text: '', value: '' } }, 'Selected matches date');
+    assert.deepEqual(values, expected, 'Selected matches expected');
+    checkCallbackData(assert, [ callbackData1, callbackData2 ], expected);
 });
 QUnit.test('DateTimeElements2', function (assert) {
     var dateElement,
@@ -319,20 +396,25 @@ QUnit.test('DateTimeElements2', function (assert) {
     assert.ok(dateElement, 'Date element exists');
     hourElement = expectChild(assert, dateElement, index++, { tagName: 'SELECT',
                                                               title: 'Select hour of the day',
+                                                              className: 'mtzdSelect',
                                                               options: makeOptions(0, 23, 2)
                                                             });
     expectChild(assert, dateElement, index++, { tagName: 'SPAN',
-                                                textContent: ':'
+                                                textContent: ':',
+                                                className: 'mtzdTimeDelim'
                                               });
     minuteElement = expectChild(assert, dateElement, index++, { tagName: 'SELECT',
                                                                 title: "Select minute of the hour",
+                                                                className: 'mtzdSelect',
                                                                 options: makeOptions(0, 59, 2)
                                                               });
     expectChild(assert, dateElement, index++, { tagName: 'SPAN',
-                                                textContent: ' '
+                                                textContent: ' ',
+                                                className: 'mtzdDelim'
                                               });
     monthElement = expectChild(assert, dateElement, index++, { tagName: 'SELECT',
                                                                title: "Select month of the year",
+                                                               className: 'mtzdSelect',
                                                                options: [ { text: 'Jan', value:  '0'},
                                                                           { text: 'Feb', value:  '1'},
                                                                           { text: 'Mar', value:  '2'},
@@ -348,31 +430,38 @@ QUnit.test('DateTimeElements2', function (assert) {
                                                                         ]
                                                              });
     expectChild(assert, dateElement, index++, { tagName: 'SPAN',
-                                                textContent: '-'
+                                                textContent: '-',
+                                                className: 'mtzdDateDelim'
                                               });
     dayElement = expectChild(assert, dateElement, index++, { tagName: 'SELECT',
                                                              title: "Select day of the month",
+                                                             className: 'mtzdSelect',
                                                              options: makeOptions(1, 31, 2)
                                                            });
     expectChild(assert, dateElement, index++, { tagName: 'SPAN',
-                                                textContent: '-'
+                                                textContent: '-',
+                                                className: 'mtzdDateDelim'
                                               });
     yearElement = expectChild(assert, dateElement, index++, { tagName: 'SELECT',
                                                               title: "Select year",
+                                                              className: 'mtzdSelect',
                                                               options: makeOptions(2010, 2020)
                                                             });
     expectChild(assert, dateElement, index++, { tagName: 'SPAN',
-                                                textContent: ' '
+                                                textContent: ' ',
+                                                className: 'mtzdDelim'
                                               });
     timezoneElement = expectChild(assert, dateElement, index++, { tagName: 'SELECT',
                                                                   title: "Select timezone",
+                                                                  className: 'mtzdSelect',
                                                                   options: [ { text: '',                value: '' },
                                                                              { text: 'US/Eastern',      value: 'US/Eastern' },
                                                                              { text: 'Australia/Perth', value: 'Australia/Perth' }
                                                                            ]
                                                                 });
     expectChild(assert, dateElement, index++, { tagName: 'SPAN',
-                                                textContent: ' '
+                                                textContent: ' ',
+                                                className: 'mtzdDelim'
                                               });
     currentTimeElement = expectChild(assert, dateElement, index++, { tagName: 'SPAN',
                                                                      className: 'mtzdCurrentTime',
@@ -472,44 +561,37 @@ QUnit.test('DateTimeElements3', function (assert) {
         index = 0,
         datetimeElement,
         timezoneElement,
-        currentTimeElement,
         values,
         dte;
     dateElement = document.getElementById('mtzdDateSingle');
     assert.ok(dateElement, 'Date element exists');
     datetimeElement = expectChild(assert, dateElement, index++, { tagName: 'INPUT',
                                                                   type: 'text',
+                                                                  className: 'mtzdInput',
                                                                   title: 'Enter the required date and time.  Supported formats are:\n' +
                                                                          '\n' +
-                                                                         '  h:mm a DD-MMM-YYYY\n' +
-                                                                         '  H:mm DD-MMM-YYYY\n' +
-                                                                         '  DD-MMM-YYYY',
-                                                                  size: 15
+                                                                         '  h:mm a D-MMM-YYYY\n' +
+                                                                         '  H:mm D-MMM-YYYY',
+                                                                  size: 18
                                                                 });
     expectChild(assert, dateElement, index++, { tagName: 'SPAN',
-                                                textContent: ' '
+                                                textContent: ' ',
+                                                className: 'mtzdDelim'
                                               });
     timezoneElement = expectChild(assert, dateElement, index++, { tagName: 'SELECT',
                                                                   title: "Select timezone",
+                                                                  className: 'mtzdSelect',
                                                                   options: [ { text: 'The current timezone', value: '' },
                                                                              { text: 'timezone1',            value: 'US/Pacific' },
                                                                              { text: 'timezone2',            value: 'Australia/Melbourne' }
                                                                            ]
                                                                 });
-    expectChild(assert, dateElement, index++, { tagName: 'SPAN',
-                                                textContent: ' '
-                                              });
-    currentTimeElement = expectChild(assert, dateElement, index++, { tagName: 'SPAN',
-                                                                     className: 'mtzdCurrentTime',
-                                                                     title: 'Current Time',
-                                                                     textContent: '\u25d4'
-                                                                   });
     expectChildren(assert, dateElement, index);
     dte = testVars.dte3;
     assert.equal(dte._locale, undefined, 'locale is not defined');
     assert.equal(dte._mode, momentTimezoneDiff.MODE_SINGLE, 'Mode matches');
     assert.equal(dte._errorClassName, 'mtzdError', 'Error class matches');
-    assert.equal(dte._currentTime, currentTimeElement, 'Current time element matches');
+    assert.equal(dte._currentTime, undefined, 'Current time element is not defined');
     assert.equal(dte._elements.hour, undefined, 'Hour element is not defined');
     assert.equal(dte._elements.minute, undefined, 'Minute element is not defined');
     assert.equal(dte._elements.ampm, undefined, 'AmPm element is not defined');
@@ -518,17 +600,16 @@ QUnit.test('DateTimeElements3', function (assert) {
     assert.equal(dte._elements.year, undefined, 'Year element is not defined');
     assert.equal(dte._elements.datetime, datetimeElement, 'Date/time element matches');
     assert.equal(dte._elements.timezone, timezoneElement, 'Timezone element matches');
-    assert.equal(dte._timeDisplayFormat, 'HH:mm DD-MMM-YYYY', 'Display format matches');
-    assert.deepEqual(dte._timeInputFormats, [ 'h:mm a DD-MMM-YYYY',
-                                              'H:mm DD-MMM-YYYY',
-                                              'DD-MMM-YYYY'
+    assert.equal(dte._timeDisplayFormat, 'h:mm a D-MMM-YYYY', 'Display format matches');
+    assert.deepEqual(dte._timeInputFormats, [ 'h:mm a D-MMM-YYYY',
+                                              'H:mm D-MMM-YYYY'
                                             ], 'Input formats match');
     assert.equal(dte._datepicker, undefined, 'Date picker element is not defined');
     assert.equal(dte._datepickerImage, undefined, 'Date picker image element is not defined');
 
     dte.setSelected({ hour: 7, minute: 14, day: 18, month: 4, year: 2015, timezone: { text: 'timezone1', value: 'US/Pacific' } });
     values = getDateTimeElementValues(dte);
-    assert.deepEqual(values, { datetime: '07:14 18-May-2015', timezone: 1 }, 'Selected values matches date');
+    assert.deepEqual(values, { datetime: '7:14 am 18-May-2015', timezone: 1 }, 'Selected values matches date');
 
     setDateTimeElementValues(dte, { datetime: '8:58 pm 8-Oct-2014', timezone: 0 });
     values = dte.getSelected();
@@ -574,29 +655,36 @@ QUnit.test('DateTimeElements4', function (assert) {
     assert.ok(dateElement, 'Date element exists');
     hourElement = expectChild(assert, dateElement, index++, { tagName: 'SELECT',
                                                               title: 'Select hour of the day',
+                                                              className: 'mtzdSelect',
                                                               options: makeOptions(0, 11, 2, { 0: '12' })
                                                             });
     expectChild(assert, dateElement, index++, { tagName: 'SPAN',
-                                                textContent: ':'
+                                                textContent: ':',
+                                                className: 'mtzdTimeDelim'
                                               });
     minuteElement = expectChild(assert, dateElement, index++, { tagName: 'SELECT',
                                                                 title: "Select minute of the hour",
+                                                                className: 'mtzdSelect',
                                                                 options: makeOptions(0, 59, 2)
                                                               });
     expectChild(assert, dateElement, index++, { tagName: 'SPAN',
-                                                textContent: ' '
+                                                textContent: ' ',
+                                                className: 'mtzdDelim'
                                               });
     ampmElement = expectChild(assert, dateElement, index++, { tagName: 'SELECT',
                                                               title: "Select morning or afternoon",
+                                                              className: 'mtzdSelect',
                                                               options: [ { text: 'am', value: '0'  },
                                                                          { text: 'pm', value: '1' }
                                                                        ]
                                                             });
     expectChild(assert, dateElement, index++, { tagName: 'SPAN',
-                                                textContent: ' '
+                                                textContent: ' ',
+                                                className: 'mtzdDelim'
                                               });
     monthElement = expectChild(assert, dateElement, index++, { tagName: 'SELECT',
                                                                title: "Select month of the year",
+                                                               className: 'mtzdSelect',
                                                                options: [ { text: 'Jan', value:  '0'},
                                                                           { text: 'Feb', value:  '1'},
                                                                           { text: 'Mar', value:  '2'},
@@ -612,31 +700,38 @@ QUnit.test('DateTimeElements4', function (assert) {
                                                                         ]
                                                              });
     expectChild(assert, dateElement, index++, { tagName: 'SPAN',
-                                                textContent: '-'
+                                                textContent: '-',
+                                                className: 'mtzdDateDelim'
                                               });
     dayElement = expectChild(assert, dateElement, index++, { tagName: 'SELECT',
                                                              title: "Select day of the month",
+                                                             className: 'mtzdSelect',
                                                              options: makeOptions(1, 31, 2)
                                                            });
     expectChild(assert, dateElement, index++, { tagName: 'SPAN',
-                                                textContent: '-'
+                                                textContent: '-',
+                                                className: 'mtzdDateDelim'
                                               });
     yearElement = expectChild(assert, dateElement, index++, { tagName: 'SELECT',
                                                               title: "Select year",
+                                                              className: 'mtzdSelect',
                                                               options: makeOptions(2010, 2020)
                                                             });
     expectChild(assert, dateElement, index++, { tagName: 'SPAN',
-                                                textContent: ' '
+                                                textContent: ' ',
+                                                className: 'mtzdDelim'
                                               });
     timezoneElement = expectChild(assert, dateElement, index++, { tagName: 'SELECT',
                                                                   title: "Select timezone",
+                                                                  className: 'mtzdSelect',
                                                                   options: [ { text: '',              value: '' },
                                                                              { text: 'Europe/London', value: 'Europe/London' },
                                                                              { text: 'Japan',         value: 'Japan' }
                                                                            ]
                                                                 });
     expectChild(assert, dateElement, index++, { tagName: 'SPAN',
-                                                textContent: ' '
+                                                textContent: ' ',
+                                                className: 'mtzdDelim'
                                               });
     currentTimeElement = expectChild(assert, dateElement, index++, { tagName: 'SPAN',
                                                                      className: 'mtzdCurrentTime',
@@ -751,15 +846,6 @@ function verifyLink(assert, env, containerElement, row, col, timezone, name, lin
     assert.equal(selectedTimezone.text, name, 'Timezone text matches timezone combo');
     assert.ok(classPresentInClassName(cell.className, linkClass), 'Class name "' + linkClass + '" is present in "' + cell.className + '"');
 }
-function fireChangeEvent(element) {
-    if (typeof document.createEvent === 'function') {
-        var event = document.createEvent('HTMLEvents');
-        event.initEvent('change', false, true);
-        element.dispatchEvent(event);
-    } else {
-        element.fireEvent('onchange');
-    }
-}
 QUnit.test('Environment1', function (assert) {
     var dateElement,
         containerElement,
@@ -807,36 +893,45 @@ QUnit.test('Environment1', function (assert) {
     assert.ok(legendElement, 'Legend is defined');
     hourElement = expectChild(assert, dateElement, index++, { tagName: 'SELECT',
                                                               title: 'Select hour of the day',
+                                                              className: 'mtzdSelect',
                                                               options: makeOptions(0, 11, 2, { 0: '12' })
                                                             });
     expectChild(assert, dateElement, index++, { tagName: 'SPAN',
-                                                textContent: ':'
+                                                textContent: ':',
+                                                className: 'mtzdTimeDelim'
                                               });
     minuteElement = expectChild(assert, dateElement, index++, { tagName: 'SELECT',
                                                                 title: "Select minute of the hour",
+                                                                className: 'mtzdSelect',
                                                                 options: makeOptions(0, 59, 2)
                                                               });
     expectChild(assert, dateElement, index++, { tagName: 'SPAN',
-                                                textContent: ' '
+                                                textContent: ' ',
+                                                className: 'mtzdDelim'
                                               });
     ampmElement = expectChild(assert, dateElement, index++, { tagName: 'SELECT',
                                                               title: "Select morning or afternoon",
+                                                              className: 'mtzdSelect',
                                                               options: [ { text: 'am', value: '0'  },
                                                                          { text: 'pm', value: '1' }
                                                                        ]
                                                             });
     expectChild(assert, dateElement, index++, { tagName: 'SPAN',
-                                                textContent: ' '
+                                                textContent: ' ',
+                                                className: 'mtzdDelim'
                                               });
     dayElement = expectChild(assert, dateElement, index++, { tagName: 'SELECT',
                                                              title: "Select day of the month",
+                                                             className: 'mtzdSelect',
                                                              options: makeOptions(1, 31, 2)
                                                            });
     expectChild(assert, dateElement, index++, { tagName: 'SPAN',
-                                                textContent: '-'
+                                                textContent: '-',
+                                                className: 'mtzdDateDelim'
                                               });
     monthElement = expectChild(assert, dateElement, index++, { tagName: 'SELECT',
                                                                title: "Select month of the year",
+                                                               className: 'mtzdSelect',
                                                                options: [ { text: 'Jan', value:  '0'},
                                                                           { text: 'Feb', value:  '1'},
                                                                           { text: 'Mar', value:  '2'},
@@ -852,17 +947,21 @@ QUnit.test('Environment1', function (assert) {
                                                                         ]
                                                              });
     expectChild(assert, dateElement, index++, { tagName: 'SPAN',
-                                                textContent: '-'
+                                                textContent: '-',
+                                                className: 'mtzdDateDelim'
                                               });
     yearElement = expectChild(assert, dateElement, index++, { tagName: 'SELECT',
                                                               title: "Select year",
+                                                              className: 'mtzdSelect',
                                                               options: makeOptions(2010, 2020)
                                                             });
     expectChild(assert, dateElement, index++, { tagName: 'SPAN',
-                                                textContent: ' '
+                                                textContent: ' ',
+                                                className: 'mtzdDelim'
                                               });
     timezoneElement = expectChild(assert, dateElement, index++, { tagName: 'SELECT',
                                                                   title: "Select timezone",
+                                                                  className: 'mtzdSelect',
                                                                   options: [ { text: '',                   value: '' },
                                                                              { text: 'Fred Flintstone',    value: 'US/Pacific' },
                                                                              { text: 'Barny Rubble',       value: 'US/Eastern' },
@@ -874,7 +973,8 @@ QUnit.test('Environment1', function (assert) {
                                                                            ]
                                                                 });
     expectChild(assert, dateElement, index++, { tagName: 'SPAN',
-                                                textContent: ' '
+                                                textContent: ' ',
+                                                className: 'mtzdDelim'
                                               });
     currentTimeElement = expectChild(assert, dateElement, index++, { tagName: 'SPAN',
                                                                      className: 'mtzdCurrentTime',

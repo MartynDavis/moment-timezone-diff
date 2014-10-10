@@ -1,0 +1,131 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css">
+<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+<script src="http://code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
+<script src='http://momentjs.com/downloads/moment-with-locales.min.js'></script>
+<script src='http://momentjs.com/downloads/moment-timezone-with-data-2010-2020.min.js'></script>
+<script src='../scripts/moment-timezone-diff.js'></script>
+<link href="../scripts/moment-timezone-diff.css" rel="stylesheet" type="text/css" />
+<title>Moment Timezone Difference (DateTimeElements) Examples Using jQuery</title>
+<style>
+    body {
+        font-size: 16px;
+    }
+    div {
+        clear: both;
+        height: auto;
+        margin: 0 auto;
+        padding-top: 5px;
+        text-align: center;
+    }
+    h1, h2 {
+        text-align: center;
+    }
+    h2 {
+        padding-top: 5px;
+    }
+    p {
+        min-height: 1.5em;
+        text-align: center;
+    }
+    .currentTimeFrench {
+        cursor: pointer;
+    }
+    .ui-datepicker {
+        font-size: 80%;
+    }
+</style>
+<script>
+    var vars = { };
+    function displayTime(dte, id, options, selected) {
+        var element,
+            m,
+            tzDiff,
+            prefix;
+        if (!selected) {
+            selected = dte.getSelected();
+        }
+        if (selected.timezone && selected.timezone.value) {
+            m = moment.tz([selected.year, selected.month, selected.day, selected.hour, selected.minute, 0], selected.timezone.value);
+        } else {
+            m = moment([selected.year, selected.month, selected.day, selected.hour, selected.minute, 0]);
+        }
+        if (options && options.locale) {
+            m.locale(options.locale);
+        }
+        tzDiff = new momentTimezoneDiff.TimezoneDiff(m, momentTimezoneDiff.getDefaultTimezone(), options);
+        element = document.getElementById(id);
+        if (element) {
+            if (options && (options.locale === 'fr')) {
+                prefix = "Le temps dans le fuseau horaire actuel est";
+            } else {
+                prefix = 'The time in the current timezone is';
+            }
+            element.textContent = prefix + ' ' + tzDiff.format('hh:mm a Do MMMM YYYY DIFF');
+        }
+    }
+    function createCallback(dte, id, options) {
+        return function (selected) {
+            displayTime(dte, id, options, selected);
+        };
+    }
+    function initialise() {
+        var frenchOptions = { locale: 'fr',
+                              ahead: 'avant',
+                              behind: 'derrière',
+                              hour: 'heure',
+                              hours: 'heures'
+                            };
+
+        vars.dte1 = new momentTimezoneDiff.DateTimeElements('mtzdDate12', { mode: momentTimezoneDiff.MODE_SPLIT_HOUR12
+                                                                          });
+        vars.dte1.addTimezone('US/Eastern');
+        vars.dte1.addTimezone('Australia/Perth');
+        vars.dte1.registerCallback(createCallback(vars.dte1, 'result1'));
+        displayTime(vars.dte1, 'result1');
+
+        vars.dte2 = new momentTimezoneDiff.DateTimeElements('mtzdDate24', { mode: momentTimezoneDiff.MODE_SPLIT_HOUR24,
+                                                                            dateOrder: momentTimezoneDiff.DATE_ORDER_MDY, 
+                                                                            locale: 'fr',
+                                                                            currentTime: "Régler l'heure actuelle",
+                                                                            currentTimeTitle: "l'heure actuelle",
+                                                                            currentTimeClass: 'currentTimeFrench',
+                                                                            hourTitle: "Sélectionnez les heures de la journée",
+                                                                            minuteTitle: "Sélectionner les minutes de l'heure",
+                                                                            ampmTitle: "Sélectionnez le matin ou l'après-midi",
+                                                                            monthTitle: "Sélectionnez un mois de l'année",
+                                                                            dayTitle: "Choisir jour du mois",
+                                                                            yearTitle: "Sélectionnez l'année",
+                                                                            timezoneTitle: "Sélectionnez le fuseau horaire",
+                                                                            monthFormat: "MMMM"
+                                                                          });
+        vars.dte2.addTimezone('Europe/Paris', 'Sebastian Roché');
+        vars.dte2.addTimezone('Canada/Newfoundland', 'André Lurçat');
+        vars.dte2.registerCallback(createCallback(vars.dte2, 'result2', frenchOptions));
+        displayTime(vars.dte2, 'result2', frenchOptions);
+
+        vars.dte3 = new momentTimezoneDiff.DateTimeElements('mtzdDateSingle', { mode: momentTimezoneDiff.MODE_SINGLE
+                                                                              });
+        vars.dte3.addTimezone('Europe/London');
+        vars.dte3.addTimezone('NZ', 'New Zealand');
+        vars.dte3.registerCallback(createCallback(vars.dte3, 'result3'));
+        displayTime(vars.dte3, 'result3');
+    }
+</script>
+</head>
+<body onload='initialise();'>
+    <h1>Moment Timezone Difference (DateTimeElements) Examples Using jQuery</h1>
+    <p>Given a time in a selected timezone, the time in the current timezone is displayed.</p>
+    <h2>Example #1 - 12 hour clock</h2>
+    <div class='date' id='mtzdDate12'></div>
+    <div class='result'><p id='result1'></p></div>
+    <h2>Exemple # 2 - horloge de 24 heures</h2>
+    <div class='date' id='mtzdDate24'></div>
+    <div class='result'><p id='result2'></p></div>
+    <h2>Example #3 - Single</h2>
+    <div class='date' id='mtzdDateSingle'></div>
+    <div class='result'><p id='result3'></p></div>
+</body>
+</html>
