@@ -1,3 +1,9 @@
+/*
+    moment-timezone-diff.js
+    version : 0.2.0
+    authors : Martyn Davis
+    license : MIT
+*/
 "use strict";
 /*global describe, it*/
 var moment = require('../moment/moment-timezone'),

@@ -1,3 +1,9 @@
+/*
+    test-moment-timezone-diff.js
+    version : 0.2.0
+    authors : Martyn Davis
+    license : MIT
+*/
 "use strict";
 /*global QUnit, moment, momentTimezoneDiff, testVars*/
 QUnit.test('momentTimezoneDiff', function (assert) {

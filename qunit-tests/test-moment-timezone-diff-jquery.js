@@ -1,3 +1,9 @@
+/*
+    test-moment-timezone-diff-jquery.css
+    version : 0.2.0
+    authors : Martyn Davis
+    license : MIT
+*/
 "use strict";
 
 /*global QUnit, moment, momentTimezoneDiff, testVars*/
