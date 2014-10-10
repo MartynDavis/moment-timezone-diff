@@ -61,10 +61,17 @@ module.exports = function(grunt) {
     version: {
       minor: {
         options: {
-          prefix: '[^\\-]version[\'"]?\\s*[,:=]\\s*[\'"]',
+          prefix: '[^\\-\\w]version[\'"]?\\s*[,:=]\\s*[\'"]?',
           release: 'minor'
         },
-        src: [ 'package.json', 'scripts/*.js', 'qunit-tests/test-moment-timezone-diff.js' ]
+        src: [ 'package.json', 
+               'scripts/*.css', 
+               'scripts/*.js', 
+               'qunit-tests/*.html', 
+               'qunit-tests/*.js',
+               'test/*.js',
+               'web/*.html'
+             ]
       }
     }
   });
