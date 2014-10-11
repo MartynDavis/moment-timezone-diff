@@ -1,17 +1,21 @@
 <!DOCTYPE html>
 <!--
-    moment-timezone-diff.html
+    moment-timezone-diff-jquery.html
     version : 0.4.0
     authors : Martyn Davis
     license : MIT
 -->
 <html>
 <head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css">
+<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+<script src="http://code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
 <script src='http://momentjs.com/downloads/moment-with-locales.min.js'></script>
 <script src='http://momentjs.com/downloads/moment-timezone-with-data-2010-2020.min.js'></script>
 <script src='../scripts/moment-timezone-diff.js'></script>
 <link href="../scripts/moment-timezone-diff.css" rel="stylesheet" type="text/css" />
-<title>Moment Timezone Difference Examples</title>
+<title>Moment Timezone Difference Examples Using jQuery</title>
 <style>
     body {
         font-size: 16px;
@@ -146,6 +150,9 @@
     .currentTimeFrench:hover {
         text-decoration: underline;
     }
+    .ui-datepicker {
+        font-size: 80%;
+    }
 </style>
 <script>
     var env1,
@@ -227,7 +234,7 @@
 </script>
 </head>
 <body onload='initialise();'>
-    <h1>Moment Timezone Difference Examples</h1>
+    <h1>Moment Timezone Difference Examples Using jQuery</h1>
     <h2>Example #1 - 12 hour clock (TABLE)</h2>
     <div class='date' id='mtzdDate'>
     </div>

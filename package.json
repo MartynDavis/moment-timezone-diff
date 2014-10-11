@@ -2,6 +2,33 @@
   "name": "moment-timezone-diff",
   "version": "0.4.0",
   "description": "Moment Timezone Difference",
+  "main": "./scripts/moment-timezone-diff.js",
+  "keywords": [
+    "moment",
+    "timezone",
+    "html"
+  ],
+  "author": {
+    "name": "Martyn Davis",
+    "email": "mad@madlid.com",
+    "url": "http://madlid.com/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MartynDavis/moment-timezone-diff.git"
+  },
+  issues: { 
+    "url" : "https://github.com/MartynDavis/moment-timezone-diff/issues",
+    "email" : "mad@madlid.com"
+  },
+  "licenses": [
+    {
+      "type": "MIT"
+    }
+  ],
+  "engines": {
+    "node": "*"
+  },
   "devDependencies": {
     "grunt": "~0.4.5",
     "grunt-contrib-jshint": "*",

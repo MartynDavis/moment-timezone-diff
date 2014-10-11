@@ -1,20 +1,18 @@
 <!DOCTYPE html>
 <!--
-    moment-timezone-diff-dte-jquery.html
+    moment-timezone-diff-dte.html
     version : 0.4.0
     authors : Martyn Davis
     license : MIT
 -->
 <html>
 <head>
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css">
-<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
-<script src="http://code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
+<meta charset="utf-8">
 <script src='http://momentjs.com/downloads/moment-with-locales.min.js'></script>
 <script src='http://momentjs.com/downloads/moment-timezone-with-data-2010-2020.min.js'></script>
 <script src='../scripts/moment-timezone-diff.js'></script>
 <link href="../scripts/moment-timezone-diff.css" rel="stylesheet" type="text/css" />
-<title>Moment Timezone Difference (DateTimeElements) Examples Using jQuery</title>
+<title>Moment Timezone Difference (DateTimeElements) Examples</title>
 <style>
     body {
         font-size: 16px;
@@ -38,9 +36,6 @@
     }
     .currentTimeFrench {
         cursor: pointer;
-    }
-    .ui-datepicker {
-        font-size: 80%;
     }
 </style>
 <script>
@@ -122,7 +117,7 @@
 </script>
 </head>
 <body onload='initialise();'>
-    <h1>Moment Timezone Difference (DateTimeElements) Examples Using jQuery</h1>
+    <h1>Moment Timezone Difference (DateTimeElements) Examples</h1>
     <p>Given a time in a selected timezone, the time in the current timezone is displayed.</p>
     <h2>Example #1 - 12 hour clock</h2>
     <div class='date' id='mtzdDate12'></div>
