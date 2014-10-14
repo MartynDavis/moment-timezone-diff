@@ -228,7 +228,7 @@ QUnit.test('DateTimeElements1', function (assert) {
     expectChildren(assert, dateElement, index);
     dte = testVars.dte1;
     assert.equal(dte._locale, 'fr', 'Locale is "fr"');
-    assert.equal(dte._mode, momentTimezoneDiff.MODE_SPLIT_HOUR12, 'Mode matches');
+    assert.equal(dte._mode, momentTimezoneDiff.MODE_DROPDOWN_HOUR12, 'Mode matches');
     assert.equal(dte._errorClassName, 'mtzdError', 'Error class matches');
     assert.equal(dte._currentTime, currentTimeElement, 'Current time element matches');
     assert.equal(dte._elements.hour, hourElement, 'Hour element matches');
@@ -418,7 +418,7 @@ QUnit.test('DateTimeElements2', function (assert) {
     expectChildren(assert, dateElement, index);
     dte = testVars.dte2;
     assert.equal(dte._locale, undefined, 'locale is not defined');
-    assert.equal(dte._mode, momentTimezoneDiff.MODE_SPLIT_HOUR24, 'Mode matches');
+    assert.equal(dte._mode, momentTimezoneDiff.MODE_DROPDOWN_HOUR24, 'Mode matches');
     assert.equal(dte._errorClassName, 'mtzdError', 'Error class matches');
     assert.equal(dte._currentTime, currentTimeElement, 'Current time element matches');
     assert.equal(dte._elements.hour, hourElement, 'Hour element matches');
@@ -561,7 +561,7 @@ QUnit.test('DateTimeElements3', function (assert) {
     expectChildren(assert, dateElement, index);
     dte = testVars.dte3;
     assert.equal(dte._locale, undefined, 'locale is not defined');
-    assert.equal(dte._mode, momentTimezoneDiff.MODE_SINGLE, 'Mode matches');
+    assert.equal(dte._mode, momentTimezoneDiff.MODE_TEXTBOX, 'Mode matches');
     assert.equal(dte._errorClassName, 'mtzdError', 'Error class matches');
     assert.equal(dte._currentTime, currentTimeElement, 'Current time element matches');
     assert.equal(dte._elements.hour, undefined, 'Hour element is not defined');
@@ -712,7 +712,7 @@ QUnit.test('DateTimeElements4', function (assert) {
     expectChildren(assert, dateElement, index);
     dte = testVars.dte4;
     assert.equal(dte._locale, undefined, 'locale is not defined');
-    assert.equal(dte._mode, momentTimezoneDiff.MODE_SPLIT_HOUR12, 'Mode matches');
+    assert.equal(dte._mode, momentTimezoneDiff.MODE_DROPDOWN_HOUR12, 'Mode matches');
     assert.equal(dte._errorClassName, 'mtzdError', 'Error class matches');
     assert.equal(dte._currentTime, currentTimeElement, 'Current time element matches');
     assert.equal(dte._elements.hour, hourElement, 'Hour element matches');
@@ -768,7 +768,7 @@ QUnit.test('DateTimeElements5', function (assert) {
     expectChildren(assert, dateElement, index);
     dte = testVars.dte5;
     assert.equal(dte._locale, undefined, 'locale is not defined');
-    assert.equal(dte._mode, momentTimezoneDiff.MODE_SINGLE, 'Mode matches');
+    assert.equal(dte._mode, momentTimezoneDiff.MODE_TEXTBOX, 'Mode matches');
     assert.equal(dte._errorClassName, 'mtzdError', 'Error class matches');
     assert.equal(dte._currentTime, undefined, 'Current time element is not defined');
     assert.equal(dte._elements.hour, undefined, 'Hour element is not defined');
@@ -925,8 +925,8 @@ QUnit.test('Environment', function (assert) {
                            sunRiseMinute: 0,
                            sunSetHour: 20,
                            sunSetMinute: 0,
-                           sun: '\u263c',  // Unicode white sun with rays
-                           moon: '\u263e', // Unicode last quarter moon
+                           daytime: '\u263c',  // Unicode white sun with rays
+                           nighttime: '\u263e', // Unicode last quarter moon
                            legendFormat: 'h:mm a',
                            legendBreak: false,
                            legendDash: ' - ',
@@ -1050,7 +1050,7 @@ QUnit.test('Environment', function (assert) {
     expectChildren(assert, dateElement, index);
     env = testVars.env1;
     assert.equal(env._dateTimeElements._locale, undefined, 'env dateTimeElements locale is not defined');
-    assert.equal(env._dateTimeElements._mode, momentTimezoneDiff.MODE_SPLIT_HOUR12, 'Mode matches');
+    assert.equal(env._dateTimeElements._mode, momentTimezoneDiff.MODE_DROPDOWN_HOUR12, 'Mode matches');
     assert.equal(env._dateTimeElements._errorClassName, 'mtzdError', 'Error class matches');
     assert.equal(env._dateTimeElements._currentTime, currentTimeElement, 'Current time element matches');
     assert.equal(env._dateTimeElements._elements.hour, hourElement, 'Hour element matches');
@@ -1075,7 +1075,7 @@ QUnit.test('Environment', function (assert) {
                 'h:mm a', 
                 'DD-MMM-YYYY', 
                 'DIFF', 
-                'sunmoon'
+                'daynight'
               ];
 
     index = 0;

@@ -36,7 +36,7 @@
 <script>
     var testVars = { };
     function initialise() {
-        testVars.dte1 = new momentTimezoneDiff.DateTimeElements('mtzdDate12hour', { mode: momentTimezoneDiff.MODE_SPLIT_HOUR12,
+        testVars.dte1 = new momentTimezoneDiff.DateTimeElements('mtzdDate12hour', { mode: momentTimezoneDiff.MODE_DROPDOWN_HOUR12,
                                                                                     dateOrder: momentTimezoneDiff.DATE_ORDER_DMY,
                                                                                     locale: 'fr',
                                                                                     currentTime: "Régler l'heure actuelle",
@@ -55,27 +55,27 @@
         testVars.dte1.addTimezone('Europe/Paris', 'Sebastian Roché');
         testVars.dte1.addTimezone('Canada/Newfoundland', 'André Lurçat');
 
-        testVars.dte2 = new momentTimezoneDiff.DateTimeElements('mtzdDate24hour', { mode: momentTimezoneDiff.MODE_SPLIT_HOUR24,
+        testVars.dte2 = new momentTimezoneDiff.DateTimeElements('mtzdDate24hour', { mode: momentTimezoneDiff.MODE_DROPDOWN_HOUR24,
                                                                                     dateOrder: momentTimezoneDiff.DATE_ORDER_MDY
                                                                                   });
         testVars.dte2.addTimezone('US/Eastern');
         testVars.dte2.addTimezone('Australia/Perth');
 
-        testVars.dte3 = new momentTimezoneDiff.DateTimeElements('mtzdDateSingle', { mode: momentTimezoneDiff.MODE_SINGLE,
+        testVars.dte3 = new momentTimezoneDiff.DateTimeElements('mtzdDateSingle', { mode: momentTimezoneDiff.MODE_TEXTBOX,
                                                                                     usejQueryDatepicker: true
                                                                                   });
         testVars.dte3.addTimezone('America/Argentina/Buenos_Aires', 'Barry');
         testVars.dte3.addTimezone('Europe/Budapest', 'Bruce');
         testVars.dte3.addTimezone('Pacific/Norfolk', 'Brett');
 
-        testVars.dte4 = new momentTimezoneDiff.DateTimeElements('mtzdDate12hour2', { mode: momentTimezoneDiff.MODE_SPLIT_HOUR12,
+        testVars.dte4 = new momentTimezoneDiff.DateTimeElements('mtzdDate12hour2', { mode: momentTimezoneDiff.MODE_DROPDOWN_HOUR12,
                                                                                      dateOrder: momentTimezoneDiff.DATE_ORDER_YMD,
                                                                                      usejQueryDatepicker: false
                                                                                    });
         testVars.dte4.addTimezone('Europe/London');
         testVars.dte4.addTimezone('Japan');
 
-        testVars.dte5 = new momentTimezoneDiff.DateTimeElements('mtzdDateSingle2', { mode: momentTimezoneDiff.MODE_SINGLE,
+        testVars.dte5 = new momentTimezoneDiff.DateTimeElements('mtzdDateSingle2', { mode: momentTimezoneDiff.MODE_TEXTBOX,
                                                                                      showCurrentTime: false,
                                                                                      usejQueryDatepicker: false
                                                                                    });
@@ -117,7 +117,7 @@
                     <th>h:mm a</th>
                     <th>DD-MMM-YYYY</th>
                     <th>DIFF</th>
-                    <th>sunmoon</th>
+                    <th>daynight</th>
                 </tr>
             </thead>
             <tbody id='mtzdContainer'>
@@ -129,7 +129,7 @@
                     <td class='time'></td>
                     <td class='date'></td>
                     <td class='diff'></td>
-                    <td class='sunmoon'></td>
+                    <td class='daynight'></td>
                 </tr>
                 <tr>
                     <td class='name'>Barny Rubble</td>
@@ -139,7 +139,7 @@
                     <td class='time'></td>
                     <td class='date'></td>
                     <td class='diff'></td>
-                    <td class='sunmoon'></td>
+                    <td class='daynight'></td>
                 </tr>
                 <tr>
                     <td class='name'>Bamm Bamm Rubble</td>
@@ -149,7 +149,7 @@
                     <td class='time'></td>
                     <td class='date'></td>
                     <td class='diff'></td>
-                    <td class='sunmoon'></td>
+                    <td class='daynight'></td>
                 </tr>
                 <tr>
                     <td class='name'>Wilma Flintstone</td>
@@ -159,7 +159,7 @@
                     <td class='time'></td>
                     <td class='date'></td>
                     <td class='diff'></td>
-                    <td class='sunmoon'></td>
+                    <td class='daynight'></td>
                 </tr>
                 <tr>
                     <td class='name'>Betty Rubble</td>
@@ -169,7 +169,7 @@
                     <td class='time'></td>
                     <td class='date'></td>
                     <td class='diff'></td>
-                    <td class='sunmoon'></td>
+                    <td class='daynight'></td>
                 </tr>
                 <tr>
                     <td class='name'>Pebbles Flintstone</td>
@@ -179,7 +179,7 @@
                     <td class='time'></td>
                     <td class='date'></td>
                     <td class='diff'></td>
-                    <td class='sunmoon'></td>
+                    <td class='daynight'></td>
                 </tr>
                 <tr>
                     <td class='name'>Dino</td>
@@ -189,7 +189,7 @@
                     <td class='time'></td>
                     <td class='date'></td>
                     <td class='diff'></td>
-                    <td class='sunmoon'></td>
+                    <td class='daynight'></td>
                 </tr>
             </tbody>
             <tfoot>

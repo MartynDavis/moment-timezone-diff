@@ -1,0 +1,18 @@
+{
+    "options": { 
+               },
+    "output": [ "dddd", 
+                "hh:mm a", 
+                "DD-MMM-YYYY", 
+                "DIFF", 
+                "daynight" 
+              ],
+    "timezones": [ "US/Pacific", 
+                   "US/Eastern", 
+                   "Europe/London",
+                   "Europe/Paris",
+                   "Asia/Calcutta",
+                   "Australia/Perth",
+                   ""
+                 ]
+}

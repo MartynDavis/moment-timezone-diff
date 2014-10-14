@@ -9,7 +9,7 @@
 (function (root, factory) {
     "use strict";
     if (typeof exports === 'object') {
-        module.exports = factory(require('../moment/moment-timezone'));   // Node
+        module.exports = factory(require('moment-timezone'));   // Node
     } else {
         root.momentTimezoneDiff = factory(moment);              // Browser
     }
@@ -17,7 +17,7 @@
     "use strict";
     function MomentTimezoneDiffException(message) {
        this.message = message;
-       this.name = "MomentTimezoneDiffException";
+       this.name = 'MomentTimezoneDiffException';
     }
     if (!moment || !moment.tz) {
         if (!moment) {
@@ -64,7 +64,7 @@
                     m.tz(id);
                 }
                 // Compare using day of month, hour and minute (some timezones differ by 30 minutes)
-                return m.format("DDHHmm");
+                return m.format('DDHHmm');
             }).join(' ');
         }
         var now = Date.now(),
@@ -88,8 +88,8 @@
                            sunRiseMinute: 0,
                            sunSetHour: 20,
                            sunSetMinute: 0,
-                           sun: '\u263c',  // Unicode white sun with rays
-                           moon: '\u263e', // Unicode last quarter moon
+                           daytime: '\u263c',  // Unicode white sun with rays
+                           nighttime: '\u263e', // Unicode last quarter moon
                            legendFormat: 'h:mm a',
                            legendBreak: false,
                            legendDash: ' - ',
@@ -98,9 +98,9 @@
                            timeShowTimezoneName: false,
                            defaultTimezone: getDefaultTimezone()
                          },
-        MODE_SINGLE = 0,
-        MODE_SPLIT_HOUR24 = 1,
-        MODE_SPLIT_HOUR12 = 2,
+        MODE_TEXTBOX = 0,
+        MODE_DROPDOWN_HOUR24 = 1,
+        MODE_DROPDOWN_HOUR12 = 2,
         DATE_ORDER_DMY = 0,
         DATE_ORDER_MDY = 1,
         DATE_ORDER_YMD = 2;
@@ -113,7 +113,7 @@
         var days = 0,
             i;
         for (i = 1; i <= 12; i += 1) {
-            days += moment(year + '-' + ((i < 10) ? '0' : '') + i, "YYYY-MM").daysInMonth();
+            days += moment(year + '-' + ((i < 10) ? '0' : '') + i, 'YYYY-MM').daysInMonth();
         }
         return days;
     }
@@ -331,7 +331,7 @@
     function getDatepickerOnSelect(dte) {
         return function () {
             var selected = dte.getSelected(),
-                date = $(dte._datepicker).datepicker( "getDate" );
+                date = $(dte._datepicker).datepicker( 'getDate' );
             if (date) {
                 if (!selected) {
                     selected = { };
@@ -377,16 +377,19 @@
         return m.format(format);
     }
     function DateTimeElements(id, options) {
+        if (typeof exports === 'object') {
+            throw new MomentTimezoneDiffException('Object can only be created when using a Browser');
+        }
         var element = document.getElementById(id),
-            mode = getOptionValue(options, 'mode', MODE_SPLIT_HOUR12),
+            mode = getOptionValue(options, 'mode', MODE_DROPDOWN_HOUR12),
             timeDelim = getOptionValue(options, 'timeDelim', ':'),
             dateDelim = getOptionValue(options, 'dateDelim', '-'),
-            hourFormat = getOptionValue(options, 'hourFormat', (mode === MODE_SINGLE) ? 'h' : ((mode === MODE_SPLIT_HOUR12) ? 'hh' : 'HH')),
+            hourFormat = getOptionValue(options, 'hourFormat', (mode === MODE_TEXTBOX) ? 'h' : ((mode === MODE_DROPDOWN_HOUR12) ? 'hh' : 'HH')),
             minuteFormat = getOptionValue(options, 'minuteFormat', 'mm'),
             ampmFormat = getOptionValue(options, 'ampmFormat', 'a'),
             yearFormat = getOptionValue(options, 'yearFormat', 'YYYY'),
             monthFormat = getOptionValue(options, 'monthFormat', 'MMM'),
-            dayFormat = getOptionValue(options, 'dayFormat', (mode === MODE_SINGLE) ? 'D' : 'DD'),
+            dayFormat = getOptionValue(options, 'dayFormat', (mode === MODE_TEXTBOX) ? 'D' : 'DD'),
             elements,
             title,
             dateOrder = getOptionValue(options, 'dateOrder', DATE_ORDER_DMY),
@@ -403,7 +406,7 @@
             console.error('Element with id "' + id + '" not found');
             return;
         }
-        if (mode === MODE_SINGLE) {
+        if (mode === MODE_TEXTBOX) {
             if (dateOrder === DATE_ORDER_MDY) {
                 dateControlsOrder = [ monthFormat, dayFormat, yearFormat];
             } else if (dateOrder === DATE_ORDER_YMD) {
@@ -451,12 +454,12 @@
                                                                               maxlength: getOptionValue(options, 'maxlength', 255) 
                                                                             }));
             elements.datetime.value = getIntialDateTimeValue(this._timeDisplayFormat, minYear, locale);
-        } else if ((mode === MODE_SPLIT_HOUR24) || (mode === MODE_SPLIT_HOUR12)) {
+        } else if ((mode === MODE_DROPDOWN_HOUR24) || (mode === MODE_DROPDOWN_HOUR12)) {
             elements = { };
             elements.hour = appendChild(element, createElement('select', { title: getOptionValue(options, 'hourTitle', 'Select hour of the day'),
                                                                            className: getOptionValue(options, 'selectClass', 'mtzdSelect'),
                                                                          }));
-            populateHourOptions(elements.hour, hourFormat, (mode === MODE_SPLIT_HOUR24), locale);
+            populateHourOptions(elements.hour, hourFormat, (mode === MODE_DROPDOWN_HOUR24), locale);
             appendChild(element, createElement('span', { textContent: timeDelim,
                                                          className: getOptionValue(options, 'timeDelimClass', 'mtzdTimeDelim'),
                                                        }));
@@ -464,7 +467,7 @@
                                                                              className: getOptionValue(options, 'selectClass', 'mtzdSelect')
                                                                            }));
             populateMinuteOptions(elements.minute, minuteFormat, locale);
-            if ((mode !== MODE_SPLIT_HOUR24)) {
+            if ((mode !== MODE_DROPDOWN_HOUR24)) {
                 appendChild(element, createElement('span', { textContent: ' ',
                                                              className: getOptionValue(options, 'delimClass', 'mtzdDelim')
                                                            }));
@@ -655,7 +658,7 @@
         var selected,
             ampm,
             m;
-        if (this._mode === MODE_SINGLE) {
+        if (this._mode === MODE_TEXTBOX) {
             if (this._locale) {
                 m = moment(this._elements.datetime.value, this._timeInputFormats, true, this._locale);
             } else {
@@ -674,14 +677,14 @@
                 classAdd(this._elements.datetime, this._errorClassName);
                 return;
             }
-        } else if ((this._mode === MODE_SPLIT_HOUR12) || (this._mode === MODE_SPLIT_HOUR24)) {
+        } else if ((this._mode === MODE_DROPDOWN_HOUR12) || (this._mode === MODE_DROPDOWN_HOUR24)) {
             selected = { };
             selected.hour = getSelected(this._elements.hour);
             selected.minute = getSelected(this._elements.minute);
             selected.day = getSelected(this._elements.day);
             selected.month = getSelected(this._elements.month);
             selected.year = getSelected(this._elements.year);
-            if (this._mode === MODE_SPLIT_HOUR12) {
+            if (this._mode === MODE_DROPDOWN_HOUR12) {
                 ampm = getSelected(this._elements.ampm);
                 if (ampm !== 0) {
                     selected.hour += 12;
@@ -727,17 +730,17 @@
     };
     DateTimeElements.prototype.setSelected = function (selected) {
         var m;
-        if (this._mode === MODE_SINGLE) {
+        if (this._mode === MODE_TEXTBOX) {
             m = moment([selected.year, selected.month, selected.day, selected.hour, selected.minute, 0]);
             if (this._locale) {
                 m.locale(this._locale);
             }
             this._elements.datetime.value = m.format(this._timeDisplayFormat);
-        } else if ((this._mode === MODE_SPLIT_HOUR12) || (this._mode === MODE_SPLIT_HOUR24)) {
+        } else if ((this._mode === MODE_DROPDOWN_HOUR12) || (this._mode === MODE_DROPDOWN_HOUR24)) {
             setSelected(this._elements.year, selected.year);
             setSelected(this._elements.month, selected.month);
             setSelected(this._elements.day, selected.day);
-            if (this._mode === MODE_SPLIT_HOUR12) {
+            if (this._mode === MODE_DROPDOWN_HOUR12) {
                 if (selected.hour < 12) {
                     setSelected(this._elements.hour, selected.hour);
                     setSelected(this._elements.ampm, 0);
@@ -784,8 +787,8 @@
         }
         var lines = [ ];
         if (options) {
-            lines.push(options.sun + options.legendDash + sayRange(options.sunRiseHour, options.sunRiseMinute, options.sunSetHour, options.sunSetMinute, options.legendFormat, options.legendSeparator));
-            lines.push(options.moon + options.legendDash + sayRange(options.sunSetHour, options.sunSetMinute, options.sunRiseHour, options.sunRiseMinute, options.legendFormat, options.legendSeparator));
+            lines.push(options.daytime + options.legendDash + sayRange(options.sunRiseHour, options.sunRiseMinute, options.sunSetHour, options.sunSetMinute, options.legendFormat, options.legendSeparator));
+            lines.push(options.nighttime + options.legendDash + sayRange(options.sunSetHour, options.sunSetMinute, options.sunRiseHour, options.sunRiseMinute, options.legendFormat, options.legendSeparator));
         }
         return lines;
     }
@@ -823,6 +826,9 @@
         };
     }
     function Environment(setupOptions, options) {
+        if (typeof exports === 'object') {
+            throw new MomentTimezoneDiffException('Object can only be created when using a Browser');
+        }
         var dateTimeElements,
             dateId,
             container,
@@ -1067,17 +1073,17 @@
     Environment.prototype.setOptions = function (o) {
         setOptionValues(this._options, o);
     };
-    Environment.prototype.sunny = function (m, options) {
-        return sunny(m, options || this._options);
+    Environment.prototype.daytime = function (m, options) {
+        return daytime(m, options || this._options);
     };
     function TimezoneDiff(momentReference, timezone, options) {
-        this._momentReference = momentReference;
-        this._momentTz = moment(momentReference);
-        this._momentTz.tz(timezone ? timezone : options.defaultTimezone);
         this._options = duplicate(defaultOptions);
         if (options) {
             setOptionValues(this._options, options);
         }
+        this._momentReference = momentReference;
+        this._momentTz = moment(momentReference);
+        this._momentTz.tz(timezone ? timezone : this._options.defaultTimezone);
         if (this._options.locale) {
             this._momentTz.locale(this._options.locale);
         }
@@ -1088,7 +1094,7 @@
     TimezoneDiff.prototype.dayDiff = function () {
         return (getDays(this._momentTz, this._momentReference.year()) - getDays(this._momentReference, this._momentTz.year())) / 60;
     };
-    function sunny(m, options) {
+    function daytime(m, options) {
         var hour = m.hour(),
             minute = m.minute(),
             value = false;
@@ -1104,8 +1110,8 @@
         }
         return value;
     }
-    TimezoneDiff.prototype.sunny = function () {
-        return sunny(this._momentTz, this._options);
+    TimezoneDiff.prototype.daytime = function () {
+        return daytime(this._momentTz, this._options);
     };
     Environment.prototype.timezoneDiff = function (momentReference, timezone) {
         return new TimezoneDiff(momentReference, timezone, this._options);
@@ -1140,7 +1146,7 @@
         return text;
     }
     TimezoneDiff.prototype.format = function (f) {
-        var re = /^(.*?)\b(DIFF|diff|sunmoon)\b(.*?)$/,
+        var re = /^(.*?)\b(DIFF|diff|daynight)\b(.*?)$/,
             fNew = '',
             match,
             value,
@@ -1165,8 +1171,8 @@
                             value = makeDiffText(hoursDiff, true, this._options);
                         } else if (match[2] === 'diff') {
                             value = makeDiffText(hoursDiff, false, this._options);
-                        } else if (match[2] === 'sunmoon') {
-                            value = sunny(this._momentTz, this._options) ? (this._options.sun || '') : (this._options.moon || '');
+                        } else if (match[2] === 'daynight') {
+                            value = daytime(this._momentTz, this._options) ? (this._options.daytime || '') : (this._options.nighttime || '');
                         } else {
                             value = match[2];
                         }
@@ -1197,9 +1203,9 @@
     };
     var mtzd = { };
     mtzd.version = '0.4.0';
-    mtzd.MODE_SINGLE = MODE_SINGLE;
-    mtzd.MODE_SPLIT_HOUR24 = MODE_SPLIT_HOUR24;
-    mtzd.MODE_SPLIT_HOUR12 = MODE_SPLIT_HOUR12;
+    mtzd.MODE_TEXTBOX = MODE_TEXTBOX;
+    mtzd.MODE_DROPDOWN_HOUR24 = MODE_DROPDOWN_HOUR24;
+    mtzd.MODE_DROPDOWN_HOUR12 = MODE_DROPDOWN_HOUR12;
     mtzd.DATE_ORDER_DMY = DATE_ORDER_DMY;
     mtzd.DATE_ORDER_MDY = DATE_ORDER_MDY;
     mtzd.DATE_ORDER_YMD = DATE_ORDER_YMD;
@@ -1213,8 +1219,8 @@
     mtzd.setOptions = function (o) {
         setOptionValues(defaultOptions, o);
     };
-    mtzd.sunny = function (m, options) {
-        return sunny(m, options || defaultOptions);
+    mtzd.daytime = function (m, options) {
+        return daytime(m, options || defaultOptions);
     };
     mtzd.createLegend = function (options) {
         return createLegend(options || defaultOptions);

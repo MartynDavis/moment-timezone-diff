@@ -63,13 +63,13 @@
     td.diff {
         min-width: 8em;
     }
-    td.sunmoon {
+    td.daynight {
         min-width: 1em;
     }
     td.dayOfWeek, td.time, td.date, td.diff {
         text-align: right;
     }
-    td.sunmoon {
+    td.daynight {
         text-align: center;
     }
     tfoot {
@@ -133,7 +133,7 @@
         min-height: 1em;
         padding: 5px;
     }
-    div.sunmoon {
+    div.daynight {
         float: left;
         min-width: 20px;
         padding: 5px;
@@ -157,7 +157,7 @@
     function initialise() {
         env1 = new momentTimezoneDiff.Environment();
         env2 = new momentTimezoneDiff.Environment({
-                                                    dateTimeElements: new momentTimezoneDiff.DateTimeElements('dateOther', { mode: momentTimezoneDiff.MODE_SINGLE }),
+                                                    dateTimeElements: new momentTimezoneDiff.DateTimeElements('dateOther', { mode: momentTimezoneDiff.MODE_TEXTBOX }),
                                                     formatsId: 'cellFormatsOther',
                                                     containerId: 'tableBodyOther',
                                                     timeId: 'currentTimeOther',
@@ -165,11 +165,11 @@
                                                   },
                                                   {
                                                     legendFormat: 'HH:mm',
-                                                    sun: 'Day',
-                                                    moon: 'Night'
+                                                    daytime: 'Day',
+                                                    nighttime: 'Night'
                                                   });
         env3 = new momentTimezoneDiff.Environment({
-                                                    dateTimeElements: new momentTimezoneDiff.DateTimeElements('dateAnother', { mode: momentTimezoneDiff.MODE_SPLIT_HOUR24,
+                                                    dateTimeElements: new momentTimezoneDiff.DateTimeElements('dateAnother', { mode: momentTimezoneDiff.MODE_DROPDOWN_HOUR24,
                                                                                                                                timeDisplayFormat: 'dddd h:mm a DD/MMM/YYYY',
                                                                                                                                dateOrder: momentTimezoneDiff.DATE_ORDER_MDY }),
                                                     formatsId: 'cellFormatsAnother',
@@ -184,7 +184,7 @@
                                                     sunSetHour: 17
                                                   });
         env4 = new momentTimezoneDiff.Environment({
-                                                    dateTimeElements: new momentTimezoneDiff.DateTimeElements('dateFrench', { mode: momentTimezoneDiff.MODE_SPLIT_HOUR24,
+                                                    dateTimeElements: new momentTimezoneDiff.DateTimeElements('dateFrench', { mode: momentTimezoneDiff.MODE_DROPDOWN_HOUR24,
                                                                                                                               locale: 'fr',
                                                                                                                               currentTime: "Régler l'heure actuelle",
                                                                                                                               currentTimeTitle: "l'heure actuelle",
@@ -249,7 +249,7 @@
                     <th>h:mm a</th>
                     <th>DD-MMM-YYYY</th>
                     <th>DIFF</th>
-                    <th>sunmoon</th>
+                    <th>daynight</th>
                 </tr>
             </thead>
             <tbody id='mtzdContainer'>
@@ -261,7 +261,7 @@
                     <td class='time'></td>
                     <td class='date'></td>
                     <td class='diff'></td>
-                    <td class='sunmoon'></td>
+                    <td class='daynight'></td>
                 </tr>
                 <tr>
                     <td class='name'>Barny Rubble</td>
@@ -271,7 +271,7 @@
                     <td class='time'></td>
                     <td class='date'></td>
                     <td class='diff'></td>
-                    <td class='sunmoon'></td>
+                    <td class='daynight'></td>
                 </tr>
                 <tr>
                     <td class='name'>Bamm Bamm Rubble</td>
@@ -281,7 +281,7 @@
                     <td class='time'></td>
                     <td class='date'></td>
                     <td class='diff'></td>
-                    <td class='sunmoon'></td>
+                    <td class='daynight'></td>
                 </tr>
                 <tr>
                     <td class='name'>Wilma Flintstone</td>
@@ -291,7 +291,7 @@
                     <td class='time'></td>
                     <td class='date'></td>
                     <td class='diff'></td>
-                    <td class='sunmoon'></td>
+                    <td class='daynight'></td>
                 </tr>
                 <tr>
                     <td class='name'>Betty Rubble</td>
@@ -301,7 +301,7 @@
                     <td class='time'></td>
                     <td class='date'></td>
                     <td class='diff'></td>
-                    <td class='sunmoon'></td>
+                    <td class='daynight'></td>
                 </tr>
                 <tr>
                     <td class='name'>Pebbles Flintstone</td>
@@ -311,7 +311,7 @@
                     <td class='time'></td>
                     <td class='date'></td>
                     <td class='diff'></td>
-                    <td class='sunmoon'></td>
+                    <td class='daynight'></td>
                 </tr>
                 <tr>
                     <td class='name'>Me</td>
@@ -321,7 +321,7 @@
                     <td class='time'></td>
                     <td class='date'></td>
                     <td class='diff'></td>
-                    <td class='sunmoon'></td>
+                    <td class='daynight'></td>
                 </tr>
             </tbody>
             <tfoot>
@@ -350,7 +350,7 @@
                     <th>h:mm a</th>
                     <th>DD/MMM/YYYY</th>
                     <th>DIFF</th>
-                    <th>sunmoon</th>
+                    <th>daynight</th>
                 </tr>
             </thead>
             <tbody id='tableBodyOther'>
@@ -360,7 +360,7 @@
                     <td class='time'></td>
                     <td class='date'></td>
                     <td class='diff'></td>
-                    <td class='sunmoon'></td>
+                    <td class='daynight'></td>
                 </tr>
                 <tr>
                     <td class='timezone'>US/Eastern</td>
@@ -368,7 +368,7 @@
                     <td class='time'></td>
                     <td class='date'></td>
                     <td class='diff'></td>
-                    <td class='sunmoon'></td>
+                    <td class='daynight'></td>
                 </tr>
                 <tr>
                     <td class='timezone'>Europe/London</td>
@@ -376,7 +376,7 @@
                     <td class='time'></td>
                     <td class='date'></td>
                     <td class='diff'></td>
-                    <td class='sunmoon'></td>
+                    <td class='daynight'></td>
                 </tr>
                 <tr>
                     <td class='timezone'>Europe/Paris</td>
@@ -384,7 +384,7 @@
                     <td class='time'></td>
                     <td class='date'></td>
                     <td class='diff'></td>
-                    <td class='sunmoon'></td>
+                    <td class='daynight'></td>
                 </tr>
                 <tr>
                     <td class='timezone'>Asia/Calcutta</td>
@@ -392,7 +392,7 @@
                     <td class='time'></td>
                     <td class='date'></td>
                     <td class='diff'></td>
-                    <td class='sunmoon'></td>
+                    <td class='daynight'></td>
                 </tr>
                 <tr>
                     <td class='timezone'>Australia/Perth</td>
@@ -400,7 +400,7 @@
                     <td class='time'></td>
                     <td class='date'></td>
                     <td class='diff'></td>
-                    <td class='sunmoon'></td>
+                    <td class='daynight'></td>
                 </tr>
                 <tr>
                     <td class='timezone'></td>
@@ -408,7 +408,7 @@
                     <td class='time'></td>
                     <td class='date'></td>
                     <td class='diff'></td>
-                    <td class='sunmoon'></td>
+                    <td class='daynight'></td>
                 </tr>
             </tbody>
             <tfoot>
@@ -430,14 +430,14 @@
         <span>LINK|TIMEZONE</span>
         <span>dddd HH:mm MMMM Do YYYY</span>
         <span>diff</span>
-        <span>sunmoon</span>
+        <span>daynight</span>
     </div>
     <div class='row'>
         <div class='header name'>Who`</div>
         <div class='header timezone hide'>Timezone</div>
         <div class='header datetime'>Local Time</div>
         <div class='header diff'>Difference</div>
-        <div class='header sunmoon'></div>
+        <div class='header daynight'></div>
     </div>
     <div id='container'>
         <div class='row shade'>
@@ -445,49 +445,49 @@
             <div class='timezone shade hide'>US/Pacific</div>
             <div class='datetime shade'></div>
             <div class='diff shade'></div>
-            <div class='sunmoon shade'></div>
+            <div class='daynight shade'></div>
         </div>
         <div class='row'>
             <div class='name'>Barny Rubble</div>
             <div class='timezone hide'>US/Eastern</div>
             <div class='datetime'></div>
             <div class='diff'></div>
-            <div class='sunmoon'></div>
+            <div class='daynight'></div>
         </div>
         <div class='row shade'>
             <div class='name shade'>Bamm Bamm Rubble</div>
             <div class='timezone shade hide'>Europe/London</div>
             <div class='datetime shade'></div>
             <div class='diff shade'></div>
-            <div class='sunmoon shade'></div>
+            <div class='daynight shade'></div>
         </div>
         <div class='row'>
             <div class='name'>Wilma Flintstone</div>
             <div class='timezone hide'>Europe/Paris</div>
             <div class='datetime'></div>
             <div class='diff'></div>
-            <div class='sunmoon'></div>
+            <div class='daynight'></div>
         </div>
         <div class='row shade'>
             <div class='name shade'>Betty Rubble</div>
             <div class='timezone shade hide'>Asia/Calcutta</div>
             <div class='datetime shade'></div>
             <div class='diff shade'></div>
-            <div class='sunmoon shade'></div>
+            <div class='daynight shade'></div>
         </div>
         <div class='row'>
             <div class='name'>Pebbles Flintstone</div>
             <div class='timezone hide'>Australia/Perth</div>
             <div class='datetime'></div>
             <div class='diff'></div>
-            <div class='sunmoon'></div>
+            <div class='daynight'></div>
         </div>
         <div class='row shade'>
             <div class='name shade'>Me</div>
             <div class='timezone shade hide'></div>
             <div class='datetime shade'></div>
             <div class='diff shade'></div>
-            <div class='sunmoon shade'></div>
+            <div class='daynight shade'></div>
         </div>
     </div>
     <div id='legendAnother'></div>
@@ -500,14 +500,14 @@
         <span>LINK|TIMEZONE</span>
         <span>LINK|dddd HH:mm Do MMMM YYYY</span>
         <span>LINK|diff</span>
-        <span>LINK|sunmoon</span>
+        <span>LINK|daynight</span>
     </div>
     <div class='row'>
         <div class='header name'>Qui`</div>
         <div class='header timezone hide'>Fuseau Horaire</div>
         <div class='header datetime'>Heure Locale</div>
         <div class='header diff'>Différence</div>
-        <div class='header sunmoon'></div>
+        <div class='header daynight'></div>
     </div>
     <div id='containerFrench'>
         <div class='row shade'>
@@ -515,49 +515,49 @@
             <div class='timezone shade hide'>US/Pacific</div>
             <div class='datetime shade'></div>
             <div class='diff shade'></div>
-            <div class='sunmoon shade'></div>
+            <div class='daynight shade'></div>
         </div>
         <div class='row'>
             <div class='name'>Barny Rubble</div>
             <div class='timezone hide'>US/Eastern</div>
             <div class='datetime'></div>
             <div class='diff'></div>
-            <div class='sunmoon'></div>
+            <div class='daynight'></div>
         </div>
         <div class='row shade'>
             <div class='name shade'>Bamm Bamm Rubble</div>
             <div class='timezone shade hide'>Europe/London</div>
             <div class='datetime shade'></div>
             <div class='diff shade'></div>
-            <div class='sunmoon shade'></div>
+            <div class='daynight shade'></div>
         </div>
         <div class='row'>
             <div class='name'>Wilma Flintstone</div>
             <div class='timezone hide'>Europe/Paris</div>
             <div class='datetime'></div>
             <div class='diff'></div>
-            <div class='sunmoon'></div>
+            <div class='daynight'></div>
         </div>
         <div class='row shade'>
             <div class='name shade'>Betty Rubble</div>
             <div class='timezone shade hide'>Asia/Calcutta</div>
             <div class='datetime shade'></div>
             <div class='diff shade'></div>
-            <div class='sunmoon shade'></div>
+            <div class='daynight shade'></div>
         </div>
         <div class='row'>
             <div class='name'>Pebbles Flintstone</div>
             <div class='timezone hide'>Australia/Perth</div>
             <div class='datetime'></div>
             <div class='diff'></div>
-            <div class='sunmoon'></div>
+            <div class='daynight'></div>
         </div>
         <div class='row shade'>
             <div class='name shade'>Me</div>
             <div class='timezone shade hide'></div>
             <div class='datetime shade'></div>
             <div class='diff shade'></div>
-            <div class='sunmoon shade'></div>
+            <div class='daynight shade'></div>
         </div>
     </div>
     <div id='legendFrench'></div>
@@ -580,7 +580,7 @@
                     <th>h:mm a</th>
                     <th>DD-MMM-YYYY</th>
                     <th>DIFF</th>
-                    <th>sunmoon</th>
+                    <th>daynight</th>
                 </tr>
             </thead>
             <tbody id='mtzdContainerAuto'>
@@ -592,7 +592,7 @@
                     <td class='time'></td>
                     <td class='date'></td>
                     <td class='diff'></td>
-                    <td class='sunmoon'></td>
+                    <td class='daynight'></td>
                 </tr>
                 <tr>
                     <td class='name'>Barny Rubble</td>
@@ -602,7 +602,7 @@
                     <td class='time'></td>
                     <td class='date'></td>
                     <td class='diff'></td>
-                    <td class='sunmoon'></td>
+                    <td class='daynight'></td>
                 </tr>
                 <tr>
                     <td class='name'>Bamm Bamm Rubble</td>
@@ -612,7 +612,7 @@
                     <td class='time'></td>
                     <td class='date'></td>
                     <td class='diff'></td>
-                    <td class='sunmoon'></td>
+                    <td class='daynight'></td>
                 </tr>
                 <tr>
                     <td class='name'>Wilma Flintstone</td>
@@ -622,7 +622,7 @@
                     <td class='time'></td>
                     <td class='date'></td>
                     <td class='diff'></td>
-                    <td class='sunmoon'></td>
+                    <td class='daynight'></td>
                 </tr>
                 <tr>
                     <td class='name'>Betty Rubble</td>
@@ -632,7 +632,7 @@
                     <td class='time'></td>
                     <td class='date'></td>
                     <td class='diff'></td>
-                    <td class='sunmoon'></td>
+                    <td class='daynight'></td>
                 </tr>
                 <tr>
                     <td class='name'>Pebbles Flintstone</td>
@@ -642,7 +642,7 @@
                     <td class='time'></td>
                     <td class='date'></td>
                     <td class='diff'></td>
-                    <td class='sunmoon'></td>
+                    <td class='daynight'></td>
                 </tr>
                 <tr>
                     <td class='name'>Me</td>
@@ -652,7 +652,7 @@
                     <td class='time'></td>
                     <td class='date'></td>
                     <td class='diff'></td>
-                    <td class='sunmoon'></td>
+                    <td class='daynight'></td>
                 </tr>
             </tbody>
             <tfoot>

@@ -17,9 +17,9 @@
     "type": "git",
     "url": "https://github.com/MartynDavis/moment-timezone-diff.git"
   },
-  "issues": { 
-    "url" : "https://github.com/MartynDavis/moment-timezone-diff/issues",
-    "email" : "mad@madlid.com"
+  "issues": {
+    "url": "https://github.com/MartynDavis/moment-timezone-diff/issues",
+    "email": "mad@madlid.com"
   },
   "licenses": [
     {
@@ -36,8 +36,11 @@
     "grunt-contrib-qunit": "*",
     "grunt-contrib-uglify": "~0.5.0",
     "grunt-contrib-watch": "~0.5.1",
+    "grunt-jsonlint": "^1.0.4",
     "grunt-mocha-test": "^0.11.0",
     "grunt-version": "^0.3.0",
-    "should": "*"
+    "should": "*",
+    "text-table": "^0.2.0",
+    "yargs": "^1.3.2"
   }
 }

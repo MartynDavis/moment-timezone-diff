@@ -20,12 +20,23 @@ module.exports = function(grunt) {
         spawn: false,
       },
     },
+    jsonlint: {
+      source: {
+        src: [ 'package.json' ]
+      },
+      examples: {
+        src: [ 'node/timezones.json' ]
+      },
+    },
     jshint: {
       source: {
         src: [ 'scripts/*.js' ],
       },
       tests: {
         src: [ 'test/**/*.js', 'qunit-tests/**/test*.js' ],
+      },
+      node: {
+        src: [ 'node/**/*.js' ],
       },
       grunt: {
         src: [ 'GruntFile.js' ],
@@ -67,10 +78,11 @@ module.exports = function(grunt) {
         src: [ 'package.json', 
                'scripts/*.css', 
                'scripts/*.js', 
-               'qunit-tests/*.html', 
+               'qunit-tests/*.html',
                'qunit-tests/*.js',
+               'node/*.js',
                'test/*.js',
-               'web/*.html'
+               'examples/*.html'
              ]
       }
     }
@@ -82,10 +94,11 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-mocha-test');
   grunt.loadNpmTasks('grunt-contrib-qunit');
   grunt.loadNpmTasks('grunt-version');
+  grunt.loadNpmTasks('grunt-jsonlint');
 
   // Default task.
-  grunt.registerTask('default', [ 'jshint', 'mochaTest', 'qunit' ]);
+  grunt.registerTask('default', [ 'jsonlint', 'jshint', 'mochaTest', 'qunit' ]);
   grunt.registerTask('jshint-job', [ 'jshint' ]);
   grunt.registerTask('qunit-job', [ 'jshint', 'qunit' ]);
-  grunt.registerTask('build', [ 'jshint', 'mochaTest', 'qunit', 'version' ]);
+  grunt.registerTask('build', [ 'jsonlint', 'jshint', 'mochaTest', 'qunit', 'version' ]);
 };

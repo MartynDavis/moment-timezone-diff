@@ -80,14 +80,14 @@
                               hours: 'heures'
                             };
 
-        vars.dte1 = new momentTimezoneDiff.DateTimeElements('mtzdDate12', { mode: momentTimezoneDiff.MODE_SPLIT_HOUR12
+        vars.dte1 = new momentTimezoneDiff.DateTimeElements('mtzdDate12', { mode: momentTimezoneDiff.MODE_DROPDOWN_HOUR12
                                                                           });
         vars.dte1.addTimezone('US/Eastern');
         vars.dte1.addTimezone('Australia/Perth');
         vars.dte1.registerCallback(createCallback(vars.dte1, 'result1'));
         displayTime(vars.dte1, 'result1');
 
-        vars.dte2 = new momentTimezoneDiff.DateTimeElements('mtzdDate24', { mode: momentTimezoneDiff.MODE_SPLIT_HOUR24,
+        vars.dte2 = new momentTimezoneDiff.DateTimeElements('mtzdDate24', { mode: momentTimezoneDiff.MODE_DROPDOWN_HOUR24,
                                                                             dateOrder: momentTimezoneDiff.DATE_ORDER_MDY, 
                                                                             locale: 'fr',
                                                                             currentTime: "Régler l'heure actuelle",
@@ -107,7 +107,7 @@
         vars.dte2.registerCallback(createCallback(vars.dte2, 'result2', frenchOptions));
         displayTime(vars.dte2, 'result2', frenchOptions);
 
-        vars.dte3 = new momentTimezoneDiff.DateTimeElements('mtzdDateSingle', { mode: momentTimezoneDiff.MODE_SINGLE
+        vars.dte3 = new momentTimezoneDiff.DateTimeElements('mtzdDateSingle', { mode: momentTimezoneDiff.MODE_TEXTBOX
                                                                               });
         vars.dte3.addTimezone('Europe/London');
         vars.dte3.addTimezone('NZ', 'New Zealand');
