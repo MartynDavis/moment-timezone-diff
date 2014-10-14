@@ -17,7 +17,7 @@
     "type": "git",
     "url": "https://github.com/MartynDavis/moment-timezone-diff.git"
   },
-  issues: { 
+  "issues": { 
     "url" : "https://github.com/MartynDavis/moment-timezone-diff/issues",
     "email" : "mad@madlid.com"
   },
