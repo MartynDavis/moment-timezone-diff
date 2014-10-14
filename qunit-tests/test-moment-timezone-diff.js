@@ -786,26 +786,43 @@ function expectTimezones(assert, timezones, length) {
 }
 function expectValues(assert, containerElement, index, values) {
     var child,
+        prop,
         i;
     assert.ok(containerElement && containerElement.children, 'Container exists and contains children');
     child = containerElement.children[index];
     assert.ok(child && child.children, 'Child exists and contains children');
     assert.equal(child.children.length, values.length, 'Child contains required number of children');
     for (i = 0; i < values.length; i += 1) {
-        assert.equal(child.children[i].textContent, values[i], 'Value matches');
+        if (typeof values[i] === 'string') {
+            assert.equal(child.children[i].textContent, values[i], 'Value matches');
+        } else if (typeof values[i] === 'object') {
+            for (prop in values[i]) {
+                if (values[i].hasOwnProperty(prop)) {
+                    assert.equal(child.children[i][prop], values[i][prop], 'Property "' + prop + '" value matches');
+                }
+            }
+        }
     }
 }
-function expectLegend(assert, legendElement, first, second, breakPresent) {
+function expectLegend(assert, legendElement, first, second, breakPresent, legendClass, legendBreakClass) {
     var index = 0;
     assert.ok(legendElement && legendElement.children, 'Legend exists and has children');
-    assert.equal(legendElement.children.length, breakPresent ? 3 : 2, 'Legend has required number of children');
+    assert.equal(legendElement.children.length, 3, 'Legend has required number of children');
     assert.equal(legendElement.children[index].tagName, 'SPAN', 'First child is a SPAN');
-    assert.equal(legendElement.children[index++].textContent, first, 'First span child has required text');
+    assert.equal(legendElement.children[index].textContent, first, 'Child has required text');
+    assert.equal(legendElement.children[index].className, legendClass || 'mtzdLegend', 'Child has required class');
+    index ++;
     if (breakPresent) {
-        assert.equal(legendElement.children[index++].tagName, 'BR', 'Next child is a BR');
+        assert.equal(legendElement.children[index].tagName, 'BR', 'Next child is a BR');
+    } else {
+        assert.equal(legendElement.children[index].tagName, 'SPAN', 'Next child is a SPAN');
+        assert.equal(legendElement.children[index].textContent, ' ', 'Child has required text');
     }
+    assert.equal(legendElement.children[index].className, legendBreakClass || 'mtzdLegendBreak', 'Next child has required class');
+    index ++;
     assert.equal(legendElement.children[index].tagName, 'SPAN', 'Next child is a SPAN');
-    assert.equal(legendElement.children[index++].textContent, second, 'Next span child has required text');
+    assert.equal(legendElement.children[index].textContent, second, 'Child has required text');
+    assert.equal(legendElement.children[index].className, legendClass || 'mtzdLegend', 'Child has required class');
 }
 function getMomentValues(moment) {
     return [ moment.year(),
@@ -1029,7 +1046,7 @@ QUnit.test('Environment1', function (assert) {
     assert.deepEqual(values, [ 2014, 8, 1, 0, 0, 0], 'moment matches');
     assert.deepEqual(env.timezone, { value: 'Australia/Melbourne', text: 'Dino' }, 'timezone matches');
     index = 0;
-    expectValues(assert, containerElement, index++, [ 'Fred Flintstone',
+    expectValues(assert, containerElement, index++, [ { textContent: 'Fred Flintstone', title: 'Vancouver, Canada\nUS/Pacific' },
                                                   'Vancouver, Canada',
                                                   'US/Pacific',
                                                   'Sunday',
@@ -1038,7 +1055,7 @@ QUnit.test('Environment1', function (assert) {
                                                   '17 hours behind',
                                                   '\u263c'
                                                 ]);
-    expectValues(assert, containerElement, index++, [ 'Barny Rubble',
+    expectValues(assert, containerElement, index++, [ { textContent: 'Barny Rubble', title: 'New York, USA\nUS/Eastern' },
                                                   'New York, USA',
                                                   'US/Eastern',
                                                   'Sunday',
@@ -1047,7 +1064,7 @@ QUnit.test('Environment1', function (assert) {
                                                   '14 hours behind',
                                                   '\u263c'
                                                 ]);
-    expectValues(assert, containerElement, index++, [ 'Bamm Bamm Rubble',
+    expectValues(assert, containerElement, index++, [ { textContent: 'Bamm Bamm Rubble', title: 'London, United Kingdom\nEurope/London' },
                                                       'London, United Kingdom',
                                                       'Europe/London',
                                                       'Sunday',
@@ -1056,7 +1073,7 @@ QUnit.test('Environment1', function (assert) {
                                                       '9 hours behind',
                                                       '\u263c'
                                                     ]);
-    expectValues(assert, containerElement, index++, [ 'Wilma Flintstone',
+    expectValues(assert, containerElement, index++, [ { textContent: 'Wilma Flintstone', title: 'Paris, France\nEurope/Paris' },
                                                       'Paris, France',
                                                       'Europe/Paris',
                                                       'Sunday',
@@ -1065,7 +1082,7 @@ QUnit.test('Environment1', function (assert) {
                                                       '8 hours behind',
                                                       '\u263c'
                                                     ]);
-    expectValues(assert, containerElement, index++, [ 'Betty Rubble',
+    expectValues(assert, containerElement, index++, [ { textContent: 'Betty Rubble', title: 'Mumbai, India\nAsia/Calcutta' },
                                                       'Mumbai, India',
                                                       'Asia/Calcutta',
                                                       'Sunday',
@@ -1074,7 +1091,7 @@ QUnit.test('Environment1', function (assert) {
                                                       '4.5 hours behind',
                                                       '\u263c'
                                                     ]);
-    expectValues(assert, containerElement, index++, [ 'Pebbles Flintstone',
+    expectValues(assert, containerElement, index++, [ { textContent: 'Pebbles Flintstone', title: 'Perth, Australia\nAustralia/Perth' },
                                                       'Perth, Australia',
                                                       'Australia/Perth',
                                                       'Sunday',
@@ -1083,7 +1100,7 @@ QUnit.test('Environment1', function (assert) {
                                                       '2 hours behind',
                                                       '\u263e'
                                                     ]);
-    expectValues(assert, containerElement, index++, [ 'Dino',
+    expectValues(assert, containerElement, index++, [ { textContent: 'Dino', title: 'Melbourne, Australia\nAustralia/Melbourne' },
                                                       'Melbourne, Australia',
                                                       'Australia/Melbourne',
                                                       'Monday',
@@ -1100,7 +1117,7 @@ QUnit.test('Environment1', function (assert) {
     assert.deepEqual(values, [ 2014, 9, 15, 14, 30, 0], 'moment matches');
     assert.deepEqual(env.timezone, { value: 'US/Pacific', text: 'Fred Flintstone' }, 'timezone matches');
     index = 0;
-    expectValues(assert, containerElement, index++, [ 'Fred Flintstone',
+    expectValues(assert, containerElement, index++, [ { textContent: 'Fred Flintstone', title: 'Vancouver, Canada\nUS/Pacific' },
                                                       'Vancouver, Canada',
                                                       'US/Pacific',
                                                       'Wednesday',
@@ -1109,7 +1126,7 @@ QUnit.test('Environment1', function (assert) {
                                                       '',
                                                       '\u263c'
                                                     ]);
-    expectValues(assert, containerElement, index++, [ 'Barny Rubble',
+    expectValues(assert, containerElement, index++, [ { textContent: 'Barny Rubble', title: 'New York, USA\nUS/Eastern' },
                                                       'New York, USA',
                                                       'US/Eastern',
                                                       'Wednesday',
@@ -1118,7 +1135,7 @@ QUnit.test('Environment1', function (assert) {
                                                       '3 hours ahead',
                                                       '\u263c'
                                                     ]);
-    expectValues(assert, containerElement, index++, [ 'Bamm Bamm Rubble',
+    expectValues(assert, containerElement, index++, [ { textContent: 'Bamm Bamm Rubble', title: 'London, United Kingdom\nEurope/London' },
                                                       'London, United Kingdom',
                                                       'Europe/London',
                                                       'Wednesday',
@@ -1127,7 +1144,7 @@ QUnit.test('Environment1', function (assert) {
                                                       '8 hours ahead',
                                                       '\u263e'
                                                     ]);
-    expectValues(assert, containerElement, index++, [ 'Wilma Flintstone',
+    expectValues(assert, containerElement, index++, [ { textContent: 'Wilma Flintstone', title: 'Paris, France\nEurope/Paris' },
                                                       'Paris, France',
                                                       'Europe/Paris',
                                                       'Wednesday',
@@ -1136,7 +1153,7 @@ QUnit.test('Environment1', function (assert) {
                                                       '9 hours ahead',
                                                       '\u263e'
                                                     ]);
-    expectValues(assert, containerElement, index++, [ 'Betty Rubble',
+    expectValues(assert, containerElement, index++, [ { textContent: 'Betty Rubble', title: 'Mumbai, India\nAsia/Calcutta' },
                                                       'Mumbai, India',
                                                       'Asia/Calcutta',
                                                       'Thursday',
@@ -1145,7 +1162,7 @@ QUnit.test('Environment1', function (assert) {
                                                       '12.5 hours ahead',
                                                       '\u263e'
                                                     ]);
-    expectValues(assert, containerElement, index++, [ 'Pebbles Flintstone',
+    expectValues(assert, containerElement, index++, [ { textContent: 'Pebbles Flintstone', title: 'Perth, Australia\nAustralia/Perth' },
                                                       'Perth, Australia',
                                                       'Australia/Perth',
                                                       'Thursday',
@@ -1154,7 +1171,7 @@ QUnit.test('Environment1', function (assert) {
                                                       '15 hours ahead',
                                                       '\u263e'
                                                     ]);
-    expectValues(assert, containerElement, index++, [ 'Dino',
+    expectValues(assert, containerElement, index++, [ { textContent: 'Dino', title: 'Melbourne, Australia\nAustralia/Melbourne' },
                                                       'Melbourne, Australia',
                                                       'Australia/Melbourne',
                                                       'Thursday',
@@ -1171,7 +1188,7 @@ QUnit.test('Environment1', function (assert) {
     assert.deepEqual(values, [ 2014, 10, 15, 14, 30, 0], 'moment matches');
     assert.deepEqual(env.timezone, { value: 'Europe/Paris', text: 'Wilma Flintstone' }, 'timezone matches');
     index = 0;
-    expectValues(assert, containerElement, index++, [ 'Fred Flintstone',
+    expectValues(assert, containerElement, index++, [ { textContent: 'Fred Flintstone', title: 'Vancouver, Canada\nUS/Pacific' },
                                                       'Vancouver, Canada',
                                                       'US/Pacific',
                                                       'Saturday',
@@ -1180,7 +1197,7 @@ QUnit.test('Environment1', function (assert) {
                                                       '9 hours behind',
                                                       '\u263e'
                                                     ]);
-    expectValues(assert, containerElement, index++, [ 'Barny Rubble',
+    expectValues(assert, containerElement, index++, [ { textContent: 'Barny Rubble', title: 'New York, USA\nUS/Eastern' },
                                                       'New York, USA',
                                                       'US/Eastern',
                                                       'Saturday',
@@ -1189,7 +1206,7 @@ QUnit.test('Environment1', function (assert) {
                                                       '6 hours behind',
                                                       '\u263c'
                                                     ]);
-    expectValues(assert, containerElement, index++, [ 'Bamm Bamm Rubble',
+    expectValues(assert, containerElement, index++, [ { textContent: 'Bamm Bamm Rubble', title: 'London, United Kingdom\nEurope/London' },
                                                       'London, United Kingdom',
                                                       'Europe/London',
                                                       'Saturday',
@@ -1198,7 +1215,7 @@ QUnit.test('Environment1', function (assert) {
                                                       '1 hour behind',
                                                       '\u263c'
                                                     ]);
-    expectValues(assert, containerElement, index++, [ 'Wilma Flintstone',
+    expectValues(assert, containerElement, index++, [ { textContent: 'Wilma Flintstone', title: 'Paris, France\nEurope/Paris' },
                                                       'Paris, France',
                                                       'Europe/Paris',
                                                       'Saturday',
@@ -1207,7 +1224,7 @@ QUnit.test('Environment1', function (assert) {
                                                       '',
                                                       '\u263c'
                                                     ]);
-    expectValues(assert, containerElement, index++, [ 'Betty Rubble',
+    expectValues(assert, containerElement, index++, [ { textContent: 'Betty Rubble', title: 'Mumbai, India\nAsia/Calcutta' },
                                                       'Mumbai, India',
                                                       'Asia/Calcutta',
                                                       'Saturday',
@@ -1216,7 +1233,7 @@ QUnit.test('Environment1', function (assert) {
                                                       '4.5 hours ahead',
                                                       '\u263c'
                                                     ]);
-    expectValues(assert, containerElement, index++, [ 'Pebbles Flintstone',
+    expectValues(assert, containerElement, index++, [ { textContent: 'Pebbles Flintstone', title: 'Perth, Australia\nAustralia/Perth' },
                                                       'Perth, Australia',
                                                       'Australia/Perth',
                                                       'Saturday',
@@ -1225,7 +1242,7 @@ QUnit.test('Environment1', function (assert) {
                                                       '7 hours ahead',
                                                       '\u263e'
                                                     ]);
-    expectValues(assert, containerElement, index++, [ 'Dino',
+    expectValues(assert, containerElement, index++, [ { textContent: 'Dino', title: 'Melbourne, Australia\nAustralia/Melbourne' },
                                                       'Melbourne, Australia',
                                                       'Australia/Melbourne',
                                                       'Sunday',
@@ -1256,7 +1273,7 @@ QUnit.test('Environment1', function (assert) {
     fireChangeEvent(env._dateTimeElements._elements.hour);
     
     index = 0;
-    expectValues(assert, containerElement, index++, [ 'Fred Flintstone',
+    expectValues(assert, containerElement, index++, [ { textContent: 'Fred Flintstone', title: 'Vancouver, Canada\nUS/Pacific' },
                                                       'Vancouver, Canada',
                                                       'US/Pacific',
                                                       'Thursday',
@@ -1265,7 +1282,7 @@ QUnit.test('Environment1', function (assert) {
                                                       '8 hours behind',
                                                       '\u263c'
                                                     ]);
-    expectValues(assert, containerElement, index++, [ 'Barny Rubble',
+    expectValues(assert, containerElement, index++, [ { textContent: 'Barny Rubble', title: 'New York, USA\nUS/Eastern' },
                                                       'New York, USA',
                                                       'US/Eastern',
                                                       'Thursday',
@@ -1274,7 +1291,7 @@ QUnit.test('Environment1', function (assert) {
                                                       '5 hours behind',
                                                       '\u263c'
                                                     ]);
-    expectValues(assert, containerElement, index++, [ 'Bamm Bamm Rubble',
+    expectValues(assert, containerElement, index++, [ { textContent: 'Bamm Bamm Rubble', title: 'London, United Kingdom\nEurope/London' },
                                                       'London, United Kingdom',
                                                       'Europe/London',
                                                       'Friday',
@@ -1283,7 +1300,7 @@ QUnit.test('Environment1', function (assert) {
                                                       '',
                                                       '\u263e'
                                                     ]);
-    expectValues(assert, containerElement, index++, [ 'Wilma Flintstone',
+    expectValues(assert, containerElement, index++, [ { textContent: 'Wilma Flintstone', title: 'Paris, France\nEurope/Paris' },
                                                       'Paris, France',
                                                       'Europe/Paris',
                                                       'Friday',
@@ -1292,7 +1309,7 @@ QUnit.test('Environment1', function (assert) {
                                                       '1 hour ahead',
                                                       '\u263e'
                                                     ]);
-    expectValues(assert, containerElement, index++, [ 'Betty Rubble',
+    expectValues(assert, containerElement, index++, [ { textContent: 'Betty Rubble', title: 'Mumbai, India\nAsia/Calcutta' },
                                                       'Mumbai, India',
                                                       'Asia/Calcutta',
                                                       'Friday',
@@ -1301,7 +1318,7 @@ QUnit.test('Environment1', function (assert) {
                                                       '5.5 hours ahead',
                                                       '\u263e'
                                                     ]);
-    expectValues(assert, containerElement, index++, [ 'Pebbles Flintstone',
+    expectValues(assert, containerElement, index++, [ { textContent: 'Pebbles Flintstone', title: 'Perth, Australia\nAustralia/Perth' },
                                                       'Perth, Australia',
                                                       'Australia/Perth',
                                                       'Friday',
@@ -1310,7 +1327,7 @@ QUnit.test('Environment1', function (assert) {
                                                       '8 hours ahead',
                                                       '\u263c'
                                                     ]);
-    expectValues(assert, containerElement, index++, [ 'Dino',
+    expectValues(assert, containerElement, index++, [ { textContent: 'Dino', title: 'Melbourne, Australia\nAustralia/Melbourne' },
                                                       'Melbourne, Australia',
                                                       'Australia/Melbourne',
                                                       'Friday',
@@ -1326,7 +1343,7 @@ QUnit.test('Environment1', function (assert) {
     fireChangeEvent(env._dateTimeElements._elements.hour);
 
     index = 0;
-    expectValues(assert, containerElement, index++, [ 'Fred Flintstone',
+    expectValues(assert, containerElement, index++, [ { textContent: 'Fred Flintstone', title: 'Vancouver, Canada\nUS/Pacific' },
                                                       'Vancouver, Canada',
                                                       'US/Pacific',
                                                       'Thursday',
@@ -1335,7 +1352,7 @@ QUnit.test('Environment1', function (assert) {
                                                       '3 hours behind',
                                                       '\u263e'
                                                     ]);
-    expectValues(assert, containerElement, index++, [ 'Barny Rubble',
+    expectValues(assert, containerElement, index++, [ { textContent: 'Barny Rubble', title: 'New York, USA\nUS/Eastern' },
                                                       'New York, USA',
                                                       'US/Eastern',
                                                       'Thursday',
@@ -1344,7 +1361,7 @@ QUnit.test('Environment1', function (assert) {
                                                       '',
                                                       '\u263e'
                                                     ]);
-    expectValues(assert, containerElement, index++, [ 'Bamm Bamm Rubble',
+    expectValues(assert, containerElement, index++, [ { textContent: 'Bamm Bamm Rubble', title: 'London, United Kingdom\nEurope/London' },
                                                       'London, United Kingdom',
                                                       'Europe/London',
                                                       'Friday',
@@ -1353,7 +1370,7 @@ QUnit.test('Environment1', function (assert) {
                                                       '5 hours ahead',
                                                       '\u263e'
                                                     ]);
-    expectValues(assert, containerElement, index++, [ 'Wilma Flintstone',
+    expectValues(assert, containerElement, index++, [ { textContent: 'Wilma Flintstone', title: 'Paris, France\nEurope/Paris' },
                                                       'Paris, France',
                                                       'Europe/Paris',
                                                       'Friday',
@@ -1362,7 +1379,7 @@ QUnit.test('Environment1', function (assert) {
                                                       '6 hours ahead',
                                                       '\u263e'
                                                     ]);
-    expectValues(assert, containerElement, index++, [ 'Betty Rubble',
+    expectValues(assert, containerElement, index++, [ { textContent: 'Betty Rubble', title: 'Mumbai, India\nAsia/Calcutta' },
                                                       'Mumbai, India',
                                                       'Asia/Calcutta',
                                                       'Friday',
@@ -1371,7 +1388,7 @@ QUnit.test('Environment1', function (assert) {
                                                       '10.5 hours ahead',
                                                       '\u263c'
                                                     ]);
-    expectValues(assert, containerElement, index++, [ 'Pebbles Flintstone',
+    expectValues(assert, containerElement, index++, [ { textContent: 'Pebbles Flintstone', title: 'Perth, Australia\nAustralia/Perth' },
                                                       'Perth, Australia',
                                                       'Australia/Perth',
                                                       'Friday',
@@ -1380,7 +1397,7 @@ QUnit.test('Environment1', function (assert) {
                                                       '13 hours ahead',
                                                       '\u263c'
                                                     ]);
-    expectValues(assert, containerElement, index++, [ 'Dino',
+    expectValues(assert, containerElement, index++, [ { textContent: 'Dino', title: 'Melbourne, Australia\nAustralia/Melbourne' },
                                                       'Melbourne, Australia',
                                                       'Australia/Melbourne',
                                                       'Friday',

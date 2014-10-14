@@ -792,16 +792,21 @@
         }
         return lines;
     }
-    function updateLegend(legendElement, options) {
+    function updateLegend(legendElement, options, legendClass, breakClass) {
         var lines = createLegend(options),
             i;
         for (i = 0; i < lines.length; i += 1) {
             if (i > 0) {
                 if (options.legendBreak) {
-                    appendChild(legendElement, createElement('br'));
+                    appendChild(legendElement, createElement('br', { className: breakClass } ));
+                } else {
+                    appendChild(legendElement, createElement('span', { textContent: ' ',
+                                                                       className: breakClass } ));
                 }
             }
-            appendChild(legendElement, createElement('span', { textContent: lines[i] }));
+            appendChild(legendElement, createElement('span', { textContent: lines[i],
+                                                               className: legendClass
+                                                             }));
         }
     }
     function createSetTimezone(env, timezone, name) {
@@ -825,7 +830,7 @@
             }
         };
     }
-    function Environment(setupOptions, options) {
+    function Environment(options) {
         if (typeof exports === 'object') {
             throw new MomentTimezoneDiffException('Object can only be created when using a Browser');
         }
@@ -855,24 +860,24 @@
             onclick,
             i,
             j;
-        dateTimeElements = getOptionValue(setupOptions, 'dateTimeElements');
+        dateTimeElements = getOptionValue(options, 'dateTimeElements');
         if (!dateTimeElements) {
-            dateId = getOptionValue(setupOptions, 'dateId', 'mtzdDate');
+            dateId = getOptionValue(options, 'dateId', 'mtzdDate');
             if (dateId) {
                 dateTimeElements = new DateTimeElements(dateId);
             }
         }
-        container = document.getElementById(getOptionValue(setupOptions, 'containerId', 'mtzdContainer'));
-        formats = document.getElementById(getOptionValue(setupOptions, 'formatsId', 'mtzdFormats'));
-        timeElement = document.getElementById(getOptionValue(setupOptions, 'timeId', 'mtzdTime'));
-        legendElement = document.getElementById(getOptionValue(setupOptions, 'legendId', 'mtzdLegend'));
+        container = document.getElementById(getOptionValue(options, 'containerId', 'mtzdContainer'));
+        formats = document.getElementById(getOptionValue(options, 'formatsId', 'mtzdFormats'));
+        timeElement = document.getElementById(getOptionValue(options, 'timeId', 'mtzdTime'));
+        legendElement = document.getElementById(getOptionValue(options, 'legendId', 'mtzdLegend'));
         if (!container || !container.children || !formats || !formats.children) {
             return;
         }
         formats = formats.children;
         for (i = 0; i < formats.length; i += 1) {
             if (formats[i] && formats[i].textContent) {
-                tokens = formats[i].textContent.split(getOptionValue(setupOptions, 'tokenSeparator', '|'));
+                tokens = formats[i].textContent.split(getOptionValue(options, 'tokenSeparator', '|'));
                 for (j = 0; j < tokens.length; j += 1) {
                     token = tokens[j];
                     if (token === 'NAME') {
@@ -893,7 +898,20 @@
         }
         this._options = duplicate(defaultOptions);
         if (options) {
-            setOptionValues(this._options, options);
+            setOptionValues(this._options, options, [ 'dateTimeElements',
+                                                      'dateId',
+                                                      'containerId',
+                                                      'formatsId',
+                                                      'timeId',
+                                                      'legendId',
+                                                      'tokenSeparator',
+                                                      'linkClass',
+                                                      'autoRefresh',
+                                                      'autoUpdate',
+                                                      'autoUpdateSeconds',
+                                                      'legendClass',
+                                                      'legendBreakClass'
+                                                    ]);
         }
         this.moment = moment();
         if (this._options.locale) {
@@ -928,7 +946,7 @@
                         for (j = 0; j < links.length; j += 1) {
                             if (cells[j]) {
                                 cells[j].addEventListener('click', onclick, false);
-                                classAdd(cells[j], getOptionValue(setupOptions, 'linkClass', 'mtzdLink'));
+                                classAdd(cells[j], getOptionValue(options, 'linkClass', 'mtzdLink'));
                             }
                         }
                         tooltip = description || '';
@@ -952,13 +970,14 @@
             this._dateTimeElements = dateTimeElements;
         }
         if (legendElement) {
-            updateLegend(legendElement, this._options);
+            updateLegend(legendElement, this._options, getOptionValue(options, 'legendClass', 'mtzdLegend'),
+                         getOptionValue(options, 'legendBreakClass', 'mtzdLegendBreak'));
         }
-        if (getOptionValue(setupOptions, 'autoRefresh', true)) {
+        if (getOptionValue(options, 'autoRefresh', true)) {
             this.refresh();
         }
-        if (getOptionValue(setupOptions, 'autoUpdate', false)) {
-            setInterval(invokeAutoUpdate(this), getOptionValue(setupOptions, 'autoUpdateSeconds', 30) * 1000);
+        if (getOptionValue(options, 'autoUpdate', false)) {
+            setInterval(invokeAutoUpdate(this), getOptionValue(options, 'autoUpdateSeconds', 30) * 1000);
         }
     }
     Environment.prototype.register = function (timezone, elementFormats) {
@@ -1059,19 +1078,19 @@
             this.refresh();
         }
     };
-    function setOptionValues(options, o) {
+    function setOptionValues(options, from, exclude) {
         var prop;
-        for (prop in o) {
-            if (o.hasOwnProperty(prop)) {
-                options[prop] = o[prop];
+        for (prop in from) {
+            if (from.hasOwnProperty(prop) && (!exclude || (exclude.indexOf(prop) === -1))) {
+                options[prop] = from[prop];
             }
         }
     }
     Environment.prototype.getOptions = function () {
         return duplicate(this._options);
     };
-    Environment.prototype.setOptions = function (o) {
-        setOptionValues(this._options, o);
+    Environment.prototype.setOptions = function (from) {
+        setOptionValues(this._options, from);
     };
     Environment.prototype.daytime = function (m, options) {
         return daytime(m, options || this._options);
@@ -1198,8 +1217,8 @@
     TimezoneDiff.prototype.getOptions = function () {
         return duplicate(this._options);
     };
-    TimezoneDiff.prototype.setOptions = function (o) {
-        setOptionValues(this._options, o);
+    TimezoneDiff.prototype.setOptions = function (from) {
+        setOptionValues(this._options, from);
     };
     var mtzd = { };
     mtzd.version = '0.4.0';
@@ -1216,8 +1235,8 @@
     mtzd.getOptions = function () {
         return duplicate(defaultOptions);
     };
-    mtzd.setOptions = function (o) {
-        setOptionValues(defaultOptions, o);
+    mtzd.setOptions = function (from) {
+        setOptionValues(defaultOptions, from);
     };
     mtzd.daytime = function (m, options) {
         return daytime(m, options || defaultOptions);
