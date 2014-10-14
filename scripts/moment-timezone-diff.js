@@ -830,7 +830,7 @@
             }
         };
     }
-    function Environment(options) {
+    function Environment(options, dteOptions) {
         if (typeof exports === 'object') {
             throw new MomentTimezoneDiffException('Object can only be created when using a Browser');
         }
@@ -864,7 +864,7 @@
         if (!dateTimeElements) {
             dateId = getOptionValue(options, 'dateId', 'mtzdDate');
             if (dateId) {
-                dateTimeElements = new DateTimeElements(dateId);
+                dateTimeElements = new DateTimeElements(dateId, dteOptions);
             }
         }
         container = document.getElementById(getOptionValue(options, 'containerId', 'mtzdContainer'));
