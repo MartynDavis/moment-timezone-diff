@@ -2,7 +2,7 @@
 
 # Moment Timezone Difference
 
-A javascript library for displaying information about different timezones.
+A javascript library for displaying information about different timezones, utilising [moment](http://momentjs.com/) and [moment-timezone](http://momentjs.com/timezone/).
 
 If you have a distributed team, you can easily display the current time for each team member
 and answer questions such as:
@@ -29,11 +29,9 @@ Contains a number of examples which illustrate the use of the momentTimezoneDiff
 
 A variant of 'examples/moment-timezone-diff.html' which loads jQuery and thus enables use of jQuery's datepicker UI control.
 
-# Documentation
+# [Documentation](DOCUMENTATION.md)
 
-A work in progress.
-
-# License
+# [License](LICENSE.md)
 
 moment-timezone-diff.js is freely distributable under the terms of the [MIT license](LICENSE).
 
