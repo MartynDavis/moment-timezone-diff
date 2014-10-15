@@ -830,7 +830,7 @@
             }
         };
     }
-    function Environment(options, dteOptions) {
+    function Environment(options) {
         if (typeof exports === 'object') {
             throw new MomentTimezoneDiffException('Object can only be created when using a Browser');
         }
@@ -864,7 +864,7 @@
         if (!dateTimeElements) {
             dateId = getOptionValue(options, 'dateId', 'mtzdDate');
             if (dateId) {
-                dateTimeElements = new DateTimeElements(dateId, dteOptions);
+                dateTimeElements = new DateTimeElements(dateId, getOptionValue(options, 'dateOptions'));
             }
         }
         container = document.getElementById(getOptionValue(options, 'containerId', 'mtzdContainer'));
@@ -900,6 +900,7 @@
         if (options) {
             setOptionValues(this._options, options, [ 'dateTimeElements',
                                                       'dateId',
+                                                      'dateOptions',
                                                       'containerId',
                                                       'formatsId',
                                                       'timeId',

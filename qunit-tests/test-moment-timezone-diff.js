@@ -1407,3 +1407,426 @@ QUnit.test('Environment1', function (assert) {
                                                       '\u263c'
                                                     ]);
 });
+function testFrench(assert, env, dateId, formatsId, containerId, timeId, legendId) {
+    var dateElement,
+        containerElement,
+        timeElement,
+        legendElement,
+        index = 0,
+        hourElement,
+        minuteElement,
+        dayElement,
+        monthElement,
+        yearElement,
+        timezoneElement,
+        currentTimeElement,
+        formats,
+        values,
+        col,
+        defaultOptions = { locale: 'fr',
+                           ahead: 'devant',
+                           behind: 'derrière',
+                           hour: 'heure',
+                           hours: 'heures',
+                           sunRiseHour: 8,
+                           sunRiseMinute: 0,
+                           sunSetHour: 16,
+                           sunSetMinute: 0,
+                           daytime: '\u263c',  // Unicode white sun with rays
+                           nighttime: '\u263e', // Unicode last quarter moon
+                           legendFormat: 'h:mm a',
+                           legendBreak: true,
+                           legendDash: ' - ',
+                           legendSeparator: ' .. ',
+                           timeFormat: 'dddd HH:mm Do MMMM YYYY',
+                           timeShowTimezoneName: true,
+                           defaultTimezone: momentTimezoneDiff.getDefaultTimezone()
+                         };
+    dateElement = document.getElementById(dateId);
+    assert.ok(dateElement, 'Date element exists');
+    containerElement = document.getElementById(containerId);
+    assert.ok(containerElement, 'Container is defined');
+    timeElement = document.getElementById(timeId);
+    assert.ok(timeElement, 'Time is defined');
+    legendElement = document.getElementById(legendId);
+    assert.ok(legendElement, 'Legend is defined');
+    hourElement = expectChild(assert, dateElement, index++, { tagName: 'SELECT',
+                                                              title: "Sélectionnez les heures de la journée",
+                                                              className: 'mtzdSelect',
+                                                              options: makeOptions(0, 23, 2)
+                                                            });
+    expectChild(assert, dateElement, index++, { tagName: 'SPAN',
+                                                textContent: ':',
+                                                className: 'mtzdTimeDelim'
+                                              });
+    minuteElement = expectChild(assert, dateElement, index++, { tagName: 'SELECT',
+                                                                title: "Sélectionner les minutes de l'heure",
+                                                                className: 'mtzdSelect',
+                                                                options: makeOptions(0, 59, 2)
+                                                              });
+    expectChild(assert, dateElement, index++, { tagName: 'SPAN',
+                                                textContent: ' ',
+                                                className: 'mtzdDelim'
+                                              });
+    dayElement = expectChild(assert, dateElement, index++, { tagName: 'SELECT',
+                                                             title: "Choisir jour du mois",
+                                                             className: 'mtzdSelect',
+                                                             options: makeOptions(1, 31, 2)
+                                                           });
+    expectChild(assert, dateElement, index++, { tagName: 'SPAN',
+                                                textContent: '-',
+                                                className: 'mtzdDateDelim'
+                                              });
+    monthElement = expectChild(assert, dateElement, index++, { tagName: 'SELECT',
+                                                               title: "Sélectionnez un mois de l'année",
+                                                               className: 'mtzdSelect',
+                                                               options: [ { text: 'janvier', value:  '0'},
+                                                                          { text: 'février', value:  '1'},
+                                                                          { text: 'mars', value:  '2'},
+                                                                          { text: 'avril', value:  '3'},
+                                                                          { text: 'mai', value:  '4'},
+                                                                          { text: 'juin', value:  '5'},
+                                                                          { text: 'juillet', value:  '6'},
+                                                                          { text: 'août', value:  '7'},
+                                                                          { text: 'septembre', value:  '8'},
+                                                                          { text: 'octobre', value:  '9'},
+                                                                          { text: 'novembre', value: '10'},
+                                                                          { text: 'décembre', value: '11'}
+                                                                        ]
+                                                             });
+    expectChild(assert, dateElement, index++, { tagName: 'SPAN',
+                                                textContent: '-',
+                                                className: 'mtzdDateDelim'
+                                              });
+    yearElement = expectChild(assert, dateElement, index++, { tagName: 'SELECT',
+                                                              title: "Sélectionnez l'année",
+                                                              className: 'mtzdSelect',
+                                                              options: makeOptions(2010, 2020)
+                                                            });
+    expectChild(assert, dateElement, index++, { tagName: 'SPAN',
+                                                textContent: ' ',
+                                                className: 'mtzdDelim'
+                                              });
+    timezoneElement = expectChild(assert, dateElement, index++, { tagName: 'SELECT',
+                                                                  title: "Sélectionnez le fuseau horaire",
+                                                                  className: 'mtzdSelect',
+                                                                  options: [ { text: '',                   value: '' },
+                                                                             { text: 'Fred Flintstone',    value: 'US/Pacific' },
+                                                                             { text: 'Barny Rubble',       value: 'US/Eastern' },
+                                                                             { text: 'Bamm Bamm Rubble',   value: 'Europe/London' },
+                                                                             { text: 'Wilma Flintstone',   value: 'Europe/Paris' },
+                                                                             { text: 'Betty Rubble',       value: 'Asia/Calcutta' },
+                                                                             { text: 'Pebbles Flintstone', value: 'Australia/Perth' },
+                                                                             { text: 'Dino',               value: 'Australia/Melbourne' },
+                                                                           ]
+                                                                });
+    expectChild(assert, dateElement, index++, { tagName: 'SPAN',
+                                                textContent: ' ',
+                                                className: 'mtzdDelim'
+                                              });
+    currentTimeElement = expectChild(assert, dateElement, index++, { tagName: 'SPAN',
+                                                                     className: 'currentTimeFrench',
+                                                                     title: "l'heure actuelle",
+                                                                     textContent: "Régler l'heure actuelle"
+                                                                   });
+    expectChildren(assert, dateElement, index);
+    assert.equal(env._dateTimeElements._locale, 'fr', 'env dateTimeElements locale matches');
+    assert.equal(env._dateTimeElements._mode, momentTimezoneDiff.MODE_DROPDOWN_HOUR24, 'Mode matches');
+    assert.equal(env._dateTimeElements._errorClassName, 'mtzdError', 'Error class matches');
+    assert.equal(env._dateTimeElements._currentTime, currentTimeElement, 'Current time element matches');
+    assert.equal(env._dateTimeElements._elements.hour, hourElement, 'Hour element matches');
+    assert.equal(env._dateTimeElements._elements.minute, minuteElement, 'Minute element matches');
+    assert.equal(env._dateTimeElements._elements.ampm, undefined, 'AmPm element is not defined');
+    assert.equal(env._dateTimeElements._elements.day, dayElement, 'Day element matches');
+    assert.equal(env._dateTimeElements._elements.month, monthElement, 'Month element matches');
+    assert.equal(env._dateTimeElements._elements.year, yearElement, 'Year element matches');
+    assert.equal(env._dateTimeElements._elements.timezone, timezoneElement, 'Timezone element matches');
+    assert.equal(env._dateTimeElements._elements.datetime, undefined, 'Date/time element is not defined');
+    assert.equal(env._dateTimeElements._timeDisplayFormat, undefined, 'Display format is not defined');
+    assert.equal(env._dateTimeElements._timeInputFormats, undefined, 'Input formats is not defined');
+    assert.equal(env._dateTimeElements._datepicker, undefined, 'Date picker element is not defined');
+    assert.equal(env._dateTimeElements._datepickerImage, undefined, 'Date picker image element is not defined');
+    assert.deepEqual(env._options, defaultOptions, 'options matches default options');
+    assert.deepEqual(env.getOptions(), defaultOptions, 'getOptions() matches default options');
+    assert.notEqual(env._options, env.getOptions(), 'getOptions() returns a copy');
+    assert.equal(env._timeElement, timeElement, 'Time element matches');
+    formats = [ 'dddd HH:mm Do MMMM YYYY',
+                'diff',
+                'daynight'
+              ];
+    index = 0;
+    expectTimezone(assert, env._timezones, index++, 'US/Pacific', formats);
+    expectTimezone(assert, env._timezones, index++, 'US/Eastern', formats);
+    expectTimezone(assert, env._timezones, index++, 'Europe/London', formats);
+    expectTimezone(assert, env._timezones, index++, 'Europe/Paris', formats);
+    expectTimezone(assert, env._timezones, index++, 'Asia/Calcutta', formats);
+    expectTimezone(assert, env._timezones, index++, 'Australia/Perth', formats);
+    expectTimezone(assert, env._timezones, index++, 'Australia/Melbourne', formats);
+    expectTimezones(assert, env._timezones, index);
+    // 1-Sep-2014 - Australia NOT in daylight savings - US IS in daylight savings
+    values = getMomentValues(env.moment);
+    assert.deepEqual(values, [ 2014, 0, 8, 14, 42, 0], 'moment matches');
+    assert.deepEqual(env.timezone, { value: 'Australia/Melbourne', text: 'Dino' }, 'timezone matches');
+    index = 0;
+    expectValues(assert, containerElement, index++, [ { textContent: 'Fred Flintstone', title: 'US/Pacific' },
+                                                      'US/Pacific',
+                                                      'mardi 19:42 7 janvier 2014',
+                                                      '-19 heures',
+                                                      '\u263e'
+                                                    ]);
+    expectValues(assert, containerElement, index++, [ { textContent: 'Barny Rubble', title: 'US/Eastern' },
+                                                      'US/Eastern',
+                                                      'mardi 22:42 7 janvier 2014',
+                                                      '-16 heures',
+                                                      '\u263e'
+                                                    ]);
+    expectValues(assert, containerElement, index++, [ { textContent: 'Bamm Bamm Rubble', title: 'Europe/London' },
+                                                      'Europe/London',
+                                                      'mercredi 03:42 8 janvier 2014',
+                                                      '-11 heures',
+                                                      '\u263e'
+                                                    ]);
+    expectValues(assert, containerElement, index++, [ { textContent: 'Wilma Flintstone', title: 'Europe/Paris' },
+                                                      'Europe/Paris',
+                                                      'mercredi 04:42 8 janvier 2014',
+                                                      '-10 heures',
+                                                      '\u263e'
+                                                    ]);
+    expectValues(assert, containerElement, index++, [ { textContent: 'Betty Rubble', title: 'Asia/Calcutta' },
+                                                      'Asia/Calcutta',
+                                                      'mercredi 09:12 8 janvier 2014',
+                                                      '-5.5 heures',
+                                                      '\u263c'
+                                                    ]);
+    expectValues(assert, containerElement, index++, [ { textContent: 'Pebbles Flintstone', title: 'Australia/Perth' },
+                                                      'Australia/Perth',
+                                                      'mercredi 11:42 8 janvier 2014',
+                                                      '-3 heures',
+                                                      '\u263c'
+                                                    ]);
+    expectValues(assert, containerElement, index++, [ { textContent: 'Dino', title: 'Australia/Melbourne' },
+                                                      'Australia/Melbourne',
+                                                      'mercredi 14:42 8 janvier 2014',
+                                                      '',
+                                                      '\u263c'
+                                                    ]);
+    assert.equal(timeElement.textContent, 'mercredi 14:42 8 janvier 2014 (Dino)', 'Time value matches');
+    expectLegend(assert, legendElement, '\u263c - 8:00 am .. 3:59 pm', '\u263e - 4:00 pm .. 7:59 am', true);
+    // 15-Oct-2014 - Australia IS in daylight savings - US IS in daylight savings
+    env.update([2014, 9, 15, 14, 30, 0], 'US/Pacific', 'Fred Flintstone');
+    values = getMomentValues(env.moment);
+    assert.deepEqual(values, [ 2014, 9, 15, 14, 30, 0], 'moment matches');
+    assert.deepEqual(env.timezone, { value: 'US/Pacific', text: 'Fred Flintstone' }, 'timezone matches');
+    index = 0;
+    expectValues(assert, containerElement, index++, [ { textContent: 'Fred Flintstone', title: 'US/Pacific' },
+                                                      'US/Pacific',
+                                                      'mercredi 14:30 15 octobre 2014',
+                                                      '',
+                                                      '\u263c'
+                                                    ]);
+    expectValues(assert, containerElement, index++, [ { textContent: 'Barny Rubble', title: 'US/Eastern' },
+                                                      'US/Eastern',
+                                                      'mercredi 17:30 15 octobre 2014',
+                                                      '3 heures',
+                                                      '\u263e'
+                                                    ]);
+    expectValues(assert, containerElement, index++, [ { textContent: 'Bamm Bamm Rubble', title: 'Europe/London' },
+                                                      'Europe/London',
+                                                      'mercredi 22:30 15 octobre 2014',
+                                                      '8 heures',
+                                                      '\u263e'
+                                                    ]);
+    expectValues(assert, containerElement, index++, [ { textContent: 'Wilma Flintstone', title: 'Europe/Paris' },
+                                                      'Europe/Paris',
+                                                      'mercredi 23:30 15 octobre 2014',
+                                                      '9 heures',
+                                                      '\u263e'
+                                                    ]);
+    expectValues(assert, containerElement, index++, [ { textContent: 'Betty Rubble', title: 'Asia/Calcutta' },
+                                                      'Asia/Calcutta',
+                                                      'jeudi 03:00 16 octobre 2014',
+                                                      '12.5 heures',
+                                                      '\u263e'
+                                                    ]);
+    expectValues(assert, containerElement, index++, [ { textContent: 'Pebbles Flintstone', title: 'Australia/Perth' },
+                                                      'Australia/Perth',
+                                                      'jeudi 05:30 16 octobre 2014',
+                                                      '15 heures',
+                                                      '\u263e'
+                                                    ]);
+    expectValues(assert, containerElement, index++, [ { textContent: 'Dino', title: 'Australia/Melbourne' },
+                                                      'Australia/Melbourne',
+                                                      'jeudi 08:30 16 octobre 2014',
+                                                      '18 heures',
+                                                      '\u263c'
+                                                    ]);
+    assert.equal(timeElement.textContent, 'mercredi 14:30 15 octobre 2014 (Fred Flintstone)', 'Time value matches');
+    expectLegend(assert, legendElement, '\u263c - 8:00 am .. 3:59 pm', '\u263e - 4:00 pm .. 7:59 am', true);
+    // 15-Nov-2014 - Australia IS in daylight savings - US NOT in daylight savings
+    env.update([2014, 10, 15, 14, 30, 0], 'Europe/Paris', 'Wilma Flintstone');
+    values = getMomentValues(env.moment);
+    assert.deepEqual(values, [ 2014, 10, 15, 14, 30, 0], 'moment matches');
+    assert.deepEqual(env.timezone, { value: 'Europe/Paris', text: 'Wilma Flintstone' }, 'timezone matches');
+    index = 0;
+    expectValues(assert, containerElement, index++, [ { textContent: 'Fred Flintstone', title: 'US/Pacific' },
+                                                      'US/Pacific',
+                                                      'samedi 05:30 15 novembre 2014',
+                                                      '-9 heures',
+                                                      '\u263e'
+                                                    ]);
+    expectValues(assert, containerElement, index++, [ { textContent: 'Barny Rubble', title: 'US/Eastern' },
+                                                      'US/Eastern',
+                                                      'samedi 08:30 15 novembre 2014',
+                                                      '-6 heures',
+                                                      '\u263c'
+                                                    ]);
+    expectValues(assert, containerElement, index++, [ { textContent: 'Bamm Bamm Rubble', title: 'Europe/London' },
+                                                      'Europe/London',
+                                                      'samedi 13:30 15 novembre 2014',
+                                                      '-1 heure',
+                                                      '\u263c'
+                                                    ]);
+    expectValues(assert, containerElement, index++, [ { textContent: 'Wilma Flintstone', title: 'Europe/Paris' },
+                                                      'Europe/Paris',
+                                                      'samedi 14:30 15 novembre 2014',
+                                                      '',
+                                                      '\u263c'
+                                                    ]);
+    expectValues(assert, containerElement, index++, [ { textContent: 'Betty Rubble', title: 'Asia/Calcutta' },
+                                                      'Asia/Calcutta',
+                                                      'samedi 19:00 15 novembre 2014',
+                                                      '4.5 heures',
+                                                      '\u263e'
+                                                    ]);
+    expectValues(assert, containerElement, index++, [ { textContent: 'Pebbles Flintstone', title: 'Australia/Perth' },
+                                                      'Australia/Perth',
+                                                      'samedi 21:30 15 novembre 2014',
+                                                      '7 heures',
+                                                      '\u263e'
+                                                    ]);
+    expectValues(assert, containerElement, index++, [ { textContent: 'Dino', title: 'Australia/Melbourne' },
+                                                      'Australia/Melbourne',
+                                                      'dimanche 00:30 16 novembre 2014',
+                                                      '10 heures',
+                                                      '\u263e'
+                                                    ]);
+    assert.equal(timeElement.textContent, 'samedi 14:30 15 novembre 2014 (Wilma Flintstone)', 'Time value matches');
+    expectLegend(assert, legendElement, '\u263c - 8:00 am .. 3:59 pm', '\u263e - 4:00 pm .. 7:59 am', true);
+    // Simulate click on the LINK cells, verify action triggered and class name as been updated
+    for (col = 0; col < 3; col += 1) {
+        index = 0;
+        verifyLink(assert, env, containerElement, index++, col, 'US/Pacific', 'Fred Flintstone', 'mtzdLink');
+        verifyLink(assert, env, containerElement, index++, col, 'US/Eastern', 'Barny Rubble', 'mtzdLink');
+        verifyLink(assert, env, containerElement, index++, col, 'Europe/London', 'Bamm Bamm Rubble', 'mtzdLink');
+        verifyLink(assert, env, containerElement, index++, col, 'Europe/Paris', 'Wilma Flintstone', 'mtzdLink');
+        verifyLink(assert, env, containerElement, index++, col, 'Asia/Calcutta', 'Betty Rubble', 'mtzdLink');
+        verifyLink(assert, env, containerElement, index++, col, 'Australia/Perth', 'Pebbles Flintstone', 'mtzdLink');
+        verifyLink(assert, env, containerElement, index++, col, 'Australia/Melbourne', 'Dino', 'mtzdLink');
+        assert.equal(containerElement.children.length, index, 'All rows verified');
+    }
+
+    // Change the DateTimeElements and trigger a change to verify that the details have changed
+    env._dateTimeElements.setSelected({ hour: 0, minute: 0, day: 1, month: 0, year: 2010, timezone: { text: 'Bamm Bamm Rubble', value: 'Europe/London' } });
+    values = getDateTimeElementValues(env._dateTimeElements);
+    assert.deepEqual(values, { hour: 0, minute: 0, day: 0, month: 0, year: 0, timezone: 3 }, 'Selected values matches date');
+    fireChangeEvent(env._dateTimeElements._elements.hour);
+    
+    index = 0;
+    expectValues(assert, containerElement, index++, [ { textContent: 'Fred Flintstone', title: 'US/Pacific' },
+                                                      'US/Pacific',
+                                                      'jeudi 16:00 31 décembre 2009',
+                                                      '-8 heures',
+                                                      '\u263e'
+                                                    ]);
+    expectValues(assert, containerElement, index++, [ { textContent: 'Barny Rubble', title: 'US/Eastern' },
+                                                      'US/Eastern',
+                                                      'jeudi 19:00 31 décembre 2009',
+                                                      '-5 heures',
+                                                      '\u263e'
+                                                    ]);
+    expectValues(assert, containerElement, index++, [ { textContent: 'Bamm Bamm Rubble', title: 'Europe/London' },
+                                                      'Europe/London',
+                                                      'vendredi 00:00 1er janvier 2010',
+                                                      '',
+                                                      '\u263e'
+                                                    ]);
+    expectValues(assert, containerElement, index++, [ { textContent: 'Wilma Flintstone', title: 'Europe/Paris' },
+                                                      'Europe/Paris',
+                                                      'vendredi 01:00 1er janvier 2010',
+                                                      '1 heure',
+                                                      '\u263e'
+                                                    ]);
+    expectValues(assert, containerElement, index++, [ { textContent: 'Betty Rubble', title: 'Asia/Calcutta' },
+                                                      'Asia/Calcutta',
+                                                      'vendredi 05:30 1er janvier 2010',
+                                                      '5.5 heures',
+                                                      '\u263e'
+                                                    ]);
+    expectValues(assert, containerElement, index++, [ { textContent: 'Pebbles Flintstone', title: 'Australia/Perth' },
+                                                      'Australia/Perth',
+                                                      'vendredi 08:00 1er janvier 2010',
+                                                      '8 heures',
+                                                      '\u263c'
+                                                    ]);
+    expectValues(assert, containerElement, index++, [ { textContent: 'Dino', title: 'Australia/Melbourne' },
+                                                      'Australia/Melbourne',
+                                                      'vendredi 11:00 1er janvier 2010',
+                                                      '11 heures',
+                                                      '\u263c'
+                                                    ]);
+
+    setDateTimeElementValues(env._dateTimeElements, { hour: 23, minute: 59, day: 30, month: 11, year: 10, timezone: 2 });
+    values = env._dateTimeElements.getSelected();
+    assert.deepEqual(values, { hour: 23, minute: 59, day: 31, month: 11, year: 2020, timezone: { text: 'Barny Rubble', value: 'US/Eastern' } }, 'Selected matches date');
+    fireChangeEvent(env._dateTimeElements._elements.hour);
+
+    index = 0;
+    expectValues(assert, containerElement, index++, [ { textContent: 'Fred Flintstone', title: 'US/Pacific' },
+                                                      'US/Pacific',
+                                                      'jeudi 20:59 31 décembre 2020',
+                                                      '-3 heures',
+                                                      '\u263e'
+                                                    ]);
+    expectValues(assert, containerElement, index++, [ { textContent: 'Barny Rubble', title: 'US/Eastern' },
+                                                      'US/Eastern',
+                                                      'jeudi 23:59 31 décembre 2020',
+                                                      '',
+                                                      '\u263e'
+                                                    ]);
+    expectValues(assert, containerElement, index++, [ { textContent: 'Bamm Bamm Rubble', title: 'Europe/London' },
+                                                      'Europe/London',
+                                                      'vendredi 04:59 1er janvier 2021',
+                                                      '5 heures',
+                                                      '\u263e'
+                                                    ]);
+    expectValues(assert, containerElement, index++, [ { textContent: 'Wilma Flintstone', title: 'Europe/Paris' },
+                                                      'Europe/Paris',
+                                                      'vendredi 05:59 1er janvier 2021',
+                                                      '6 heures',
+                                                      '\u263e'
+                                                    ]);
+    expectValues(assert, containerElement, index++, [ { textContent: 'Betty Rubble', title: 'Asia/Calcutta' },
+                                                      'Asia/Calcutta',
+                                                      'vendredi 10:29 1er janvier 2021',
+                                                      '10.5 heures',
+                                                      '\u263c'
+                                                    ]);
+    expectValues(assert, containerElement, index++, [ { textContent: 'Pebbles Flintstone', title: 'Australia/Perth' },
+                                                      'Australia/Perth',
+                                                      'vendredi 12:59 1er janvier 2021',
+                                                      '13 heures',
+                                                      '\u263c'
+                                                    ]);
+    expectValues(assert, containerElement, index++, [ { textContent: 'Dino', title: 'Australia/Melbourne' },
+                                                      'Australia/Melbourne',
+                                                      'vendredi 15:59 1er janvier 2021',
+                                                      '16 heures',
+                                                      '\u263c'
+                                                    ]);
+}
+QUnit.test('Environment2', function (assert) {
+    testFrench(assert, testVars.env2, 'dateFrench', 'cellFormatsFrench', 'containerFrench', 'currentTimeFrench', 'legendFrench');
+});
+QUnit.test('Environment3', function (assert) {
+    testFrench(assert, testVars.env3, 'dateFrench2', 'cellFormatsFrench2', 'containerFrench2', 'currentTimeFrench2', 'legendFrench2');
+});

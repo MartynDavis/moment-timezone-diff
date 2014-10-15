@@ -25,8 +25,52 @@
         margin: 0 auto;
         text-align: center;
     }
+    div.row, div.legend {
+        clear: both;
+        height: auto;
+        margin: 0 auto;
+        width: 670px;
+    }
+    .shade {
+        background-color: #eee;
+    }
+    div.header {
+        font-weight: bold;
+    }
+    div.name {
+        float: left;
+        min-width: 200px;
+        padding: 5px;
+    }
+    div.timezone {
+        float: left;
+        min-width: 150px;
+        padding: 5px;
+    }
+    div.datetime {
+        float: left;
+        min-width: 300px;
+        padding: 5px;
+    }
+    div.diff {
+        float: left;
+        min-width: 100px;
+        min-height: 1em;
+        padding: 5px;
+    }
+    div.daynight {
+        float: left;
+        min-width: 20px;
+        padding: 5px;
+    }
+    .hide {
+        display: none;
+    }
     .currentTimeFrench {
         cursor: pointer;
+    }
+    .currentTimeFrench:hover {
+        text-decoration: underline;
     }
     .ui-datepicker {
         font-size: 80%;
@@ -83,6 +127,72 @@
 
         testVars.env1 = new momentTimezoneDiff.Environment();
         testVars.env1.update([2014, 8, 1, 0, 0, 0], 'Australia/Melbourne', 'Dino');
+
+        // NOTE: env2 and env3 should be configured identically, just using dateId & dateOptions vs dateTimeElements
+        testVars.env2 = new momentTimezoneDiff.Environment({ dateId: 'dateFrench',
+                                                             dateOptions: { mode: momentTimezoneDiff.MODE_DROPDOWN_HOUR24,
+                                                                            locale: 'fr',
+                                                                            currentTime: "Régler l'heure actuelle",
+                                                                            currentTimeTitle: "l'heure actuelle",
+                                                                            currentTimeClass: 'currentTimeFrench',
+                                                                            hourTitle: "Sélectionnez les heures de la journée",
+                                                                            minuteTitle: "Sélectionner les minutes de l'heure",
+                                                                            ampmTitle: "Sélectionnez le matin ou l'après-midi",
+                                                                            monthTitle: "Sélectionnez un mois de l'année",
+                                                                            dayTitle: "Choisir jour du mois",
+                                                                            yearTitle: "Sélectionnez l'année",
+                                                                            timezoneTitle: "Sélectionnez le fuseau horaire",
+                                                                            datepickerTitle: "Sélectionnez la date en utilisant le calendrier.",
+                                                                            monthFormat: "MMMM"
+                                                                          },
+                                                             formatsId: 'cellFormatsFrench',
+                                                             containerId: 'containerFrench',
+                                                             timeId: 'currentTimeFrench',
+                                                             legendId: 'legendFrench',
+                                                             locale: 'fr',
+                                                             timeShowTimezoneName: true,
+                                                             legendBreak: true,
+                                                             sunRiseHour: 8,
+                                                             sunSetHour: 16,
+                                                             ahead: 'devant',
+                                                             behind: 'derrière',
+                                                             hour: 'heure',
+                                                             hours: 'heures',
+                                                             timeFormat: 'dddd HH:mm Do MMMM YYYY'
+                                                           });
+        testVars.env2.update([2014, 0, 8, 14, 42, 0], 'Australia/Melbourne', 'Dino');
+
+        testVars.env3 = new momentTimezoneDiff.Environment({ dateTimeElements: new momentTimezoneDiff.DateTimeElements('dateFrench2', { mode: momentTimezoneDiff.MODE_DROPDOWN_HOUR24,
+                                                                                                                                        locale: 'fr',
+                                                                                                                                        currentTime: "Régler l'heure actuelle",
+                                                                                                                                        currentTimeTitle: "l'heure actuelle",
+                                                                                                                                        currentTimeClass: 'currentTimeFrench',
+                                                                                                                                        hourTitle: "Sélectionnez les heures de la journée",
+                                                                                                                                        minuteTitle: "Sélectionner les minutes de l'heure",
+                                                                                                                                        ampmTitle: "Sélectionnez le matin ou l'après-midi",
+                                                                                                                                        monthTitle: "Sélectionnez un mois de l'année",
+                                                                                                                                        dayTitle: "Choisir jour du mois",
+                                                                                                                                        yearTitle: "Sélectionnez l'année",
+                                                                                                                                        timezoneTitle: "Sélectionnez le fuseau horaire",
+                                                                                                                                        datepickerTitle: "Sélectionnez la date en utilisant le calendrier.",
+                                                                                                                                        monthFormat: "MMMM"
+                                                                                                                                      }),
+                                                             formatsId: 'cellFormatsFrench2',
+                                                             containerId: 'containerFrench2',
+                                                             timeId: 'currentTimeFrench2',
+                                                             legendId: 'legendFrench2',
+                                                             locale: 'fr',
+                                                             timeShowTimezoneName: true,
+                                                             legendBreak: true,
+                                                             sunRiseHour: 8,
+                                                             sunSetHour: 16,
+                                                             ahead: 'devant',
+                                                             behind: 'derrière',
+                                                             hour: 'heure',
+                                                             hours: 'heures',
+                                                             timeFormat: 'dddd HH:mm Do MMMM YYYY'
+                                                           });
+        testVars.env3.update([2014, 0, 8, 14, 42, 0], 'Australia/Melbourne', 'Dino');
     }
 </script>
 </head>
@@ -202,6 +312,145 @@
             </tfoot>
         </table>
     </div>
+    <h2>Exemple #7 - Horloge de 24 heures (DIV, dateId & dateOptions)</h2>
+    <div class='date' id='dateFrench'></div>
+    <p class='exampleCurrentTime'>Heure: <span id='currentTimeFrench'></span></p>
+    <div class='hide' id='cellFormatsFrench'>
+        <span>LINK|NAME|TOOLTIP</span>
+        <span>LINK|TIMEZONE</span>
+        <span>LINK|dddd HH:mm Do MMMM YYYY</span>
+        <span>LINK|diff</span>
+        <span>LINK|daynight</span>
+    </div>
+    <div class='row'>
+        <div class='header name'>Qui`</div>
+        <div class='header timezone hide'>Fuseau Horaire</div>
+        <div class='header datetime'>Heure Locale</div>
+        <div class='header diff'>Différence</div>
+        <div class='header daynight'></div>
+    </div>
+    <div id='containerFrench'>
+        <div class='row shade'>
+            <div class='name shade'>Fred Flintstone</div>
+            <div class='timezone shade hide'>US/Pacific</div>
+            <div class='datetime shade'></div>
+            <div class='diff shade'></div>
+            <div class='daynight shade'></div>
+        </div>
+        <div class='row'>
+            <div class='name'>Barny Rubble</div>
+            <div class='timezone hide'>US/Eastern</div>
+            <div class='datetime'></div>
+            <div class='diff'></div>
+            <div class='daynight'></div>
+        </div>
+        <div class='row shade'>
+            <div class='name shade'>Bamm Bamm Rubble</div>
+            <div class='timezone shade hide'>Europe/London</div>
+            <div class='datetime shade'></div>
+            <div class='diff shade'></div>
+            <div class='daynight shade'></div>
+        </div>
+        <div class='row'>
+            <div class='name'>Wilma Flintstone</div>
+            <div class='timezone hide'>Europe/Paris</div>
+            <div class='datetime'></div>
+            <div class='diff'></div>
+            <div class='daynight'></div>
+        </div>
+        <div class='row shade'>
+            <div class='name shade'>Betty Rubble</div>
+            <div class='timezone shade hide'>Asia/Calcutta</div>
+            <div class='datetime shade'></div>
+            <div class='diff shade'></div>
+            <div class='daynight shade'></div>
+        </div>
+        <div class='row'>
+            <div class='name'>Pebbles Flintstone</div>
+            <div class='timezone hide'>Australia/Perth</div>
+            <div class='datetime'></div>
+            <div class='diff'></div>
+            <div class='daynight'></div>
+        </div>
+        <div class='row shade'>
+            <div class='name shade'>Dino</div>
+            <div class='timezone shade hide'>Australia/Melbourne</div>
+            <div class='datetime shade'></div>
+            <div class='diff shade'></div>
+            <div class='daynight shade'></div>
+        </div>
+    </div>
+    <div class='legend' id='legendFrench'></div>
+    <h2>Exemple #8 - Horloge de 24 heures (DIV & dateTimeElements)</h2>
+    <div class='date' id='dateFrench2'>
+    </div>
+    <p class='exampleCurrentTime'>Heure: <span id='currentTimeFrench2'></span></p>
+    <div class='hide' id='cellFormatsFrench2'>
+        <span>LINK|NAME|TOOLTIP</span>
+        <span>LINK|TIMEZONE</span>
+        <span>LINK|dddd HH:mm Do MMMM YYYY</span>
+        <span>LINK|diff</span>
+        <span>LINK|daynight</span>
+    </div>
+    <div class='row'>
+        <div class='header name'>Qui`</div>
+        <div class='header timezone hide'>Fuseau Horaire</div>
+        <div class='header datetime'>Heure Locale</div>
+        <div class='header diff'>Différence</div>
+        <div class='header daynight'></div>
+    </div>
+    <div id='containerFrench2'>
+        <div class='row shade'>
+            <div class='name shade'>Fred Flintstone</div>
+            <div class='timezone shade hide'>US/Pacific</div>
+            <div class='datetime shade'></div>
+            <div class='diff shade'></div>
+            <div class='daynight shade'></div>
+        </div>
+        <div class='row'>
+            <div class='name'>Barny Rubble</div>
+            <div class='timezone hide'>US/Eastern</div>
+            <div class='datetime'></div>
+            <div class='diff'></div>
+            <div class='daynight'></div>
+        </div>
+        <div class='row shade'>
+            <div class='name shade'>Bamm Bamm Rubble</div>
+            <div class='timezone shade hide'>Europe/London</div>
+            <div class='datetime shade'></div>
+            <div class='diff shade'></div>
+            <div class='daynight shade'></div>
+        </div>
+        <div class='row'>
+            <div class='name'>Wilma Flintstone</div>
+            <div class='timezone hide'>Europe/Paris</div>
+            <div class='datetime'></div>
+            <div class='diff'></div>
+            <div class='daynight'></div>
+        </div>
+        <div class='row shade'>
+            <div class='name shade'>Betty Rubble</div>
+            <div class='timezone shade hide'>Asia/Calcutta</div>
+            <div class='datetime shade'></div>
+            <div class='diff shade'></div>
+            <div class='daynight shade'></div>
+        </div>
+        <div class='row'>
+            <div class='name'>Pebbles Flintstone</div>
+            <div class='timezone hide'>Australia/Perth</div>
+            <div class='datetime'></div>
+            <div class='diff'></div>
+            <div class='daynight'></div>
+        </div>
+        <div class='row shade'>
+            <div class='name shade'>Dino</div>
+            <div class='timezone shade hide'>Australia/Melbourne</div>
+            <div class='datetime shade'></div>
+            <div class='diff shade'></div>
+            <div class='daynight shade'></div>
+        </div>
+    </div>
+    <div class='legend' id='legendFrench2'></div>
     <h2>QUnit Tests</h2>
     <div id="qunit"></div>
     <div id="qunit-fixture"></div>
