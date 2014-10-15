@@ -591,6 +591,20 @@
             addComboValue(this._elements.timezone, timezone, name);
         }
     };
+    function getTextValue(element, value) {
+        var i;
+        if (element && element.options) {
+            for (i = 0; i < element.options.length; i += 1) {
+                if (element.options[i].value === value) {
+                    return element.options[i].textContent;
+                }
+            }
+        }
+        return undefined;
+    }
+    DateTimeElements.prototype.getTimezoneName = function (timezone) {
+        return getTextValue(this._elements.timezone, timezone);
+    };
     function getSelected(element) {
         if (element) {
             return parseInt(element.options[element.selectedIndex].value, 10);
@@ -1025,10 +1039,23 @@
             }
         }
     };
+    Environment.prototype.getTimezoneName = function (timezone) {
+        var name;
+        if (this._dateTimeElements) {
+            name = this._dateTimeElements.getTimezoneName(timezone);
+        }
+        if (name === undefined) {
+            name = timezone;
+        }
+        return name;
+    };
     Environment.prototype.update = function (value, timezone, name) {
+        if (name === undefined) {
+            name = this.getTimezoneName(timezone);
+        }
         if (timezone) {
             this.moment = moment.tz(value, timezone);
-            this.timezone = { text: (name || timezone), value: timezone };
+            this.timezone = { text: name, value: timezone };
         } else {
             this.moment = moment(value);
             this.timezone = undefined;
@@ -1057,7 +1084,10 @@
         if (this._options.locale) {
             this.moment.locale(this._options.locale);
         }
-        this.timezone = { text: (name || timezone), value: timezone };
+        if (name === undefined) {
+            name = this.getTimezoneName(timezone);
+        }
+        this.timezone = { text: name, value: timezone };
         this.refresh();
     };
     Environment.prototype.updated = function (selected) {

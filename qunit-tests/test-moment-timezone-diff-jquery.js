@@ -312,6 +312,11 @@ QUnit.test('DateTimeElements1', function (assert) {
     assert.equal(dte._datepicker, datepickerElement, 'Date picker element matches');
     assert.equal(dte._datepickerImage, datepickerImageElement, 'Date picker image element matches');
 
+    assert.equal(dte.getTimezoneName(''), '', 'Timezone name matches');
+    assert.equal(dte.getTimezoneName('Europe/Paris'), 'Sebastian Roché', 'Timezone name matches');
+    assert.equal(dte.getTimezoneName('Canada/Newfoundland'), 'André Lurçat', 'Timezone name matches');
+    assert.equal(dte.getTimezoneName('I DO NOT EXIST'), undefined, 'Invalid timezone returns undefined');
+
     dte.registerCallback(createCallback(callbackData1));
     dte.registerCallback(createCallback(callbackData2));
 
@@ -531,6 +536,11 @@ QUnit.test('DateTimeElements2', function (assert) {
     assert.equal(dte._datepicker, datepickerElement, 'Date picker element matches');
     assert.equal(dte._datepickerImage, datepickerImageElement, 'Date picker image element matches');
 
+    assert.equal(dte.getTimezoneName(''), '', 'Timezone name matches');
+    assert.equal(dte.getTimezoneName('US/Eastern'), 'US/Eastern', 'Timezone name matches');
+    assert.equal(dte.getTimezoneName('Australia/Perth'), 'Australia/Perth', 'Timezone name matches');
+    assert.equal(dte.getTimezoneName('I DO NOT EXIST'), undefined, 'Invalid timezone returns undefined');
+
     dte.setSelected({ hour: 17, minute: 55, day: 21, month: 8, year: 2017, timezone: { text: 'US/Eastern', value: 'US/Eastern' } });
     values = getDateTimeElementValues(dte);
     assert.deepEqual(values, { hour: 17, minute: 55, day: 20, month: 8, year: 7, timezone: 1 }, 'Selected values matches date');
@@ -675,6 +685,12 @@ QUnit.test('DateTimeElements3', function (assert) {
                                             ], 'Input formats match');
     assert.equal(dte._datepicker, datepickerElement, 'Date picker element matches');
     assert.equal(dte._datepickerImage, datepickerImageElement, 'Date picker element matches');
+
+    assert.equal(dte.getTimezoneName(''), '', 'Timezone name matches');
+    assert.equal(dte.getTimezoneName('America/Argentina/Buenos_Aires'), 'Barry', 'Timezone name matches');
+    assert.equal(dte.getTimezoneName('Europe/Budapest'), 'Bruce', 'Timezone name matches');
+    assert.equal(dte.getTimezoneName('Pacific/Norfolk'), 'Brett', 'Timezone name matches');
+    assert.equal(dte.getTimezoneName('I DO NOT EXIST'), undefined, 'Invalid timezone returns undefined');
 
     dte.setSelected({ hour: 7, minute: 14, day: 18, month: 4, year: 2015, timezone: { text: 'Barry', value: 'America/Argentina/Buenos_Aires' } });
     values = getDateTimeElementValues(dte);
@@ -824,6 +840,11 @@ QUnit.test('DateTimeElements4', function (assert) {
     assert.equal(dte._timeInputFormats, undefined, 'Input formats is not defined');
     assert.equal(dte._datepicker, undefined, 'Date picker element is not defined');
     assert.equal(dte._datepickerImage, undefined, 'Date picker image element is not defined');
+
+    assert.equal(dte.getTimezoneName(''), '', 'Timezone name matches');
+    assert.equal(dte.getTimezoneName('Europe/London'), 'Europe/London', 'Timezone name matches');
+    assert.equal(dte.getTimezoneName('Japan'), 'Japan', 'Timezone name matches');
+    assert.equal(dte.getTimezoneName('I DO NOT EXIST'), undefined, 'Invalid timezone returns undefined');
 
     dte.setSelected({ hour: 0, minute: 0, day: 1, month: 0, year: 2010, timezone: { text: '', value: '' } });
     values = getDateTimeElementValues(dte);
@@ -1168,6 +1189,17 @@ QUnit.test('Environment1', function (assert) {
     assert.equal(env._dateTimeElements._timeInputFormats, undefined, 'Input formats is not defined');
     assert.equal(env._dateTimeElements._datepicker, datepickerElement, 'Date Picker element matches');
     assert.equal(env._dateTimeElements._datepickerImage, datepickerImageElement, 'Date Picker image element matches');
+
+    assert.equal(env._dateTimeElements.getTimezoneName(''), '', 'Timezone name matches');
+    assert.equal(env._dateTimeElements.getTimezoneName('US/Pacific'), 'Fred Flintstone', 'Timezone name matches');
+    assert.equal(env._dateTimeElements.getTimezoneName('US/Eastern'), 'Barny Rubble', 'Timezone name matches');
+    assert.equal(env._dateTimeElements.getTimezoneName('Europe/London'), 'Bamm Bamm Rubble', 'Timezone name matches');
+    assert.equal(env._dateTimeElements.getTimezoneName('Europe/Paris'), 'Wilma Flintstone', 'Timezone name matches');
+    assert.equal(env._dateTimeElements.getTimezoneName('Asia/Calcutta'), 'Betty Rubble', 'Timezone name matches');
+    assert.equal(env._dateTimeElements.getTimezoneName('Australia/Perth'), 'Pebbles Flintstone', 'Timezone name matches');
+    assert.equal(env._dateTimeElements.getTimezoneName('Australia/Melbourne'), 'Dino', 'Timezone name matches');
+    assert.equal(env._dateTimeElements.getTimezoneName('I DO NOT EXIST'), undefined, 'Invalid timezone returns undefined');
+
     assert.deepEqual(env._options, defaultOptions, 'options matches default options');
     assert.deepEqual(env.getOptions(), defaultOptions, 'getOptions() matches default options');
     assert.notEqual(env._options, env.getOptions(), 'getOptions() returns a copy');
@@ -1262,6 +1294,14 @@ QUnit.test('Environment1', function (assert) {
     values = getMomentValues(env.moment);
     assert.deepEqual(values, [ 2014, 9, 15, 14, 30, 0], 'moment matches');
     assert.deepEqual(env.timezone, { value: 'US/Pacific', text: 'Fred Flintstone' }, 'timezone matches');
+    env.update([2014, 9, 15, 14, 30, 0], 'Australia/Melbourne');
+    values = getMomentValues(env.moment);
+    assert.deepEqual(values, [ 2014, 9, 15, 14, 30, 0], 'moment matches');
+    assert.deepEqual(env.timezone, { value: 'Australia/Melbourne', text: 'Dino' }, 'timezone matches');
+    env.update([2014, 9, 15, 14, 30, 0], 'US/Pacific');
+    values = getMomentValues(env.moment);
+    assert.deepEqual(values, [ 2014, 9, 15, 14, 30, 0], 'moment matches');
+    assert.deepEqual(env.timezone, { value: 'US/Pacific', text: 'Fred Flintstone' }, 'timezone matches');
     index = 0;
     expectValues(assert, containerElement, index++, [ { textContent: 'Fred Flintstone', title: 'Vancouver, Canada\nUS/Pacific' },
                                                       'Vancouver, Canada',
@@ -1330,6 +1370,14 @@ QUnit.test('Environment1', function (assert) {
     expectLegend(assert, legendElement, '\u263c - 6:00 am .. 7:59 pm', '\u263e - 8:00 pm .. 5:59 am', false);
     // 15-Nov-2014 - Australia IS in daylight savings - US NOT in daylight savings
     env.update([2014, 10, 15, 14, 30, 0], 'Europe/Paris', 'Wilma Flintstone');
+    values = getMomentValues(env.moment);
+    assert.deepEqual(values, [ 2014, 10, 15, 14, 30, 0], 'moment matches');
+    assert.deepEqual(env.timezone, { value: 'Europe/Paris', text: 'Wilma Flintstone' }, 'timezone matches');
+    env.update([2014, 9, 15, 14, 30, 0], 'Australia/Melbourne');
+    values = getMomentValues(env.moment);
+    assert.deepEqual(values, [ 2014, 9, 15, 14, 30, 0], 'moment matches');
+    assert.deepEqual(env.timezone, { value: 'Australia/Melbourne', text: 'Dino' }, 'timezone matches');
+    env.update([2014, 10, 15, 14, 30, 0], 'Europe/Paris');
     values = getMomentValues(env.moment);
     assert.deepEqual(values, [ 2014, 10, 15, 14, 30, 0], 'moment matches');
     assert.deepEqual(env.timezone, { value: 'Europe/Paris', text: 'Wilma Flintstone' }, 'timezone matches');
@@ -1706,6 +1754,17 @@ function testFrench(assert, env, dateId, formatsId, containerId, timeId, legendI
     assert.equal(env._dateTimeElements._timeInputFormats, undefined, 'Input formats is not defined');
     assert.equal(env._dateTimeElements._datepicker, datepickerElement, 'Date picker element matches');
     assert.equal(env._dateTimeElements._datepickerImage, datepickerImageElement, 'Date picker image element matches');
+
+    assert.equal(env._dateTimeElements.getTimezoneName(''), '', 'Timezone name matches');
+    assert.equal(env._dateTimeElements.getTimezoneName('US/Pacific'), 'Fred Flintstone', 'Timezone name matches');
+    assert.equal(env._dateTimeElements.getTimezoneName('US/Eastern'), 'Barny Rubble', 'Timezone name matches');
+    assert.equal(env._dateTimeElements.getTimezoneName('Europe/London'), 'Bamm Bamm Rubble', 'Timezone name matches');
+    assert.equal(env._dateTimeElements.getTimezoneName('Europe/Paris'), 'Wilma Flintstone', 'Timezone name matches');
+    assert.equal(env._dateTimeElements.getTimezoneName('Asia/Calcutta'), 'Betty Rubble', 'Timezone name matches');
+    assert.equal(env._dateTimeElements.getTimezoneName('Australia/Perth'), 'Pebbles Flintstone', 'Timezone name matches');
+    assert.equal(env._dateTimeElements.getTimezoneName('Australia/Melbourne'), 'Dino', 'Timezone name matches');
+    assert.equal(env._dateTimeElements.getTimezoneName('I DO NOT EXIST'), undefined, 'Invalid timezone returns undefined');
+
     assert.deepEqual(env._options, defaultOptions, 'options matches default options');
     assert.deepEqual(env.getOptions(), defaultOptions, 'getOptions() matches default options');
     assert.notEqual(env._options, env.getOptions(), 'getOptions() returns a copy');
@@ -1777,6 +1836,14 @@ function testFrench(assert, env, dateId, formatsId, containerId, timeId, legendI
     values = getMomentValues(env.moment);
     assert.deepEqual(values, [ 2014, 9, 15, 14, 30, 0], 'moment matches');
     assert.deepEqual(env.timezone, { value: 'US/Pacific', text: 'Fred Flintstone' }, 'timezone matches');
+    env.update([2014, 9, 15, 14, 30, 0], 'Australia/Melbourne');
+    values = getMomentValues(env.moment);
+    assert.deepEqual(values, [ 2014, 9, 15, 14, 30, 0], 'moment matches');
+    assert.deepEqual(env.timezone, { value: 'Australia/Melbourne', text: 'Dino' }, 'timezone matches');
+    env.update([2014, 9, 15, 14, 30, 0], 'US/Pacific');
+    values = getMomentValues(env.moment);
+    assert.deepEqual(values, [ 2014, 9, 15, 14, 30, 0], 'moment matches');
+    assert.deepEqual(env.timezone, { value: 'US/Pacific', text: 'Fred Flintstone' }, 'timezone matches');
     index = 0;
     expectValues(assert, containerElement, index++, [ { textContent: 'Fred Flintstone', title: 'US/Pacific' },
                                                       'US/Pacific',
@@ -1824,6 +1891,14 @@ function testFrench(assert, env, dateId, formatsId, containerId, timeId, legendI
     expectLegend(assert, legendElement, '\u263c - 8:00 am .. 3:59 pm', '\u263e - 4:00 pm .. 7:59 am', true);
     // 15-Nov-2014 - Australia IS in daylight savings - US NOT in daylight savings
     env.update([2014, 10, 15, 14, 30, 0], 'Europe/Paris', 'Wilma Flintstone');
+    values = getMomentValues(env.moment);
+    assert.deepEqual(values, [ 2014, 10, 15, 14, 30, 0], 'moment matches');
+    assert.deepEqual(env.timezone, { value: 'Europe/Paris', text: 'Wilma Flintstone' }, 'timezone matches');
+    env.update([2014, 9, 15, 14, 30, 0], 'Australia/Melbourne');
+    values = getMomentValues(env.moment);
+    assert.deepEqual(values, [ 2014, 9, 15, 14, 30, 0], 'moment matches');
+    assert.deepEqual(env.timezone, { value: 'Australia/Melbourne', text: 'Dino' }, 'timezone matches');
+    env.update([2014, 10, 15, 14, 30, 0], 'Europe/Paris');
     values = getMomentValues(env.moment);
     assert.deepEqual(values, [ 2014, 10, 15, 14, 30, 0], 'moment matches');
     assert.deepEqual(env.timezone, { value: 'Europe/Paris', text: 'Wilma Flintstone' }, 'timezone matches');
