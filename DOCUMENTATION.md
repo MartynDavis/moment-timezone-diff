@@ -146,7 +146,9 @@ Updates the DateTimeElements controls, if present, and Environment values as per
 
 	Environment.update(Object value, String timezone, [String name]);
 
-Updates the current moment and timezone values for the given date/time *value*, *timezone* and *name*.  If name is not specified, the *timezone* value is used.
+Updates the current moment and timezone values for the given date/time *value*, *timezone* and *name*.
+
+If name is not specified, then the name is looked up within the environment's DateTimeElements object.  If the environment's DateTimeElements object is not defined, then name is set to the timezone value.
 
 The *value* value can be either of the following:
 
@@ -167,6 +169,8 @@ Sets the moment and timezone values to be the user's current time.
 	Environment.setCurrentTime(String timezone, [String name]);
 
 Sets the current timezone, and name, to the specified value.
+
+If name is not specified, then the name is looked up within the environment's DateTimeElements object.  If the environment's DateTimeElements object is not defined, then name is set to the timezone value.
 
 ## Get Options
 
@@ -191,9 +195,3 @@ Returns whether the supplied moment occurs during the daytime, as per the enviro
 	Array Environment.createLegend();
 
 Returns an array of String values which present the environment's legend, as per the environment's configured options.
-
-## Timezone Diff
-
-	TimezoneDiff Environment.timezoneDiff(Moment moment, String timezone);
-
-Creates a new TimezoneDiff object for the specified moment, so that the hourly difference to the supplied timezone can be calculated.

@@ -1163,9 +1163,6 @@
     TimezoneDiff.prototype.daytime = function () {
         return daytime(this._momentTz, this._options);
     };
-    Environment.prototype.timezoneDiff = function (momentReference, timezone) {
-        return new TimezoneDiff(momentReference, timezone, this._options);
-    };
     Environment.prototype.createLegend = function () {
         return createLegend(this._options);
     };
