@@ -1093,8 +1093,8 @@
     Environment.prototype.setOptions = function (from) {
         setOptionValues(this._options, from);
     };
-    Environment.prototype.daytime = function (m, options) {
-        return daytime(m, options || this._options);
+    Environment.prototype.daytime = function (m) {
+        return daytime(m, this._options);
     };
     function TimezoneDiff(momentReference, timezone, options) {
         this._options = duplicate(defaultOptions);
@@ -1240,10 +1240,18 @@
         setOptionValues(defaultOptions, from);
     };
     mtzd.daytime = function (m, options) {
-        return daytime(m, options || defaultOptions);
+        var workingOptions = duplicate(defaultOptions);
+        if (options) {
+            setOptionValues(workingOptions, options);
+        }
+        return daytime(m, workingOptions);
     };
     mtzd.createLegend = function (options) {
-        return createLegend(options || defaultOptions);
+        var workingOptions = duplicate(defaultOptions);
+        if (options) {
+            setOptionValues(workingOptions, options);
+        }
+        return createLegend(workingOptions);
     };
     return mtzd;
 }));

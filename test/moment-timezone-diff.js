@@ -183,6 +183,10 @@ describe('options', function () {
             tzDiff = new momentTimezoneDiff.TimezoneDiff(m, 'Australia/Adelaide');
             tzDiff.daytime().should.equal(false);
             momentTimezoneDiff.daytime(m).should.equal(false);
+            // Override options within call to daytime()
+            momentTimezoneDiff.daytime(m, { sunRiseHour: 1, sunRiseMinute: 0 }).should.equal(true);
+            // Default options should not have been affected
+            momentTimezoneDiff.daytime(m).should.equal(false);
         });
         function checkSunny(m, options) {
             var hour = m.hour(),
@@ -463,6 +467,10 @@ describe('options', function () {
             momentTimezoneDiff.setOptions({ daytime: 'DAY', nighttime: 'NIGHT' });
             momentTimezoneDiff.createLegend().should.eql([ 'DAY> 6:0...7:59', 'NIGHT> 8:0...5:59' ]);
             momentTimezoneDiff.setOptions({ sunRiseHour: 13, sunRiseMinute: 42, sunSetHour: 19, sunSetMinute: 13, legendDash: ' - ', legendSeparator: ' .. ' });
+            momentTimezoneDiff.createLegend().should.eql([ 'DAY - 1:42 .. 7:12', 'NIGHT - 7:13 .. 1:41' ]);
+            // Override some options via createLegend() parameter
+            momentTimezoneDiff.createLegend({ sunRiseHour: 9, legendFormat: 'HH:mm' }).should.eql([ 'DAY - 09:42 .. 19:12', 'NIGHT - 19:13 .. 09:41' ]);
+            // The namespace's default options should not have chnaged
             momentTimezoneDiff.createLegend().should.eql([ 'DAY - 1:42 .. 7:12', 'NIGHT - 7:13 .. 1:41' ]);
         });
     });
