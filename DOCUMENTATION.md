@@ -101,12 +101,12 @@ Returns an array of information for each component used and its version number.
 For example:
 
     [
-      { 'name': 'moment-timezone-diff', 'link': 'https://github.com/MartynDavis/moment-timezone-diff/', 'vesion': '0.5.0'},
-      { 'name': 'moment', 'link': 'http://momentjs.com/', 'vesion': '2.8.3' },
-      { 'name': 'moment-timezone', 'link': 'http://momentjs.com/timezone/', 'vesion': '0.2.2' },
-      { 'name': 'moment-timezone-data', 'link': 'http://momentjs.com/timezone/', 'vesion': '2014g' }
-      { 'name': 'jQuery', 'link': 'https://jquery.com/', 'vesion': '1.10.2' });
-      { 'name': 'jQuery-UI', 'link': 'https://jqueryui.com/', 'vesion': '1.11.1' }
+      { 'name': 'moment-timezone-diff', 'link': 'https://github.com/MartynDavis/moment-timezone-diff/', 'versionNumber': '0.5.0'},
+      { 'name': 'moment', 'link': 'http://momentjs.com/', 'versionNumber': '2.8.3' },
+      { 'name': 'moment-timezone', 'link': 'http://momentjs.com/timezone/', 'versionNumber': '0.2.2' },
+      { 'name': 'moment-timezone-data', 'link': 'http://momentjs.com/timezone/', 'versionNumber': '2014g' }
+      { 'name': 'jQuery', 'link': 'https://jquery.com/', 'versionNumber': '1.10.2' });
+      { 'name': 'jQuery-UI', 'link': 'https://jqueryui.com/', 'versionNumber': '1.11.1' }
     ]
 
 ## displayVersionInfo
