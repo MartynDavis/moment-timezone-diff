@@ -103,16 +103,16 @@ function checkVersion(assert, element, info, options) {
     }
     expectChild(assert, element, index++, { tagName: 'SPAN',
                                             className: options.versionVersionClass,
-                                            textContent: info.version
+                                            textContent: info.versionNumber
                                           });
 }
 function checkVersionInfo(assert, id, options) {
     var version = '0.4.0',
         element = document.getElementById(id),
-        versions = [ { name: 'moment-timezone-diff', link: 'https://github.com/MartynDavis/moment-timezone-diff/', version: version },
-                     { name: 'moment', link: 'http://momentjs.com/', version: '2.8.3' },
-                     { name: 'moment-timezone', link: 'http://momentjs.com/timezone/', version: '0.2.2' },
-                     { name: 'moment-timezone-data', link: 'http://momentjs.com/timezone/', version: '2014g' }
+        versions = [ { name: 'moment-timezone-diff', link: 'https://github.com/MartynDavis/moment-timezone-diff/', versionNumber: version },
+                     { name: 'moment', link: 'http://momentjs.com/', versionNumber: '2.8.3' },
+                     { name: 'moment-timezone', link: 'http://momentjs.com/timezone/', versionNumber: '0.2.2' },
+                     { name: 'moment-timezone-data', link: 'http://momentjs.com/timezone/', versionNumber: '2014g' }
                    ],
         childrenLength,
         index = 0,

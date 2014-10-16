@@ -91,10 +91,10 @@ describe('options', function () {
             momentTimezoneDiff.getOptions().should.eql(defaultOptions);
         });
         it('versionInfo', function () {
-            var versions = [ { name: 'moment-timezone-diff', link: 'https://github.com/MartynDavis/moment-timezone-diff/', version: version },
-                             { name: 'moment', link: 'http://momentjs.com/', version: '2.8.3' },
-                             { name: 'moment-timezone', link: 'http://momentjs.com/timezone/', version: '0.2.2' },
-                             { name: 'moment-timezone-data', link: 'http://momentjs.com/timezone/', version: '2014g' }
+            var versions = [ { name: 'moment-timezone-diff', link: 'https://github.com/MartynDavis/moment-timezone-diff/', versionNumber: version },
+                             { name: 'moment', link: 'http://momentjs.com/', versionNumber: '2.8.3' },
+                             { name: 'moment-timezone', link: 'http://momentjs.com/timezone/', versionNumber: '0.2.2' },
+                             { name: 'moment-timezone-data', link: 'http://momentjs.com/timezone/', versionNumber: '2014g' }
                            ],
                 i;
             momentTimezoneDiff.getVersionInfo().should.eql(versions);

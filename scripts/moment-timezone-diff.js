@@ -1291,7 +1291,8 @@
     function getVersionInfo(options) {
         var versions = [ ];
         function makeVersionInfo(options, name, link, version) {
-            var obj = { name: name, version: version };
+            // NOTE: Use a name other than 'version' for the version value since 'grunt build' will change lines which it shouldn't.
+            var obj = { name: name, versionNumber: version };
             if (options.versionIncludeLinks && link) {
                 obj.link = link;
             }
@@ -1341,7 +1342,7 @@
                                                                         className: options.versionNameClass
                                                                       }));
                 }
-                appendChild(versionElement, createElement('span', { textContent: versions[i].version,
+                appendChild(versionElement, createElement('span', { textContent: versions[i].versionNumber,
                                                                     className: options.versionVersionClass
                                                                   }));
             }
