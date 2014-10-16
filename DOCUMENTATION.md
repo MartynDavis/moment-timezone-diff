@@ -703,6 +703,8 @@ The HTML page will be rendered as the following:
 
 ![Browser rendering of simple.html](images/simple.png)
 
+You can see it live at [http://madlid.com/moment-timezone-diff/examples/simple.html](http://madlid.com/moment-timezone-diff/examples/simple.html).
+
 # More Examples
 
 More examples are available within the 'examples' folder.
