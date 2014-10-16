@@ -72,7 +72,7 @@ module.exports = function(grunt) {
     version: {
       minor: {
         options: {
-          prefix: '[^\\-\\w]version[\'"]?\\s*[,:=]\\s*[\'"]?',
+          prefix: '[^\\-\\w]version[\'"]?\\s*[:=]\\s*[\'"]?',
           release: 'minor'
         },
         src: [ 'package.json', 
