@@ -31,7 +31,7 @@ A variant of 'examples/moment-timezone-diff.html' which loads jQuery and thus en
 
 # [Documentation](DOCUMENTATION.md)
 
-# [License](LICENSE.md)
+# [License](LICENSE)
 
 moment-timezone-diff.js is freely distributable under the terms of the [MIT license](LICENSE).
 
