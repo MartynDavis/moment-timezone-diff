@@ -32,3 +32,27 @@
 .mtzdLegendBreak {
     padding-left: 10px;
 }
+.mtzdVersionTitle, .mtzdVersion {
+    margin-right: 5px;
+    color: #888;
+    font-size: small;
+}
+.mtzdVersionTitle, .mtzdVersionName , .mtzdVersionVersion {
+    padding-top: 2px;
+    padding-bottom: 2px;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+.mtzdVersion {
+    border: solid #eee 1px;
+}
+.mtzdVersionName {
+    background-color: #eee;
+    text-decoration: none;
+}
+.mtzdVersionName:hover {
+    text-decoration: underline;
+}
+.mtzdVersionName:link, .mtzdVersionName:active, .mtzdVersionName:visited , .mtzdVersionName:hover {
+    color: inherit;
+}

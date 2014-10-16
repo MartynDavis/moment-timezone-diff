@@ -8,8 +8,8 @@
 <html>
 <head>
 <meta charset="utf-8">
-<script src='http://momentjs.com/downloads/moment-with-locales.min.js'></script>
-<script src='http://momentjs.com/downloads/moment-timezone-with-data-2010-2020.min.js'></script>
+<script src='../moment/moment.min.js'></script>
+<script src='../moment/moment-timezone.min.js'></script>
 <script src='../scripts/moment-timezone-diff.js'></script>
 <link href="../scripts/moment-timezone-diff.css" rel="stylesheet" type="text/css" />
 <title>Moment Timezone Difference Examples</title>
@@ -17,7 +17,7 @@
     body {
         font-size: 16px;
     }
-    div.date, div.table, div#legendAnother, div#legendFrench {
+    div.date, div.table, div#legendAnother, div#legendFrench, div#versions {
         clear: both;
         height: auto;
         margin: 0 auto;
@@ -30,7 +30,7 @@
         padding-bottom: 10px;
         padding-top: 10px;
     }
-    div.date {
+    div.date, div#versions {
         text-align: center;
     }
     table {
@@ -212,6 +212,7 @@
                                                     autoUpdate: true,
                                                     autoUpdateSeconds: 10
                                                   });
+        momentTimezoneDiff.displayVersionInfo('versions');
     }
 </script>
 </head>
@@ -653,5 +654,6 @@
             </tfoot>
         </table>
     </div>
+    <div id='versions'></div>
 </body>
 </html>

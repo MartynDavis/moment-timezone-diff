@@ -24,7 +24,7 @@ module.exports = function(grunt) {
       source: {
         src: [ 'package.json' ]
       },
-      examples: {
+      node: {
         src: [ 'node/timezones.json' ]
       },
     },

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<!--
+    simple.html
+    version : 0.4.0
+    authors : Martyn Davis
+    license : MIT
+-->
+<html>
+<head>
+<meta charset="utf-8">
+<script src='../moment/moment.min.js'></script>
+<script src='../moment/moment-timezone.min.js'></script>
+<script src='../scripts/moment-timezone-diff.js'></script>
+<link href="../scripts/moment-timezone-diff.css" rel="stylesheet" type="text/css" />
+<title>Moment Timezone Difference Simple Example</title>
+<style>
+    body {
+        font-size: 16px;
+    }
+    div.date, div.table {
+        clear: both;
+        height: auto;
+        margin: 0 auto;
+        padding-top: 10px;
+    }
+    h1 {
+        text-align: center;
+    }
+    div.date, div#versions {
+        text-align: center;
+    }
+    table {
+        margin: 0px auto;
+        border-collapse: collapse;
+    }
+    .name, .location, .timezone {
+        text-align: left;
+    }
+    tr {
+        height: 2em;
+    }
+    tbody tr:nth-child(odd) {
+        background-color: #eee;
+    }
+    th, td {
+        padding-left: 10px;
+        padding-right: 10px;
+        vertical-align: middle;
+    }
+    td.dayOfWeek {
+        min-width: 5em;
+    }
+    td.time {
+        min-width: 4em;
+    }
+    td.date {
+        min-width: 6em;
+    }
+    td.diff {
+        min-width: 8em;
+    }
+    td.daynight {
+        min-width: 1em;
+    }
+    td.dayOfWeek, td.time, td.date, td.diff {
+        text-align: right;
+    }
+    td.daynight {
+        text-align: center;
+    }
+    tfoot {
+        font-size: small;
+    }
+    tfoot tr td {
+        text-align: center;
+        padding: 0px;
+        margin: 0px;
+    }
+    .currentTime {
+        padding-top: 0.75em;
+        padding-bottom: 0.75em;
+    }
+</style>
+<script>
+    var env;
+    function initialise() {
+        env = new momentTimezoneDiff.Environment();
+        momentTimezoneDiff.displayVersionInfo('versions');
+    }
+</script>
+</head>
+<body onload='initialise();'>
+    <h1>Moment Timezone Difference Simple Example</h1>
+    <div class='date' id='mtzdDate'>
+    </div>
+    <div class='table'>
+        <table>
+            <thead>
+                <tr>
+                    <th class='name'>Who</th>
+                    <th class='location'>Location</th>
+                    <th class='timezone'>Timezone</th>
+                    <th colspan='5'>Local Time</th>
+                </tr>
+                <tr class='hide' id='mtzdFormats'>
+                    <th>LINK|NAME</th>
+                    <th>LINK</th>
+                    <th>LINK|TIMEZONE</th>
+                    <th>dddd</th>
+                    <th>h:mm a</th>
+                    <th>DD-MMM-YYYY</th>
+                    <th>DIFF</th>
+                    <th>daynight</th>
+                </tr>
+            </thead>
+            <tbody id='mtzdContainer'>
+                <tr>
+                    <td class='name'>Fred Flintstone</td>
+                    <td class='location'>Vancouver, Canada</td>
+                    <td class='timezone'>US/Pacific</td>
+                    <td class='dayOfWeek'></td>
+                    <td class='time'></td>
+                    <td class='date'></td>
+                    <td class='diff'></td>
+                    <td class='daynight'></td>
+                </tr>
+                <tr>
+                    <td class='name'>Barny Rubble</td>
+                    <td class='location'>New York, USA</td>
+                    <td class='timezone'>US/Eastern</td>
+                    <td class='dayOfWeek'></td>
+                    <td class='time'></td>
+                    <td class='date'></td>
+                    <td class='diff'></td>
+                    <td class='daynight'></td>
+                </tr>
+                <tr>
+                    <td class='name'>Bamm Bamm Rubble</td>
+                    <td class='location'>London, United Kingdom</td>
+                    <td class='timezone'>Europe/London</td>
+                    <td class='dayOfWeek'></td>
+                    <td class='time'></td>
+                    <td class='date'></td>
+                    <td class='diff'></td>
+                    <td class='daynight'></td>
+                </tr>
+                <tr>
+                    <td class='name'>Wilma Flintstone</td>
+                    <td class='location'>Paris, France</td>
+                    <td class='timezone'>Europe/Paris</td>
+                    <td class='dayOfWeek'></td>
+                    <td class='time'></td>
+                    <td class='date'></td>
+                    <td class='diff'></td>
+                    <td class='daynight'></td>
+                </tr>
+                <tr>
+                    <td class='name'>Betty Rubble</td>
+                    <td class='location'>Mumbai, India</td>
+                    <td class='timezone'>Asia/Calcutta</td>
+                    <td class='dayOfWeek'></td>
+                    <td class='time'></td>
+                    <td class='date'></td>
+                    <td class='diff'></td>
+                    <td class='daynight'></td>
+                </tr>
+                <tr>
+                    <td class='name'>Pebbles Flintstone</td>
+                    <td class='location'>Perth, Australia</td>
+                    <td class='timezone'>Australia/Perth</td>
+                    <td class='dayOfWeek'></td>
+                    <td class='time'></td>
+                    <td class='date'></td>
+                    <td class='diff'></td>
+                    <td class='daynight'></td>
+                </tr>
+                <tr>
+                    <td class='name'>Me</td>
+                    <td class='location'>Here</td>
+                    <td class='timezone'></td>
+                    <td class='dayOfWeek'></td>
+                    <td class='time'></td>
+                    <td class='date'></td>
+                    <td class='diff'></td>
+                    <td class='daynight'></td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td class='currentTime' id='mtzdTime' colspan='8'></td>
+                </tr>
+                <tr>
+                    <td id='mtzdLegend' colspan='8'></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+    <div id='versions'></div>
+</body>
+</html>

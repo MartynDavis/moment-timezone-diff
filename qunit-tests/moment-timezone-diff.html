@@ -176,6 +176,18 @@
                                                              timeFormat: 'dddd HH:mm Do MMMM YYYY'
                                                            });
         testVars.env3.update([2014, 0, 8, 14, 42, 0], 'Australia/Melbourne', 'Dino');
+        
+        momentTimezoneDiff.displayVersionInfo('versions');
+        momentTimezoneDiff.displayVersionInfo('versionsNoTarget', { versionLinkTarget: ''
+                                                                  });
+        momentTimezoneDiff.displayVersionInfo('versionsNoLinks', { versionClass: 'mtzdVersionNew',
+                                                                   versionTitle: '',
+                                                                   versionTitleClass: 'mtzdVersionTitleNew',
+                                                                   versionNameClass: 'mtzdVersionNameNew',
+                                                                   versionVersionClass: 'mtzdVersionVersionNew',
+                                                                   versionIncludeLinks: false,
+                                                                   versionIncludejQuery: false
+                                                                  });
     }
 </script>
 </head>
@@ -432,6 +444,9 @@
         </div>
     </div>
     <div class='legend' id='legendFrench2'></div>
+    <div id='versions'></div>
+    <div id='versionsNoTarget'></div>
+    <div id='versionsNoLinks'></div>
     <h2>QUnit Tests</h2>
     <div id="qunit"></div>
     <div id="qunit-fixture"></div>

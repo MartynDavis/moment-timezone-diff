@@ -7,7 +7,8 @@
 "use strict";
 /*global QUnit, moment, momentTimezoneDiff, testVars*/
 QUnit.test('momentTimezoneDiff', function (assert) {
-    assert.equal(momentTimezoneDiff.version, '0.4.0', 'Moment timezone diff version is correct');
+    var version = '0.4.0';
+    assert.equal(momentTimezoneDiff.version, version, 'Moment timezone diff version is correct');
     assert.equal(momentTimezoneDiff.MODE_TEXTBOX, 0, 'Moment timezone diff MODE_TEXTBOX is correct');
     assert.equal(momentTimezoneDiff.MODE_DROPDOWN_HOUR24, 1, 'Moment timezone diff MODE_DROPDOWN_HOUR24 is correct');
     assert.equal(momentTimezoneDiff.MODE_DROPDOWN_HOUR12, 2, 'Moment timezone diff MODE_DROPDOWN_HOUR12 is correct');
@@ -22,6 +23,8 @@ QUnit.test('momentTimezoneDiff', function (assert) {
     assert.equal(typeof momentTimezoneDiff.setOptions, 'function', 'Moment timezone diff setOptions is a function');
     assert.equal(typeof momentTimezoneDiff.daytime, 'function', 'Moment timezone diff daytime is a function');
     assert.equal(typeof momentTimezoneDiff.createLegend, 'function', 'Moment timezone diff createLegend is a function');
+    assert.equal(typeof momentTimezoneDiff.getVersionInfo, 'function', 'Moment timezone diff getVersionInfo is a function');
+    assert.equal(typeof momentTimezoneDiff.displayVersionInfo, 'function', 'Moment timezone diff displayVersionInfo is a function');
 });
 QUnit.test('Diff', function (assert) {
     var m = moment.tz([2014, 8, 1, 12, 42, 13], 'US/Pacific'),
@@ -78,6 +81,96 @@ function expectChildren(assert, parent, length) {
     assert.ok(parent && parent.children, 'Parent has children');
     assert.equal(parent.children.length, length, 'Parent has required number of children');
 }
+function checkVersion(assert, element, info, options) {
+    var index = 0,
+        properties;
+    expectChildren(assert, element, 2);
+    if (options.versionIncludeLinks && info.link) {
+        properties = { tagName: 'A',
+                       href: info.link,
+                       className: options.versionNameClass,
+                       textContent: info.name
+                     };
+        if (options.versionLinkTarget) {
+            properties.target = options.versionLinkTarget;
+        }
+        expectChild(assert, element, index++, properties);
+    } else {
+        expectChild(assert, element, index++, { tagName: 'SPAN',
+                                                className: options.versionNameClass,
+                                                textContent: info.name
+                                              });
+    }
+    expectChild(assert, element, index++, { tagName: 'SPAN',
+                                            className: options.versionVersionClass,
+                                            textContent: info.version
+                                          });
+}
+function checkVersionInfo(assert, id, options) {
+    var version = '0.4.0',
+        element = document.getElementById(id),
+        versions = [ { name: 'moment-timezone-diff', link: 'https://github.com/MartynDavis/moment-timezone-diff/', version: version },
+                     { name: 'moment', link: 'http://momentjs.com/', version: '2.8.3' },
+                     { name: 'moment-timezone', link: 'http://momentjs.com/timezone/', version: '0.2.2' },
+                     { name: 'moment-timezone-data', link: 'http://momentjs.com/timezone/', version: '2014g' }
+                   ],
+        childrenLength,
+        index = 0,
+        i;
+    if (!options.versionIncludeLinks) {
+        for (i = 0; i < versions.length; i += 1) {
+            delete versions[i].link;
+        }
+    }
+    assert.deepEqual(momentTimezoneDiff.getVersionInfo(options), versions, 'Version information matches');
+    childrenLength = versions.length;
+    if (options.versionTitle) {
+        childrenLength += 1;
+    }
+    expectChildren(assert, element, childrenLength);
+    
+    if (options.versionTitle) {
+        expectChild(assert, element, index++, { tagName: 'SPAN',
+                                                textContent: options.versionTitle,
+                                                className: options.versionTitleClass,
+                                              });
+    }
+    for (i = 0; i < versions.length; i += 1) {
+        expectChild(assert, element, index, { tagName: 'SPAN',
+                                              className: options.versionClass
+                                            });
+        checkVersion(assert, element.children[index], versions[i], options);
+        index += 1;
+    }
+}
+QUnit.test('versions', function (assert) {
+    checkVersionInfo(assert, 'versions', { versionClass: 'mtzdVersion',
+                                           versionTitle: 'Versions:',
+                                           versionTitleClass: 'mtzdVersionTitle',
+                                           versionNameClass: 'mtzdVersionName',
+                                           versionVersionClass: 'mtzdVersionVersion',
+                                           versionIncludeLinks: true,
+                                           versionLinkTarget: '_blank',
+                                           versionIncludejQuery: true
+                                         });
+    checkVersionInfo(assert, 'versionsNoTarget', { versionClass: 'mtzdVersion',
+                                                   versionTitle: 'Versions:',
+                                                   versionTitleClass: 'mtzdVersionTitle',
+                                                   versionNameClass: 'mtzdVersionName',
+                                                   versionVersionClass: 'mtzdVersionVersion',
+                                                   versionIncludeLinks: true,
+                                                   versionLinkTarget: '',
+                                                   versionIncludejQuery: true
+                                                 });
+    checkVersionInfo(assert, 'versionsNoLinks', { versionClass: 'mtzdVersionNew',
+                                                  versionTitle: '',
+                                                  versionTitleClass: 'mtzdVersionTitleNew',
+                                                  versionNameClass: 'mtzdVersionNameNew',
+                                                  versionVersionClass: 'mtzdVersionVersionNew',
+                                                  versionIncludeLinks: false,
+                                                  versionIncludejQuery: false
+                                                });
+});
 function makeOptions(from, to, length, exceptions) {
     var values = [ ],
         value,
@@ -923,7 +1016,15 @@ QUnit.test('Environment1', function (assert) {
                            legendSeparator: ' .. ',
                            timeFormat: 'dddd h:mm a DD-MMM-YYYY',
                            timeShowTimezoneName: false,
-                           defaultTimezone: momentTimezoneDiff.getDefaultTimezone()
+                           defaultTimezone: momentTimezoneDiff.getDefaultTimezone(),
+                           versionClass: 'mtzdVersion',
+                           versionTitle: 'Versions:',
+                           versionTitleClass: 'mtzdVersionTitle',
+                           versionNameClass: 'mtzdVersionName',
+                           versionVersionClass: 'mtzdVersionVersion',
+                           versionIncludeLinks: true,
+                           versionLinkTarget: '_blank',
+                           versionIncludejQuery: true
                          };
     dateElement = document.getElementById('mtzdDate');
     assert.ok(dateElement, 'Date element exists');
@@ -1486,7 +1587,15 @@ function testFrench(assert, env, dateId, formatsId, containerId, timeId, legendI
                            legendSeparator: ' .. ',
                            timeFormat: 'dddd HH:mm Do MMMM YYYY',
                            timeShowTimezoneName: true,
-                           defaultTimezone: momentTimezoneDiff.getDefaultTimezone()
+                           defaultTimezone: momentTimezoneDiff.getDefaultTimezone(),
+                           versionClass: 'mtzdVersion',
+                           versionTitle: 'Versions:',
+                           versionTitleClass: 'mtzdVersionTitle',
+                           versionNameClass: 'mtzdVersionName',
+                           versionVersionClass: 'mtzdVersionVersion',
+                           versionIncludeLinks: true,
+                           versionLinkTarget: '_blank',
+                           versionIncludejQuery: true
                          };
     dateElement = document.getElementById(dateId);
     assert.ok(dateElement, 'Date element exists');

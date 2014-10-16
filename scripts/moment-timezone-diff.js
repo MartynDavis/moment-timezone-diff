@@ -96,7 +96,15 @@
                            legendSeparator: ' .. ',
                            timeFormat: 'dddd h:mm a DD-MMM-YYYY',
                            timeShowTimezoneName: false,
-                           defaultTimezone: getDefaultTimezone()
+                           defaultTimezone: getDefaultTimezone(),
+                           versionClass: 'mtzdVersion',
+                           versionTitle: 'Versions:',
+                           versionTitleClass: 'mtzdVersionTitle',
+                           versionNameClass: 'mtzdVersionName',
+                           versionVersionClass: 'mtzdVersionVersion',
+                           versionIncludeLinks: true,
+                           versionLinkTarget: '_blank',
+                           versionIncludejQuery: true
                          },
         MODE_TEXTBOX = 0,
         MODE_DROPDOWN_HOUR24 = 1,
@@ -515,7 +523,7 @@
             console.error('Mode "' + mode + '" is invalid');
             return;
         }
-        if (getOptionValue(options, 'usejQueryDatepicker', true) && window.jQuery && $ && $.datepicker) {
+        if (getOptionValue(options, 'usejQueryDatepicker', true) && (typeof jQuery !== 'undefined') && $ && $.datepicker) {
             datepickerLocale = getOptionValue(options, 'datepickerLocale');
             datepickerOptions = { showButtonPanel: false,
                                   changeYear: true,
@@ -1142,7 +1150,7 @@
         return (getMinutes(this._momentTz, this._momentReference.year()) - getMinutes(this._momentReference, this._momentTz.year())) / 60;
     };
     TimezoneDiff.prototype.dayDiff = function () {
-        return (getDays(this._momentTz, this._momentReference.year()) - getDays(this._momentReference, this._momentTz.year())) / 60;
+        return getDays(this._momentTz, this._momentReference.year()) - getDays(this._momentReference, this._momentTz.year());
     };
     function daytime(m, options) {
         var hour = m.hour(),
@@ -1279,6 +1287,79 @@
             setOptionValues(workingOptions, options);
         }
         return createLegend(workingOptions);
+    };
+    function getVersionInfo(options) {
+        var versions = [ ];
+        function makeVersionInfo(options, name, link, version) {
+            var obj = { name: name, version: version };
+            if (options.versionIncludeLinks && link) {
+                obj.link = link;
+            }
+            return obj;
+        }
+        versions.push(makeVersionInfo(options, 'moment-timezone-diff', 'https://github.com/MartynDavis/moment-timezone-diff/', mtzd.version));
+        versions.push(makeVersionInfo(options, 'moment', 'http://momentjs.com/', moment.version));
+        versions.push(makeVersionInfo(options, 'moment-timezone', 'http://momentjs.com/timezone/', moment.tz.version));
+        versions.push(makeVersionInfo(options, 'moment-timezone-data', 'http://momentjs.com/timezone/', moment.tz.dataVersion));
+        if (options.versionIncludejQuery && (typeof jQuery !== 'undefined') && $) {
+            versions.push(makeVersionInfo(options, 'jQuery', 'https://jquery.com/', $().jquery));
+            if ($.ui) {
+                versions.push(makeVersionInfo(options, 'jQuery-UI', 'https://jqueryui.com/', $.ui.version || "pre 1.6"));
+            }
+        }
+        return versions;
+    }
+    function displayVersionInfo(id, options) {
+        if (typeof exports === 'object') {
+            throw new MomentTimezoneDiffException('Fucntion can only be called when using a Browser');
+        }
+        var element = document.getElementById(id),
+            versions = getVersionInfo(options),
+            versionElement,
+            properties,
+            i;
+        if (element && versions) {
+            if (options.versionTitle) {
+                appendChild(element, createElement('span', { textContent: options.versionTitle,
+                                                             className: options.versionTitleClass
+                                                           }));
+            }
+            for (i = 0; i < versions.length; i += 1) {
+                versionElement = appendChild(element, createElement('span', { className: options.versionClass
+                                                                            }));
+                if (options.versionIncludeLinks && versions[i].link) {
+                    properties = { textContent: versions[i].name,
+                                   href: versions[i].link,
+                                   className: options.versionNameClass
+                                 };
+                    if (options.versionLinkTarget) {
+                        properties.target = options.versionLinkTarget;
+                    }
+                    appendChild(versionElement, createElement('a', properties));
+                } else {
+                    appendChild(versionElement, createElement('span', { textContent: versions[i].name,
+                                                                        className: options.versionNameClass
+                                                                      }));
+                }
+                appendChild(versionElement, createElement('span', { textContent: versions[i].version,
+                                                                    className: options.versionVersionClass
+                                                                  }));
+            }
+        }
+    }
+    mtzd.getVersionInfo = function (options) {
+        var workingOptions = duplicate(defaultOptions);
+        if (options) {
+            setOptionValues(workingOptions, options);
+        }
+        return getVersionInfo(workingOptions);
+    };
+    mtzd.displayVersionInfo = function (id, options) {
+        var workingOptions = duplicate(defaultOptions);
+        if (options) {
+            setOptionValues(workingOptions, options);
+        }
+        return displayVersionInfo(id, workingOptions);
     };
     return mtzd;
 }));

@@ -9,6 +9,7 @@
 var moment = require('../moment/moment-timezone'),
     momentTimezoneDiff = require('../scripts/moment-timezone-diff');
 describe('options', function () {
+    var version = '0.4.0';
     describe('options', function () {
         var defaultOptions = { locale: undefined,
                                ahead: 'ahead',
@@ -27,8 +28,16 @@ describe('options', function () {
                                legendSeparator: ' .. ',
                                timeFormat: 'dddd h:mm a DD-MMM-YYYY',
                                timeShowTimezoneName: false,
-                               defaultTimezone: momentTimezoneDiff.getDefaultTimezone()
-                               };
+                               defaultTimezone: momentTimezoneDiff.getDefaultTimezone(),
+                               versionClass: 'mtzdVersion',
+                               versionTitle: 'Versions:',
+                               versionTitleClass: 'mtzdVersionTitle',
+                               versionNameClass: 'mtzdVersionName',
+                               versionVersionClass: 'mtzdVersionVersion',
+                               versionIncludeLinks: true,
+                               versionLinkTarget: '_blank',
+                               versionIncludejQuery: true
+                             };
         //
         // copy(...)
         //
@@ -51,13 +60,8 @@ describe('options', function () {
             return newObj;
         }
         it('main', function () {
-            var func,
-                result;
-            // NOTE: Do not phrase version check as:
-            //      momentTimezoneDiff.version.should.eql('0.4.0')
-            // as the grunt script will not be able to update it when the version is bumped
-            result = momentTimezoneDiff.version === '0.4.0';
-            result.should.eql(true);
+            var func;
+            momentTimezoneDiff.version.should.eql(version);
             momentTimezoneDiff.MODE_TEXTBOX.should.eql(0);
             momentTimezoneDiff.MODE_DROPDOWN_HOUR24.should.eql(1);
             momentTimezoneDiff.MODE_DROPDOWN_HOUR12.should.eql(2);
@@ -72,15 +76,32 @@ describe('options', function () {
             (typeof momentTimezoneDiff.setOptions).should.eql('function');
             (typeof momentTimezoneDiff.daytime).should.eql('function');
             (typeof momentTimezoneDiff.createLegend).should.eql('function');
+            (typeof momentTimezoneDiff.getVersionInfo).should.eql('function');
+            (typeof momentTimezoneDiff.displayVersionInfo).should.eql('function');
             func = function () { var obj = new momentTimezoneDiff.DateTimeElements(); };
             func.should.throw('Object can only be created when using a Browser');
             func = function () { var obj = new momentTimezoneDiff.Environment(); };
             func.should.throw('Object can only be created when using a Browser');
             func = function () { var obj = new momentTimezoneDiff.TimezoneDiff(moment(), 'US/Pacific'); };
             func.should.not.throw();
+            func = function () { momentTimezoneDiff.displayVersionInfo('blah'); };
+            func.should.throw();
         });
         it('defaultOptions', function () {
             momentTimezoneDiff.getOptions().should.eql(defaultOptions);
+        });
+        it('versionInfo', function () {
+            var versions = [ { name: 'moment-timezone-diff', link: 'https://github.com/MartynDavis/moment-timezone-diff/', version: version },
+                             { name: 'moment', link: 'http://momentjs.com/', version: '2.8.3' },
+                             { name: 'moment-timezone', link: 'http://momentjs.com/timezone/', version: '0.2.2' },
+                             { name: 'moment-timezone-data', link: 'http://momentjs.com/timezone/', version: '2014g' }
+                           ],
+                i;
+            momentTimezoneDiff.getVersionInfo().should.eql(versions);
+            for (i = 0; i < versions.length; i += 1) {
+                delete versions[i].link;
+            }
+            momentTimezoneDiff.getVersionInfo({ versionIncludeLinks: false }).should.eql(versions);
         });
         it('get/set', function () {
             var options,
@@ -100,32 +121,43 @@ describe('options', function () {
             var m = moment.tz([2014, 8, 1, 12, 42, 13], 'US/Pacific'),
                 tzDiff = new momentTimezoneDiff.TimezoneDiff(m, 'US/Eastern');
             tzDiff.diff().should.equal(3);
+            tzDiff.dayDiff().should.equal(0);
             m = moment.tz([2014, 11, 31, 23, 42, 13], 'US/Pacific');
             tzDiff = new momentTimezoneDiff.TimezoneDiff(m, 'US/Eastern');
             tzDiff.diff().should.equal(3);
+            tzDiff.dayDiff().should.equal(1);
             m = moment.tz([2015, 0, 1, 1, 42, 13], 'US/Eastern');
             tzDiff = new momentTimezoneDiff.TimezoneDiff(m, 'US/Pacific');
             tzDiff.diff().should.equal(-3);
+            tzDiff.dayDiff().should.equal(-1);
             m = moment.tz([2015, 0, 1, 1, 1, 1], 'Australia/Melbourne');
             tzDiff = new momentTimezoneDiff.TimezoneDiff(m, 'Australia/Perth');
             tzDiff.diff().should.equal(-3);
+            tzDiff.dayDiff().should.equal(-1);
             tzDiff = new momentTimezoneDiff.TimezoneDiff(m, 'Australia/Brisbane');
             tzDiff.diff().should.equal(-1);
             m = moment.tz([2014, 7, 7, 7, 7, 7], 'Australia/Melbourne');
             tzDiff = new momentTimezoneDiff.TimezoneDiff(m, 'Australia/Perth');
             tzDiff.diff().should.equal(-2);
+            tzDiff.dayDiff().should.equal(0);
             tzDiff = new momentTimezoneDiff.TimezoneDiff(m, 'Australia/Brisbane');
             tzDiff.diff().should.equal(0);
+            tzDiff.dayDiff().should.equal(0);
         });
         it('Format', function () {
             var m = moment.tz([2015, 0, 1, 0, 15, 0], 'Australia/Melbourne'),
                 tzDiff = new momentTimezoneDiff.TimezoneDiff(m, 'Australia/Adelaide');
             tzDiff.diff().should.equal(-0.5);
+            tzDiff.dayDiff().should.equal(-1);
             tzDiff.format('HH:mm MMM-DD-YYYY DIFF daynight').should.equal('23:45 Dec-31-2014 0.5 hours behind \u263e');
             tzDiff = new momentTimezoneDiff.TimezoneDiff(m, 'US/Pacific');
+            tzDiff.diff().should.equal(-19);
+            tzDiff.dayDiff().should.equal(-1);
             tzDiff.format('HH:mm MMM-DD-YYYY DIFF daynight').should.equal('05:15 Dec-31-2014 19 hours behind \u263e');
             m = moment.tz([2015, 0, 1, 9, 15, 0], 'Australia/Melbourne');
             tzDiff = new momentTimezoneDiff.TimezoneDiff(m, 'US/Pacific');
+            tzDiff.diff().should.equal(-19);
+            tzDiff.dayDiff().should.equal(-1);
             tzDiff.format('HH:mm MMM-DD-YYYY DIFF daynight').should.equal('14:15 Dec-31-2014 19 hours behind \u263c');
             tzDiff.format('HH:mm MMM-DD-YYYY diff daynight').should.equal('14:15 Dec-31-2014 -19 hours \u263c');
             tzDiff.format('HH:mm MMM-DD-YYYY [DIFF] daynight').should.equal('14:15 Dec-31-2014 DIFF \u263c');
@@ -135,6 +167,7 @@ describe('options', function () {
         it('Format - escaped', function () {
             var m = moment.tz([2015, 0, 1, 9, 15, 0], 'Australia/Melbourne'),
                 tzDiff = new momentTimezoneDiff.TimezoneDiff(m, 'US/Pacific');
+            tzDiff.diff().should.equal(-19);
             tzDiff.format('DIFF').should.equal('19 hours behind');
             tzDiff.format('diff').should.equal('-19 hours');
             tzDiff.format('daynight').should.equal('\u263c');
@@ -145,6 +178,7 @@ describe('options', function () {
             tzDiff.format('HH:mm MMM-DD-YYYY [diff] [daynight]').should.equal('14:15 Dec-31-2014 diff daynight');
             m = moment.tz([2014, 11, 31, 14, 15, 0], 'US/Pacific');
             tzDiff = new momentTimezoneDiff.TimezoneDiff(m, 'Australia/Melbourne');
+            tzDiff.diff().should.equal(19);
             tzDiff.format('DIFF').should.equal('19 hours ahead');
             tzDiff.format('diff').should.equal('19 hours');
             tzDiff.format('daynight').should.equal('\u263c');
@@ -188,7 +222,7 @@ describe('options', function () {
             // Default options should not have been affected
             momentTimezoneDiff.daytime(m).should.equal(false);
         });
-        function checkSunny(m, options) {
+        function checkDaytime(m, options) {
             var hour = m.hour(),
                 minute = m.minute();
             if ((hour > options.sunRiseHour) && (hour < options.sunSetHour)) {
@@ -218,7 +252,7 @@ describe('options', function () {
                             momentTimezoneDiff.setOptions({ sunRiseHour: sunRiseHour, sunRiseMinute: sunRiseMinute,
                                                             sunSetHour: sunSetHour, sunSetMinute: sunSetMinute });
                             //console.log("daytime(" + sunRiseHour + ":" + sunRiseMinute + "," + sunSetHour + ":" + sunSetMinute + ") - " + m.hour() + ":" + m.minute());
-                            momentTimezoneDiff.daytime(m).should.equal(checkSunny(m, momentTimezoneDiff.getOptions()));
+                            momentTimezoneDiff.daytime(m).should.equal(checkDaytime(m, momentTimezoneDiff.getOptions()));
                         }
                     }
                 }
@@ -227,7 +261,7 @@ describe('options', function () {
                 for (sunSetHour = sunRiseHour; sunSetHour < 24; sunSetHour += 1) {
                     momentTimezoneDiff.setOptions({ sunRiseHour: sunRiseHour, sunRiseMinute: undefined,
                                                     sunSetHour: sunSetHour, sunSetMinute: undefined });
-                    momentTimezoneDiff.daytime(m).should.equal(checkSunny(m, momentTimezoneDiff.getOptions()));
+                    momentTimezoneDiff.daytime(m).should.equal(checkDaytime(m, momentTimezoneDiff.getOptions()));
                 }
             }
             // restore default options
