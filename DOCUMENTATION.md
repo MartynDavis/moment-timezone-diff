@@ -508,6 +508,9 @@ The following example is contained within [examples/simple.html](examples/simple
     <html>
     <head>
     <meta charset="utf-8">
+    <link href="http://code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css" rel="stylesheet" type="text/css" />
+    <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="http://code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
     <script src='../moment/moment.min.js'></script>
     <script src='../moment/moment-timezone.min.js'></script>
     <script src='../scripts/moment-timezone-diff.js'></script>
@@ -579,6 +582,9 @@ The following example is contained within [examples/simple.html](examples/simple
         .currentTime {
             padding-top: 0.75em;
             padding-bottom: 0.75em;
+        }
+        .ui-datepicker {
+            font-size: 80%;
         }
     </style>
     <script>
