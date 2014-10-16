@@ -57,10 +57,12 @@ if (!config.output) {
 
 console.log();
 
+data.push([ 'Name', 'Location', 'Timezone' ]);
+
 for (i = 0; i < config.timezones.length; i++) {
-    tzDiff = new momentTimezoneDiff.TimezoneDiff(m, config.timezones[i], config.options);
+    tzDiff = new momentTimezoneDiff.TimezoneDiff(m, config.timezones[i].timezone, config.options);
     
-    rowData = [ config.timezones[i] || 'Current timezone' ];
+    rowData = [ config.timezones[i].name, config.timezones[i].location, config.timezones[i].timezone || 'Current timezone' ];
     
     for (j = 0; j < config.output.length; j++) {
         rowData.push(tzDiff.format(config.output[j]));
@@ -69,7 +71,7 @@ for (i = 0; i < config.timezones.length; i++) {
     data.push(rowData);
 }
 
-align = [ 'l' ];
+align = [ 'l', 'l', 'l' ];
 
 for (j = 0; j < config.output.length; j++) {
     align.push('r');

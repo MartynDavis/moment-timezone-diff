@@ -6,18 +6,28 @@ A javascript library for displaying information about different timezones, utili
 
 If you have a distributed team, you can easily display the current time for each team member
 and answer questions such as:
-- If the time for me, in Melbourne, Australia, is 2 pm this Sunday, what is the time for John, in New Zealand, & Jane, in Paris, France.
-- If the time for John is 5 pm Friday fortnight, what is the time for me and Jane.
+- If the time for me, in Melbourne, Australia, is 2 pm this Sunday, what is the time for Wilma, in Paris, & Fred, in Vancouver.
+- If the time for Barney is 5 pm Friday fortnight, what is the time for me and Betty.
 
 # Example
 
-A very simple example of its usage is provided at [examples/simple.html](examples/simple.html).
+## HTML
+
+An example of its usage is provided at [examples/simple.html](examples/simple.html).
 
 When viewed in a browser, the following is displayed:
 
-![Simple example of moment-timezone-diff](images/simple.png)
+![HTML example of moment-timezone-diff](images/simple.png)
 
 You can see it live at [http://madlid.com/moment-timezone-diff/examples/simple.html](http://madlid.com/moment-timezone-diff/examples/simple.html).
+
+## Node.js
+
+An example of its usage is provided at [node/timezone.js](node/timezone.js).
+
+When executed, the following is displayed:
+
+![Node.js example of moment-timezone-diff](images/node.png)
 
 # Documentation
 

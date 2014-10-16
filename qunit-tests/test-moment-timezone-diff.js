@@ -1107,7 +1107,7 @@ QUnit.test('Environment1', function (assert) {
                                                                   className: 'mtzdSelect',
                                                                   options: [ { text: '',                   value: '' },
                                                                              { text: 'Fred Flintstone',    value: 'US/Pacific' },
-                                                                             { text: 'Barny Rubble',       value: 'US/Eastern' },
+                                                                             { text: 'Barney Rubble',       value: 'US/Eastern' },
                                                                              { text: 'Bamm Bamm Rubble',   value: 'Europe/London' },
                                                                              { text: 'Wilma Flintstone',   value: 'Europe/Paris' },
                                                                              { text: 'Betty Rubble',       value: 'Asia/Calcutta' },
@@ -1145,7 +1145,7 @@ QUnit.test('Environment1', function (assert) {
 
     assert.equal(env._dateTimeElements.getTimezoneName(''), '', 'Timezone name matches');
     assert.equal(env._dateTimeElements.getTimezoneName('US/Pacific'), 'Fred Flintstone', 'Timezone name matches');
-    assert.equal(env._dateTimeElements.getTimezoneName('US/Eastern'), 'Barny Rubble', 'Timezone name matches');
+    assert.equal(env._dateTimeElements.getTimezoneName('US/Eastern'), 'Barney Rubble', 'Timezone name matches');
     assert.equal(env._dateTimeElements.getTimezoneName('Europe/London'), 'Bamm Bamm Rubble', 'Timezone name matches');
     assert.equal(env._dateTimeElements.getTimezoneName('Europe/Paris'), 'Wilma Flintstone', 'Timezone name matches');
     assert.equal(env._dateTimeElements.getTimezoneName('Asia/Calcutta'), 'Betty Rubble', 'Timezone name matches');
@@ -1186,7 +1186,7 @@ QUnit.test('Environment1', function (assert) {
                                                   '17 hours behind',
                                                   '\u263c'
                                                 ]);
-    expectValues(assert, containerElement, index++, [ { textContent: 'Barny Rubble', title: 'New York, USA\nUS/Eastern' },
+    expectValues(assert, containerElement, index++, [ { textContent: 'Barney Rubble', title: 'New York, USA\nUS/Eastern' },
                                                   'New York, USA',
                                                   'US/Eastern',
                                                   'Sunday',
@@ -1265,7 +1265,7 @@ QUnit.test('Environment1', function (assert) {
                                                       '',
                                                       '\u263c'
                                                     ]);
-    expectValues(assert, containerElement, index++, [ { textContent: 'Barny Rubble', title: 'New York, USA\nUS/Eastern' },
+    expectValues(assert, containerElement, index++, [ { textContent: 'Barney Rubble', title: 'New York, USA\nUS/Eastern' },
                                                       'New York, USA',
                                                       'US/Eastern',
                                                       'Wednesday',
@@ -1344,7 +1344,7 @@ QUnit.test('Environment1', function (assert) {
                                                       '9 hours behind',
                                                       '\u263e'
                                                     ]);
-    expectValues(assert, containerElement, index++, [ { textContent: 'Barny Rubble', title: 'New York, USA\nUS/Eastern' },
+    expectValues(assert, containerElement, index++, [ { textContent: 'Barney Rubble', title: 'New York, USA\nUS/Eastern' },
                                                       'New York, USA',
                                                       'US/Eastern',
                                                       'Saturday',
@@ -1404,7 +1404,7 @@ QUnit.test('Environment1', function (assert) {
     for (col = 0; col < 3; col += 1) {
         index = 0;
         verifyLink(assert, env, containerElement, index++, col, 'US/Pacific', 'Fred Flintstone', 'mtzdLink');
-        verifyLink(assert, env, containerElement, index++, col, 'US/Eastern', 'Barny Rubble', 'mtzdLink');
+        verifyLink(assert, env, containerElement, index++, col, 'US/Eastern', 'Barney Rubble', 'mtzdLink');
         verifyLink(assert, env, containerElement, index++, col, 'Europe/London', 'Bamm Bamm Rubble', 'mtzdLink');
         verifyLink(assert, env, containerElement, index++, col, 'Europe/Paris', 'Wilma Flintstone', 'mtzdLink');
         verifyLink(assert, env, containerElement, index++, col, 'Asia/Calcutta', 'Betty Rubble', 'mtzdLink');
@@ -1429,7 +1429,7 @@ QUnit.test('Environment1', function (assert) {
                                                       '8 hours behind',
                                                       '\u263c'
                                                     ]);
-    expectValues(assert, containerElement, index++, [ { textContent: 'Barny Rubble', title: 'New York, USA\nUS/Eastern' },
+    expectValues(assert, containerElement, index++, [ { textContent: 'Barney Rubble', title: 'New York, USA\nUS/Eastern' },
                                                       'New York, USA',
                                                       'US/Eastern',
                                                       'Thursday',
@@ -1486,7 +1486,7 @@ QUnit.test('Environment1', function (assert) {
 
     setDateTimeElementValues(env._dateTimeElements, { hour: 11, minute: 59, ampm: 1, day: 30, month: 11, year: 10, timezone: 2 });
     values = env._dateTimeElements.getSelected();
-    assert.deepEqual(values, { hour: 23, minute: 59, day: 31, month: 11, year: 2020, timezone: { text: 'Barny Rubble', value: 'US/Eastern' } }, 'Selected matches date');
+    assert.deepEqual(values, { hour: 23, minute: 59, day: 31, month: 11, year: 2020, timezone: { text: 'Barney Rubble', value: 'US/Eastern' } }, 'Selected matches date');
     fireChangeEvent(env._dateTimeElements._elements.hour);
 
     index = 0;
@@ -1499,7 +1499,7 @@ QUnit.test('Environment1', function (assert) {
                                                       '3 hours behind',
                                                       '\u263e'
                                                     ]);
-    expectValues(assert, containerElement, index++, [ { textContent: 'Barny Rubble', title: 'New York, USA\nUS/Eastern' },
+    expectValues(assert, containerElement, index++, [ { textContent: 'Barney Rubble', title: 'New York, USA\nUS/Eastern' },
                                                       'New York, USA',
                                                       'US/Eastern',
                                                       'Thursday',
@@ -1667,7 +1667,7 @@ function testFrench(assert, env, dateId, formatsId, containerId, timeId, legendI
                                                                   className: 'mtzdSelect',
                                                                   options: [ { text: '',                   value: '' },
                                                                              { text: 'Fred Flintstone',    value: 'US/Pacific' },
-                                                                             { text: 'Barny Rubble',       value: 'US/Eastern' },
+                                                                             { text: 'Barney Rubble',       value: 'US/Eastern' },
                                                                              { text: 'Bamm Bamm Rubble',   value: 'Europe/London' },
                                                                              { text: 'Wilma Flintstone',   value: 'Europe/Paris' },
                                                                              { text: 'Betty Rubble',       value: 'Asia/Calcutta' },
@@ -1704,7 +1704,7 @@ function testFrench(assert, env, dateId, formatsId, containerId, timeId, legendI
 
     assert.equal(env._dateTimeElements.getTimezoneName(''), '', 'Timezone name matches');
     assert.equal(env._dateTimeElements.getTimezoneName('US/Pacific'), 'Fred Flintstone', 'Timezone name matches');
-    assert.equal(env._dateTimeElements.getTimezoneName('US/Eastern'), 'Barny Rubble', 'Timezone name matches');
+    assert.equal(env._dateTimeElements.getTimezoneName('US/Eastern'), 'Barney Rubble', 'Timezone name matches');
     assert.equal(env._dateTimeElements.getTimezoneName('Europe/London'), 'Bamm Bamm Rubble', 'Timezone name matches');
     assert.equal(env._dateTimeElements.getTimezoneName('Europe/Paris'), 'Wilma Flintstone', 'Timezone name matches');
     assert.equal(env._dateTimeElements.getTimezoneName('Asia/Calcutta'), 'Betty Rubble', 'Timezone name matches');
@@ -1740,7 +1740,7 @@ function testFrench(assert, env, dateId, formatsId, containerId, timeId, legendI
                                                       '-19 heures',
                                                       '\u263e'
                                                     ]);
-    expectValues(assert, containerElement, index++, [ { textContent: 'Barny Rubble', title: 'US/Eastern' },
+    expectValues(assert, containerElement, index++, [ { textContent: 'Barney Rubble', title: 'US/Eastern' },
                                                       'US/Eastern',
                                                       'mardi 22:42 7 janvier 2014',
                                                       '-16 heures',
@@ -1798,7 +1798,7 @@ function testFrench(assert, env, dateId, formatsId, containerId, timeId, legendI
                                                       '',
                                                       '\u263c'
                                                     ]);
-    expectValues(assert, containerElement, index++, [ { textContent: 'Barny Rubble', title: 'US/Eastern' },
+    expectValues(assert, containerElement, index++, [ { textContent: 'Barney Rubble', title: 'US/Eastern' },
                                                       'US/Eastern',
                                                       'mercredi 17:30 15 octobre 2014',
                                                       '3 heures',
@@ -1856,7 +1856,7 @@ function testFrench(assert, env, dateId, formatsId, containerId, timeId, legendI
                                                       '-9 heures',
                                                       '\u263e'
                                                     ]);
-    expectValues(assert, containerElement, index++, [ { textContent: 'Barny Rubble', title: 'US/Eastern' },
+    expectValues(assert, containerElement, index++, [ { textContent: 'Barney Rubble', title: 'US/Eastern' },
                                                       'US/Eastern',
                                                       'samedi 08:30 15 novembre 2014',
                                                       '-6 heures',
@@ -1898,7 +1898,7 @@ function testFrench(assert, env, dateId, formatsId, containerId, timeId, legendI
     for (col = 0; col < 3; col += 1) {
         index = 0;
         verifyLink(assert, env, containerElement, index++, col, 'US/Pacific', 'Fred Flintstone', 'mtzdLink');
-        verifyLink(assert, env, containerElement, index++, col, 'US/Eastern', 'Barny Rubble', 'mtzdLink');
+        verifyLink(assert, env, containerElement, index++, col, 'US/Eastern', 'Barney Rubble', 'mtzdLink');
         verifyLink(assert, env, containerElement, index++, col, 'Europe/London', 'Bamm Bamm Rubble', 'mtzdLink');
         verifyLink(assert, env, containerElement, index++, col, 'Europe/Paris', 'Wilma Flintstone', 'mtzdLink');
         verifyLink(assert, env, containerElement, index++, col, 'Asia/Calcutta', 'Betty Rubble', 'mtzdLink');
@@ -1920,7 +1920,7 @@ function testFrench(assert, env, dateId, formatsId, containerId, timeId, legendI
                                                       '-8 heures',
                                                       '\u263e'
                                                     ]);
-    expectValues(assert, containerElement, index++, [ { textContent: 'Barny Rubble', title: 'US/Eastern' },
+    expectValues(assert, containerElement, index++, [ { textContent: 'Barney Rubble', title: 'US/Eastern' },
                                                       'US/Eastern',
                                                       'jeudi 19:00 31 décembre 2009',
                                                       '-5 heures',
@@ -1959,7 +1959,7 @@ function testFrench(assert, env, dateId, formatsId, containerId, timeId, legendI
 
     setDateTimeElementValues(env._dateTimeElements, { hour: 23, minute: 59, day: 30, month: 11, year: 10, timezone: 2 });
     values = env._dateTimeElements.getSelected();
-    assert.deepEqual(values, { hour: 23, minute: 59, day: 31, month: 11, year: 2020, timezone: { text: 'Barny Rubble', value: 'US/Eastern' } }, 'Selected matches date');
+    assert.deepEqual(values, { hour: 23, minute: 59, day: 31, month: 11, year: 2020, timezone: { text: 'Barney Rubble', value: 'US/Eastern' } }, 'Selected matches date');
     fireChangeEvent(env._dateTimeElements._elements.hour);
 
     index = 0;
@@ -1969,7 +1969,7 @@ function testFrench(assert, env, dateId, formatsId, containerId, timeId, legendI
                                                       '-3 heures',
                                                       '\u263e'
                                                     ]);
-    expectValues(assert, containerElement, index++, [ { textContent: 'Barny Rubble', title: 'US/Eastern' },
+    expectValues(assert, containerElement, index++, [ { textContent: 'Barney Rubble', title: 'US/Eastern' },
                                                       'US/Eastern',
                                                       'jeudi 23:59 31 décembre 2020',
                                                       '',
