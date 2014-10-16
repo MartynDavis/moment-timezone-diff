@@ -27,6 +27,12 @@ File | Description
 moment-timezone-diff.js | File containing the Javascript for momentTimezoneDiff functionality.
 moment-timezone-diff.css | File containing default styles for the HTML elements created by momentTimezoneDiff. 
 
+# Timezones
+
+Timezone information is maintained by [iana](http://www.iana.org/time-zones), which is used by [moment-timezone](http://momentjs.com/timezone/) to provide a simple enough way to access the information.
+
+What does one use for a timezone value? Checkout the interactive map provided by [moment-timezone](http://momentjs.com/timezone/).  You will not be disappointed.
+
 # momentTimezoneDiff Namespace
 
 The *momentTimezoneDiff* namespace allows access to the top-level properties, methods and classes. 
