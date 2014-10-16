@@ -84,6 +84,21 @@ module.exports = function(grunt) {
                'test/*.js',
                'examples/*.html'
              ]
+      },
+      patch: {
+        options: {
+          prefix: '[^\\-\\w]version[\'"]?\\s*[:=]\\s*[\'"]?',
+          release: 'patch'
+        },
+        src: [ 'package.json', 
+               'scripts/*.css', 
+               'scripts/*.js', 
+               'qunit-tests/*.html',
+               'qunit-tests/*.js',
+               'node/*.js',
+               'test/*.js',
+               'examples/*.html'
+             ]
       }
     }
   });
@@ -100,5 +115,6 @@ module.exports = function(grunt) {
   grunt.registerTask('default', [ 'jsonlint', 'jshint', 'mochaTest', 'qunit' ]);
   grunt.registerTask('jshint-job', [ 'jshint' ]);
   grunt.registerTask('qunit-job', [ 'jshint', 'qunit' ]);
-  grunt.registerTask('build', [ 'jsonlint', 'jshint', 'mochaTest', 'qunit', 'version' ]);
+  grunt.registerTask('build', [ 'jsonlint', 'jshint', 'mochaTest', 'qunit', 'version:minor' ]);
+  grunt.registerTask('build-patch', [ 'jsonlint', 'jshint', 'mochaTest', 'qunit', 'version:patch' ]);
 };

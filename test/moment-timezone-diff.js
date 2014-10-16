@@ -1,6 +1,6 @@
 /*
     moment-timezone-diff.js
-    version : 0.5.0
+    version : 0.5.1
     authors : Martyn Davis
     license : MIT
 */
@@ -9,7 +9,7 @@
 var moment = require('../moment/moment-timezone'),
     momentTimezoneDiff = require('../scripts/moment-timezone-diff');
 describe('options', function () {
-    var version = '0.5.0';
+    var version = '0.5.1';
     describe('options', function () {
         var defaultOptions = { locale: undefined,
                                ahead: 'ahead',
