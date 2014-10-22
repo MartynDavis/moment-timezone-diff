@@ -1,0 +1,13 @@
+Date & Time: 2014-01-01 01:00
+Timezone:    Australia/Melbourne
+Timezone:    Australia/Melbourne
+Data:        test\data.json
+
+Name                Location                Timezone
+Fred Flintstone     Vancouver, Canada       US/Pacific             Tuesday  06:00 am  31-Dec-2013   19 hours behind  ☼
+Barney Rubble       New York, USA           US/Eastern             Tuesday  09:00 am  31-Dec-2013   16 hours behind  ☼
+Bamm Bamm Rubble    London, United Kingdom  Europe/London          Tuesday  02:00 pm  31-Dec-2013   11 hours behind  ☼
+Wilma Flintstone    Paris, France           Europe/Paris           Tuesday  03:00 pm  31-Dec-2013   10 hours behind  ☼
+Betty Rubble        Mumbai, India           Asia/Calcutta          Tuesday  07:30 pm  31-Dec-2013  5.5 hours behind  ☼
+Pebbles Flintstone  Perth, Australia        Australia/Perth        Tuesday  10:00 pm  31-Dec-2013    3 hours behind  ☾
+Dino                Melbourne, Australia    Australia/Melbourne  Wednesday  01:00 am  01-Jan-2014                    ☾

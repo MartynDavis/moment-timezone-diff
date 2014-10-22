@@ -78,11 +78,11 @@ describe('options', function () {
             (typeof momentTimezoneDiff.createLegend).should.eql('function');
             (typeof momentTimezoneDiff.getVersionInfo).should.eql('function');
             (typeof momentTimezoneDiff.displayVersionInfo).should.eql('function');
-            func = function () { var obj = new momentTimezoneDiff.DateTimeElements(); };
+            func = function () { new momentTimezoneDiff.DateTimeElements(); };
             func.should.throw('Object can only be created when using a Browser');
-            func = function () { var obj = new momentTimezoneDiff.Environment(); };
+            func = function () { new momentTimezoneDiff.Environment(); };
             func.should.throw('Object can only be created when using a Browser');
-            func = function () { var obj = new momentTimezoneDiff.TimezoneDiff(moment(), 'US/Pacific'); };
+            func = function () { new momentTimezoneDiff.TimezoneDiff(moment(), 'US/Pacific'); };
             func.should.not.throw();
             func = function () { momentTimezoneDiff.displayVersionInfo('blah'); };
             func.should.throw();

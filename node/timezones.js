@@ -6,7 +6,7 @@
 */
 "use strict";
 var moment = require('moment-timezone'),
-    momentTimezoneDiff = require('../scripts/moment-timezone-diff'),
+    momentTimezoneDiff = require('../scripts/moment-timezone-diff.min'),
     yargs = require('yargs'),
     fs = require('fs'),
     table = require('text-table');
@@ -15,27 +15,55 @@ var moment = require('moment-timezone'),
 // Parse command line options
 //
 var argv = yargs
-    .usage('\nDisplay Timezone Related Information\n\nUsage: $0')
+    .usage(
+           '\nDisplay Timezone Related Information\n' +
+           '\n' +
+           'Usage: $0'
+    )
     .demand(0)
-    .alias({ 'f': 'file' })
-    .describe({ 'f': 'File containing configuration to load' })
-    .string([ 'f' ])
-    .defaults({ 'f': './timezones.json' })
+    .alias(
+           {
+            'd': 'data',
+            'f': 'format',
+            't': ['time', 'date' ],
+            'z': 'timezone'
+           }
+    )
+    .describe({
+               'd': 'File containing configuration data to load',
+               'f': 'Format of date & time',
+               't': 'Date & time (as per format)',
+               'z': 'Timezone'
+              }
+    )
+    .string([
+             'd',
+             'f',
+             't',
+             'z'
+            ]
+    )
+    .defaults(
+              {
+               'd': './timezones.json',
+               'f': 'YYYY-MM-DD HH:mm' 
+              }
+    )
     .strict(true)
     .argv;
 
 /*jslint nomen: true*/
 if (argv._.length !== 0) {
+    
     /*jslint nomen: false*/
     yargs.showHelp();
     process.exit(1);
 }
 
-var file = argv.f,
+var file = argv.data,
     config,
     data = [ ],
-    m = moment(),
-    timezone,
+    m,
     tzDiff,
     rowData,
     i,
@@ -43,16 +71,36 @@ var file = argv.f,
     align,
     t;
 
+if (argv.time) {
+    console.log('Date & Time: ' + argv.time);
+    if (argv.timezone) {
+        console.log('Timezone:    ' + argv.timezone);
+        if (!moment.tz.zone(argv.timezone)) {
+            console.error('Error: Timezone "' + argv.timezone + '" is not valid');
+            process.exit(1);
+        }
+        m = moment.tz(argv.time, argv.format, true, argv.timezone);
+    } else {
+        m = moment(argv.time, argv.format, true);
+    }
+    if (!m.isValid()) {
+        console.error('Error: Date & time "' + argv.time + '" is not valid using the format "' + argv.format + '"');
+        process.exit(1);
+    }
+} else {
+    m = moment();
+}
+
 if (!fs.existsSync(file)) {
-    console.error('File "' + file + '" does not exist');
+    console.error('Error: File "' + file + '" does not exist');
     process.exit(1);
 }
 
-console.log('Loading "' + file + '"...');
+console.log('Data:        ' + file);
 config = JSON.parse(fs.readFileSync(file, 'utf8'));
 
 if (!config.output) {
-    config.output = [ "hh:mm a DD-MMM-YYYY DIFF daynight" ];
+    config.output = [ 'hh:mm a DD-MMM-YYYY DIFF daynight' ];
 }
 
 console.log();

@@ -1,3 +1,6 @@
 
 node_modules/**
 /.project
+scripts/*.min.js
+qunit-tests/*.min.html
+test/*.min.js

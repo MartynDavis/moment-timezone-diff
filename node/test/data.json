@@ -1,0 +1,19 @@
+{
+    "options": { 
+               },
+    "output": [ "dddd", 
+                "hh:mm a", 
+                "DD-MMM-YYYY", 
+                "DIFF", 
+                "daynight" 
+              ],
+    "timezones": [ 
+                    { "name": "Fred Flintstone", "location": "Vancouver, Canada", "timezone": "US/Pacific" },
+                    { "name": "Barney Rubble", "location": "New York, USA", "timezone": "US/Eastern" },
+                    { "name": "Bamm Bamm Rubble", "location": "London, United Kingdom", "timezone": "Europe/London" },
+                    { "name": "Wilma Flintstone", "location": "Paris, France", "timezone": "Europe/Paris" },
+                    { "name": "Betty Rubble", "location": "Mumbai, India", "timezone": "Asia/Calcutta" },
+                    { "name": "Pebbles Flintstone", "location": "Perth, Australia", "timezone": "Australia/Perth" },
+                    { "name": "Dino", "location": "Melbourne, Australia", "timezone": "Australia/Melbourne" }
+                 ]
+}

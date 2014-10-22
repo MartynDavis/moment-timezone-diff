@@ -151,8 +151,7 @@
     // This allows a difference to be calculated should days be in different years
     //
     function getMinutes(m, baseYear) {
-        var year,
-            minutes = getDays(m, baseYear) * (24 * 60);
+        var minutes = getDays(m, baseYear) * (24 * 60);
         minutes += (m.hour() * 60) +
                    m.minute();
         return minutes;
@@ -878,7 +877,6 @@
             tokens,
             token,
             param,
-            onchange,
             onclick,
             i,
             j;
@@ -1205,8 +1203,7 @@
             fNew = '',
             match,
             value,
-            hoursDiff = this.diff(),
-            process;
+            hoursDiff = this.diff();
         if (f.match(/^\s*$/)) {
             return this._momentTz.format(f);
         }
