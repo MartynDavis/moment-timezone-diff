@@ -1,6 +1,6 @@
 /*
     moment-timezone-diff.js
-    version : 0.5.1
+    version : 0.5.2
     authors : Martyn Davis
     license : MIT
 */
@@ -1254,7 +1254,7 @@
         setOptionValues(this._options, from);
     };
     var mtzd = { };
-    mtzd.version = '0.5.1';
+    mtzd.version = '0.5.2';
     mtzd.MODE_TEXTBOX = MODE_TEXTBOX;
     mtzd.MODE_DROPDOWN_HOUR24 = MODE_DROPDOWN_HOUR24;
     mtzd.MODE_DROPDOWN_HOUR12 = MODE_DROPDOWN_HOUR12;

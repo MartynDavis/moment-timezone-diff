@@ -1,13 +1,13 @@
 /*
     test-moment-timezone-diff-jquery.js
-    version : 0.5.1
+    version : 0.5.2
     authors : Martyn Davis
     license : MIT
 */
 "use strict";
 /*global QUnit, moment, momentTimezoneDiff, testVars*/
 QUnit.test('momentTimezoneDiff', function (assert) {
-    var version = '0.5.1';
+    var version = '0.5.2';
     assert.equal(momentTimezoneDiff.version, version, 'Moment timezone diff version is correct');
     assert.equal(momentTimezoneDiff.MODE_TEXTBOX, 0, 'Moment timezone diff MODE_TEXTBOX is correct');
     assert.equal(momentTimezoneDiff.MODE_DROPDOWN_HOUR24, 1, 'Moment timezone diff MODE_DROPDOWN_HOUR24 is correct');
@@ -107,7 +107,7 @@ function checkVersion(assert, element, info, options) {
                                           });
 }
 function checkVersionInfo(assert, id, options) {
-    var version = '0.5.1',
+    var version = '0.5.2',
         element = document.getElementById(id),
         versions = [ { name: 'moment-timezone-diff', link: 'https://github.com/MartynDavis/moment-timezone-diff/', versionNumber: version },
                      { name: 'moment', link: 'http://momentjs.com/', versionNumber: '2.8.3' },
