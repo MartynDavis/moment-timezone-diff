@@ -1,24 +1,35 @@
 # Moment Timezone Difference
 
-To use moment-timezone-diff, you will need [moment@2.8.3+](http://momentjs.com/), [moment-timezone@0.2.2](http://momentjs.com/timezone/), and the [moment-timezone](http://momentjs.com/timezone/) data.
+To use moment-timezone-diff, you will need [moment@2.8.3+](http://momentjs.com/), [moment-timezone@0.2.3](http://momentjs.com/timezone/), and the [moment-timezone](http://momentjs.com/timezone/) data.
 
 ## Browser
 
 Include the [moment](http://momentjs.com/) and [moment-timezone](http://momentjs.com/timezone/) files, and then include *moment-timezone-diff.js*.
 
-	<script src="moment+locales.js"></script>
-	<script src="moment-timezone-all-years.js"></script>
-	<script src="moment-timezone-diff.js"></script>
+	<script src="moment-with-locales.min.js"></script>
+	<script src="moment-timezone-with-data.min.js"></script>
+	<script src="moment-timezone-diff.min.js"></script>
 	<link href="moment-timezone-diff.css" rel="stylesheet" type="text/css" />
 
-See [moment-timezone](http://momentjs.com/timezone/).
+If you will not be using locales, and want to use a minimal set of data, then you can include the following:
+
+	<script src="moment.min.js"></script>
+	<script src="moment-timezone-with-data-2010-2020.min.js"></script>
+	<script src="moment-timezone-diff.min.js"></script>
+	<link href="moment-timezone-diff.css" rel="stylesheet" type="text/css" />
+
+See [moment](http://momentjs.com/) and [moment-timezone](http://momentjs.com/timezone/) for more information.
 
 ## Node.js
 
-Include the [moment-timezone](http://momentjs.com/timezone/) files, and then include *moment-timezone-diff.js*.
+Include *moment-timezone-diff.js*.
 
-	var moment = require('moment-timezone'),
-		momentTimezoneDiff = require('moment-timezone-diff');
+	var momentTimezoneDiff = require('moment-timezone-diff');
+
+This automatically loads 'moment-timezone', which loads all available timezone data.  This assumes that you have the available files already loaded, which is done using:
+
+	npm install moment
+	npm install moment-timezone
 
 ## Files
 
@@ -60,6 +71,14 @@ createLegend | function | Returns an array of strings which present the legend.
 	String momentTimezoneDiff.version
 
 Returns the version of **momentTimezoneDiff**.
+
+## moment
+
+	Object momentTimezoneDiff.moment
+
+Returns the moment-timezone object referenced, normally 'moment-timezone'.
+
+Useful for Node.js modules, since it removes the need to reload moment-timezone.
 
 ## getDefaultTimezone
 

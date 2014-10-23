@@ -1255,6 +1255,7 @@
     };
     var mtzd = { };
     mtzd.version = '0.5.2';
+    mtzd.moment = moment;
     mtzd.MODE_TEXTBOX = MODE_TEXTBOX;
     mtzd.MODE_DROPDOWN_HOUR24 = MODE_DROPDOWN_HOUR24;
     mtzd.MODE_DROPDOWN_HOUR12 = MODE_DROPDOWN_HOUR12;

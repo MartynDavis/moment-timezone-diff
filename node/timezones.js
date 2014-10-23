@@ -5,8 +5,7 @@
     license : MIT
 */
 "use strict";
-var moment = require('moment-timezone'),
-    momentTimezoneDiff = require('../scripts/moment-timezone-diff.min'),
+var momentTimezoneDiff = require('../scripts/moment-timezone-diff.min'),
     yargs = require('yargs'),
     fs = require('fs'),
     table = require('text-table');
@@ -75,20 +74,20 @@ if (argv.time) {
     console.log('Date & Time: ' + argv.time);
     if (argv.timezone) {
         console.log('Timezone:    ' + argv.timezone);
-        if (!moment.tz.zone(argv.timezone)) {
+        if (!momentTimezoneDiff.moment.tz.zone(argv.timezone)) {
             console.error('Error: Timezone "' + argv.timezone + '" is not valid');
             process.exit(1);
         }
-        m = moment.tz(argv.time, argv.format, true, argv.timezone);
+        m = momentTimezoneDiff.moment.tz(argv.time, argv.format, true, argv.timezone);
     } else {
-        m = moment(argv.time, argv.format, true);
+        m = momentTimezoneDiff.moment(argv.time, argv.format, true);
     }
     if (!m.isValid()) {
         console.error('Error: Date & time "' + argv.time + '" is not valid using the format "' + argv.format + '"');
         process.exit(1);
     }
 } else {
-    m = moment();
+    m = momentTimezoneDiff.moment();
 }
 
 if (!fs.existsSync(file)) {

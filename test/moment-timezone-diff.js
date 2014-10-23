@@ -6,8 +6,7 @@
 */
 "use strict";
 /*global describe, it*/
-var moment = require('../moment/moment-timezone'),
-    momentTimezoneDiff = require('../scripts/moment-timezone-diff');
+var momentTimezoneDiff = require('../scripts/moment-timezone-diff');
 describe('options', function () {
     var version = '0.5.2';
     describe('options', function () {
@@ -82,7 +81,7 @@ describe('options', function () {
             func.should.throw('Object can only be created when using a Browser');
             func = function () { new momentTimezoneDiff.Environment(); };
             func.should.throw('Object can only be created when using a Browser');
-            func = function () { new momentTimezoneDiff.TimezoneDiff(moment(), 'US/Pacific'); };
+            func = function () { new momentTimezoneDiff.TimezoneDiff(momentTimezoneDiff.moment(), 'US/Pacific'); };
             func.should.not.throw();
             func = function () { momentTimezoneDiff.displayVersionInfo('blah'); };
             func.should.throw();
@@ -93,8 +92,8 @@ describe('options', function () {
         it('versionInfo', function () {
             var versions = [ { name: 'moment-timezone-diff', link: 'https://github.com/MartynDavis/moment-timezone-diff/', versionNumber: version },
                              { name: 'moment', link: 'http://momentjs.com/', versionNumber: '2.8.3' },
-                             { name: 'moment-timezone', link: 'http://momentjs.com/timezone/', versionNumber: '0.2.2' },
-                             { name: 'moment-timezone-data', link: 'http://momentjs.com/timezone/', versionNumber: '2014g' }
+                             { name: 'moment-timezone', link: 'http://momentjs.com/timezone/', versionNumber: '0.2.3' },
+                             { name: 'moment-timezone-data', link: 'http://momentjs.com/timezone/', versionNumber: '2014h' }
                            ],
                 i;
             momentTimezoneDiff.getVersionInfo().should.eql(versions);
@@ -118,25 +117,25 @@ describe('options', function () {
             momentTimezoneDiff.getOptions().should.eql(defaultOptions);
         });
         it('TimezoneDiff', function () {
-            var m = moment.tz([2014, 8, 1, 12, 42, 13], 'US/Pacific'),
+            var m = momentTimezoneDiff.moment.tz([2014, 8, 1, 12, 42, 13], 'US/Pacific'),
                 tzDiff = new momentTimezoneDiff.TimezoneDiff(m, 'US/Eastern');
             tzDiff.diff().should.equal(3);
             tzDiff.dayDiff().should.equal(0);
-            m = moment.tz([2014, 11, 31, 23, 42, 13], 'US/Pacific');
+            m = momentTimezoneDiff.moment.tz([2014, 11, 31, 23, 42, 13], 'US/Pacific');
             tzDiff = new momentTimezoneDiff.TimezoneDiff(m, 'US/Eastern');
             tzDiff.diff().should.equal(3);
             tzDiff.dayDiff().should.equal(1);
-            m = moment.tz([2015, 0, 1, 1, 42, 13], 'US/Eastern');
+            m = momentTimezoneDiff.moment.tz([2015, 0, 1, 1, 42, 13], 'US/Eastern');
             tzDiff = new momentTimezoneDiff.TimezoneDiff(m, 'US/Pacific');
             tzDiff.diff().should.equal(-3);
             tzDiff.dayDiff().should.equal(-1);
-            m = moment.tz([2015, 0, 1, 1, 1, 1], 'Australia/Melbourne');
+            m = momentTimezoneDiff.moment.tz([2015, 0, 1, 1, 1, 1], 'Australia/Melbourne');
             tzDiff = new momentTimezoneDiff.TimezoneDiff(m, 'Australia/Perth');
             tzDiff.diff().should.equal(-3);
             tzDiff.dayDiff().should.equal(-1);
             tzDiff = new momentTimezoneDiff.TimezoneDiff(m, 'Australia/Brisbane');
             tzDiff.diff().should.equal(-1);
-            m = moment.tz([2014, 7, 7, 7, 7, 7], 'Australia/Melbourne');
+            m = momentTimezoneDiff.moment.tz([2014, 7, 7, 7, 7, 7], 'Australia/Melbourne');
             tzDiff = new momentTimezoneDiff.TimezoneDiff(m, 'Australia/Perth');
             tzDiff.diff().should.equal(-2);
             tzDiff.dayDiff().should.equal(0);
@@ -145,7 +144,7 @@ describe('options', function () {
             tzDiff.dayDiff().should.equal(0);
         });
         it('Format', function () {
-            var m = moment.tz([2015, 0, 1, 0, 15, 0], 'Australia/Melbourne'),
+            var m = momentTimezoneDiff.moment.tz([2015, 0, 1, 0, 15, 0], 'Australia/Melbourne'),
                 tzDiff = new momentTimezoneDiff.TimezoneDiff(m, 'Australia/Adelaide');
             tzDiff.diff().should.equal(-0.5);
             tzDiff.dayDiff().should.equal(-1);
@@ -154,7 +153,7 @@ describe('options', function () {
             tzDiff.diff().should.equal(-19);
             tzDiff.dayDiff().should.equal(-1);
             tzDiff.format('HH:mm MMM-DD-YYYY DIFF daynight').should.equal('05:15 Dec-31-2014 19 hours behind \u263e');
-            m = moment.tz([2015, 0, 1, 9, 15, 0], 'Australia/Melbourne');
+            m = momentTimezoneDiff.moment.tz([2015, 0, 1, 9, 15, 0], 'Australia/Melbourne');
             tzDiff = new momentTimezoneDiff.TimezoneDiff(m, 'US/Pacific');
             tzDiff.diff().should.equal(-19);
             tzDiff.dayDiff().should.equal(-1);
@@ -165,7 +164,7 @@ describe('options', function () {
             tzDiff.format('HH:mm MMM-DD-YYYY [diff] [daynight]').should.equal('14:15 Dec-31-2014 diff daynight');
         });
         it('Format - escaped', function () {
-            var m = moment.tz([2015, 0, 1, 9, 15, 0], 'Australia/Melbourne'),
+            var m = momentTimezoneDiff.moment.tz([2015, 0, 1, 9, 15, 0], 'Australia/Melbourne'),
                 tzDiff = new momentTimezoneDiff.TimezoneDiff(m, 'US/Pacific');
             tzDiff.diff().should.equal(-19);
             tzDiff.format('DIFF').should.equal('19 hours behind');
@@ -176,7 +175,7 @@ describe('options', function () {
             tzDiff.format('HH:mm MMM-DD-YYYY [DIFF] daynight').should.equal('14:15 Dec-31-2014 DIFF \u263c');
             tzDiff.format('HH:mm MMM-DD-YYYY [diff] daynight').should.equal('14:15 Dec-31-2014 diff \u263c');
             tzDiff.format('HH:mm MMM-DD-YYYY [diff] [daynight]').should.equal('14:15 Dec-31-2014 diff daynight');
-            m = moment.tz([2014, 11, 31, 14, 15, 0], 'US/Pacific');
+            m = momentTimezoneDiff.moment.tz([2014, 11, 31, 14, 15, 0], 'US/Pacific');
             tzDiff = new momentTimezoneDiff.TimezoneDiff(m, 'Australia/Melbourne');
             tzDiff.diff().should.equal(19);
             tzDiff.format('DIFF').should.equal('19 hours ahead');
@@ -189,31 +188,31 @@ describe('options', function () {
             tzDiff.format('HH:mm MMM-DD-YYYY [diff] [daynight]').should.equal('09:15 Jan-01-2015 diff daynight');
         });
         it('Daytime', function () {
-            var m = moment.tz([2015, 0, 1, 9, 15, 0], 'Australia/Melbourne'),
+            var m = momentTimezoneDiff.moment.tz([2015, 0, 1, 9, 15, 0], 'Australia/Melbourne'),
                 tzDiff = new momentTimezoneDiff.TimezoneDiff(m, 'US/Pacific');
             tzDiff.daytime().should.equal(true);
             momentTimezoneDiff.daytime(m).should.equal(true);
-            m = moment.tz([2014, 11, 31, 14, 15, 0], 'US/Pacific');
+            m = momentTimezoneDiff.moment.tz([2014, 11, 31, 14, 15, 0], 'US/Pacific');
             tzDiff = new momentTimezoneDiff.TimezoneDiff(m, 'Australia/Melbourne');
             tzDiff.daytime().should.equal(true);
             momentTimezoneDiff.daytime(m).should.equal(true);
-            m = moment.tz([2014, 11, 31, 20, 15, 0], 'US/Pacific');
+            m = momentTimezoneDiff.moment.tz([2014, 11, 31, 20, 15, 0], 'US/Pacific');
             tzDiff = new momentTimezoneDiff.TimezoneDiff(m, 'Australia/Melbourne');
             tzDiff.daytime().should.equal(true);
             momentTimezoneDiff.daytime(m).should.equal(false);
-            m = moment.tz([2014, 11, 31, 20, 15, 0], 'Australia/Melbourne');
+            m = momentTimezoneDiff.moment.tz([2014, 11, 31, 20, 15, 0], 'Australia/Melbourne');
             tzDiff = new momentTimezoneDiff.TimezoneDiff(m, 'Australia/Perth');
             tzDiff.daytime().should.equal(true);
             momentTimezoneDiff.daytime(m).should.equal(false);
-            m = moment.tz([2014, 11, 31, 14, 15, 0], 'Australia/Melbourne');
+            m = momentTimezoneDiff.moment.tz([2014, 11, 31, 14, 15, 0], 'Australia/Melbourne');
             tzDiff = new momentTimezoneDiff.TimezoneDiff(m, 'Australia/Perth');
             tzDiff.daytime().should.equal(true);
             momentTimezoneDiff.daytime(m).should.equal(true);
-            m = moment.tz([2014, 11, 31, 8, 15, 0], 'Australia/Melbourne');
+            m = momentTimezoneDiff.moment.tz([2014, 11, 31, 8, 15, 0], 'Australia/Melbourne');
             tzDiff = new momentTimezoneDiff.TimezoneDiff(m, 'Australia/Perth');
             tzDiff.daytime().should.equal(false);
             momentTimezoneDiff.daytime(m).should.equal(true);
-            m = moment.tz([2014, 11, 31, 1, 15, 0], 'Australia/Melbourne');
+            m = momentTimezoneDiff.moment.tz([2014, 11, 31, 1, 15, 0], 'Australia/Melbourne');
             tzDiff = new momentTimezoneDiff.TimezoneDiff(m, 'Australia/Adelaide');
             tzDiff.daytime().should.equal(false);
             momentTimezoneDiff.daytime(m).should.equal(false);
@@ -244,7 +243,7 @@ describe('options', function () {
                 sunRiseMinute,
                 sunSetHour,
                 sunSetMinute,
-                m = moment.tz([2015, 0, 8, 12, 35, 0], 'Europe/London');
+                m = momentTimezoneDiff.moment.tz([2015, 0, 8, 12, 35, 0], 'Europe/London');
             for (sunRiseHour = 0; sunRiseHour < 24; sunRiseHour += 1) {
                 for (sunRiseMinute = 0; sunRiseMinute < 60; sunRiseMinute += 1) {
                     for (sunSetHour = sunRiseHour; sunSetHour < 24; sunSetHour += 1) {
@@ -269,13 +268,13 @@ describe('options', function () {
             momentTimezoneDiff.getOptions().should.eql(defaultOptions);
         });
         it('Format with various options values', function () {
-            var m1 = moment.tz([2015, 0, 1, 9, 15, 0], 'Australia/Melbourne'),
+            var m1 = momentTimezoneDiff.moment.tz([2015, 0, 1, 9, 15, 0], 'Australia/Melbourne'),
                 tzDiff1 = new momentTimezoneDiff.TimezoneDiff(m1, 'US/Pacific'),
-                m2 = moment.tz([2014, 11, 31, 14, 15, 0], 'US/Pacific'),
+                m2 = momentTimezoneDiff.moment.tz([2014, 11, 31, 14, 15, 0], 'US/Pacific'),
                 tzDiff2 = new momentTimezoneDiff.TimezoneDiff(m2, 'Australia/Melbourne'),
-                m3 = moment.tz([2014, 11, 31, 14, 15, 0], 'Australia/Melbourne'),
+                m3 = momentTimezoneDiff.moment.tz([2014, 11, 31, 14, 15, 0], 'Australia/Melbourne'),
                 tzDiff3 = new momentTimezoneDiff.TimezoneDiff(m3, 'Australia/Brisbane'),
-                m4 = moment.tz([2014, 11, 31, 1, 15, 0], 'Australia/Brisbane'),
+                m4 = momentTimezoneDiff.moment.tz([2014, 11, 31, 1, 15, 0], 'Australia/Brisbane'),
                 tzDiff4 = new momentTimezoneDiff.TimezoneDiff(m4, 'Australia/Melbourne');
             tzDiff1.format('DIFF').should.equal('19 hours behind');
             tzDiff1.format('diff').should.equal('-19 hours');
@@ -470,7 +469,7 @@ describe('options', function () {
             momentTimezoneDiff.getOptions().should.eql(defaultOptions);
         });
         it('Same timezone values', function () {
-            var m = moment.tz([2015, 0, 1, 1, 15, 0], 'Australia/Melbourne'),
+            var m = momentTimezoneDiff.moment.tz([2015, 0, 1, 1, 15, 0], 'Australia/Melbourne'),
                 tzDiff = new momentTimezoneDiff.TimezoneDiff(m, 'Australia/Sydney');
             tzDiff.format('DIFF').should.equal('');
             tzDiff.format('diff').should.equal('');
@@ -480,7 +479,7 @@ describe('options', function () {
             tzDiff.format('HH:mm MMM-DD-YYYY [DIFF] daynight').should.equal('01:15 Jan-01-2015 DIFF \u263e');
             tzDiff.format('HH:mm MMM-DD-YYYY [diff] daynight').should.equal('01:15 Jan-01-2015 diff \u263e');
             tzDiff.format('HH:mm MMM-DD-YYYY [diff] [daynight]').should.equal('01:15 Jan-01-2015 diff daynight');
-            m = moment.tz([2014, 11, 31, 14, 15, 0], 'Australia/ACT');
+            m = momentTimezoneDiff.moment.tz([2014, 11, 31, 14, 15, 0], 'Australia/ACT');
             tzDiff = new momentTimezoneDiff.TimezoneDiff(m, 'Australia/Melbourne');
             tzDiff.format('DIFF').should.equal('');
             tzDiff.format('diff').should.equal('');

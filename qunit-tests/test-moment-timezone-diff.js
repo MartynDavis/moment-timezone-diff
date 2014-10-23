@@ -111,8 +111,8 @@ function checkVersionInfo(assert, id, options) {
         element = document.getElementById(id),
         versions = [ { name: 'moment-timezone-diff', link: 'https://github.com/MartynDavis/moment-timezone-diff/', versionNumber: version },
                      { name: 'moment', link: 'http://momentjs.com/', versionNumber: '2.8.3' },
-                     { name: 'moment-timezone', link: 'http://momentjs.com/timezone/', versionNumber: '0.2.2' },
-                     { name: 'moment-timezone-data', link: 'http://momentjs.com/timezone/', versionNumber: '2014g' }
+                     { name: 'moment-timezone', link: 'http://momentjs.com/timezone/', versionNumber: '0.2.3' },
+                     { name: 'moment-timezone-data', link: 'http://momentjs.com/timezone/', versionNumber: '2014h' }
                    ],
         childrenLength,
         index = 0,
