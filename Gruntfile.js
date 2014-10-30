@@ -44,7 +44,7 @@ module.exports = function(grunt) {
         src: [ 'node/**/*.js' ],
       },
       grunt: {
-        src: [ 'GruntFile.js' ],
+        src: [ 'Gruntfile.js' ],
       },
       options: {
         curly: true,        // Always put curly braces around blocks in loops and conditionals.
